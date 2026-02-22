@@ -1,0 +1,1072 @@
+﻿Ôû▓ Next.js 16.1.1 (Turbopack)
+
+  Creating an optimized production build ...
+node.exe : 
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" "C:\
+Users\User\AppData\Roaming\
+n ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
+    + CategoryInfo         
+     : NotSpecified: (:St  
+  ring) [], RemoteExcept   
+ ion
+    + FullyQualifiedErrorI 
+   d : NativeCommandError
+ 
+> Build error occurred
+Error: Turbopack build 
+failed with 8 errors:
+./src/app/fonts/page.jsx:14
+:1
+Export cartService doesn't 
+exist in target module
+[0m [90m 12 |[39m 
+[36mimport[39m 
+[33mFooter[39m 
+[36mfrom[39m [32m"@/comp
+onents/shared/Footer"[39m
+[33m;[39m
+ [90m 13 |[39m 
+[36mimport[39m { 
+useLanguage } 
+[36mfrom[39m [32m"@/cont
+ext/LanguageContext"[39m[
+33m;[39m
+[31m[1m>[22m[39m[90m 
+14 |[39m [36mimport[39m 
+{ fontService[33m,[39m 
+cartService } 
+[36mfrom[39m [32m"@/serv
+ices/api"[39m[33m;[39m
+ [90m    |[39m [31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m
+ [90m 15 |[39m
+ [90m 16 |[39m [90m// 
+Font Categories[39m
+ [90m 17 |[39m 
+[36mconst[39m categories 
+[33m=[39m [[0m
+
+The export cartService was 
+not found in module [projec
+t]/src/services/api.js 
+[app-client] (ecmascript).
+Did you mean to import 
+authService?
+All exports of the module 
+are statically known (It 
+doesn't have dynamic 
+exports). So it's known 
+statically that the 
+requested export doesn't 
+exist.
+
+Import traces:
+  Client Component Browser:
+    
+./src/app/fonts/page.jsx 
+[Client Component Browser]
+    
+./src/app/fonts/page.jsx 
+[Server Component]
+
+  Client Component SSR:
+    
+./src/app/fonts/page.jsx 
+[Client Component SSR]
+    
+./src/app/fonts/page.jsx 
+[Server Component]
+
+
+./src/app/fonts/page.jsx:14
+:1
+Export cartService doesn't 
+exist in target module
+[0m [90m 12 |[39m 
+[36mimport[39m 
+[33mFooter[39m 
+[36mfrom[39m [32m"@/comp
+onents/shared/Footer"[39m
+[33m;[39m
+ [90m 13 |[39m 
+[36mimport[39m { 
+useLanguage } 
+[36mfrom[39m [32m"@/cont
+ext/LanguageContext"[39m[
+33m;[39m
+[31m[1m>[22m[39m[90m 
+14 |[39m [36mimport[39m 
+{ fontService[33m,[39m 
+cartService } 
+[36mfrom[39m [32m"@/serv
+ices/api"[39m[33m;[39m
+ [90m    |[39m [31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m
+ [90m 15 |[39m
+ [90m 16 |[39m [90m// 
+Font Categories[39m
+ [90m 17 |[39m 
+[36mconst[39m categories 
+[33m=[39m [[0m
+
+The export cartService was 
+not found in module [projec
+t]/src/services/api.js 
+[app-ssr] (ecmascript).
+Did you mean to import 
+authService?
+All exports of the module 
+are statically known (It 
+doesn't have dynamic 
+exports). So it's known 
+statically that the 
+requested export doesn't 
+exist.
+
+Import traces:
+  Client Component Browser:
+    
+./src/app/fonts/page.jsx 
+[Client Component Browser]
+    
+./src/app/fonts/page.jsx 
+[Server Component]
+
+  Client Component SSR:
+    
+./src/app/fonts/page.jsx 
+[Client Component SSR]
+    
+./src/app/fonts/page.jsx 
+[Server Component]
+
+
+./src/app/fonts/[slug]/page
+.jsx:18:1
+Export downloadService 
+doesn't exist in target 
+module
+[0m [90m 16 |[39m 
+[36mimport[39m { 
+addToCart } [36mfrom[39m 
+[32m"@/redux/features/cart
+Slice"[39m[33m;[39m
+ [90m 17 |[39m 
+[36mimport[39m { 
+selectIsAuthenticated } 
+[36mfrom[39m [32m"@/redu
+x/features/authSlice"[39m
+[33m;[39m
+[31m[1m>[22m[39m[90m 
+18 |[39m [36mimport[39m 
+{ fontService[33m,[39m 
+downloadService } 
+[36mfrom[39m [32m"@/serv
+ices/api"[39m[33m;[39m
+ [90m    |[39m [31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m
+ [90m 19 |[39m
+ [90m 20 |[39m 
+[36mconst[39m mockFonts 
+[33m=[39m [
+ [90m 21 |[39m     { 
+_id[33m:[39m 
+[32m"1"[39m[33m,[39m 
+title[33m:[39m 
+[32m"Bangla Modern 
+Sans"[39m[33m,[39m 
+slug[33m:[39m [32m"bangl
+a-modern-sans"[39m[33m,[
+39m category[33m:[39m 
+[32m"Sans 
+Serif"[39m[33m,[39m 
+price[33m:[39m 
+[35m499[39m[33m,[39m 
+salePrice[33m:[39m 
+[35m299[39m[33m,[39m 
+thumbnail[33m:[39m [32m"
+https://images.unsplash.com
+/photo-1618761714954-0b8cd0
+026356?w=800"[39m[33m,[3
+9m downloads[33m:[39m 
+[35m1250[39m[33m,[39m 
+views[33m:[39m 
+[35m5600[39m[33m,[39m 
+likes[33m:[39m 
+[35m340[39m[33m,[39m 
+rating[33m:[39m 
+[35m4.8[39m[33m,[39m 
+description[33m:[39m 
+[32m"A clean, modern 
+sans-serif font designed 
+specifically for 
+high-readability on 
+digital screens. Includes 
+full Bangla and Latin 
+character sets with 
+multiple 
+weights."[39m[33m,[39m 
+weights[33m:[39m [[32m"L
+ight"[39m[33m,[39m [32m
+"Regular"[39m[33m,[39m 
+[32m"Bold"[39m][33m,[39m
+ styles[33m:[39m [[32m"n
+ormal"[39m[33m,[39m [32
+m"italic"[39m][33m,[39m 
+glyphs[33m:[39m 
+[35m450[39m[33m,[39m 
+version[33m:[39m 
+[32m"2.1"[39m 
+}[33m,[39m[0m
+
+The export downloadService 
+was not found in module [pr
+oject]/src/services/api.js 
+[app-client] (ecmascript).
+Did you mean to import 
+uploadService?
+All exports of the module 
+are statically known (It 
+doesn't have dynamic 
+exports). So it's known 
+statically that the 
+requested export doesn't 
+exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/fonts/[slug]/
+page.jsx [Client Component 
+Browser]
+    ./src/app/fonts/[slug]/
+page.jsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/fonts/[slug]/
+page.jsx [Client Component 
+SSR]
+    ./src/app/fonts/[slug]/
+page.jsx [Server Component]
+
+
+./src/app/fonts/[slug]/page
+.jsx:18:1
+Export downloadService 
+doesn't exist in target 
+module
+[0m [90m 16 |[39m 
+[36mimport[39m { 
+addToCart } [36mfrom[39m 
+[32m"@/redux/features/cart
+Slice"[39m[33m;[39m
+ [90m 17 |[39m 
+[36mimport[39m { 
+selectIsAuthenticated } 
+[36mfrom[39m [32m"@/redu
+x/features/authSlice"[39m
+[33m;[39m
+[31m[1m>[22m[39m[90m 
+18 |[39m [36mimport[39m 
+{ fontService[33m,[39m 
+downloadService } 
+[36mfrom[39m [32m"@/serv
+ices/api"[39m[33m;[39m
+ [90m    |[39m [31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m
+ [90m 19 |[39m
+ [90m 20 |[39m 
+[36mconst[39m mockFonts 
+[33m=[39m [
+ [90m 21 |[39m     { 
+_id[33m:[39m 
+[32m"1"[39m[33m,[39m 
+title[33m:[39m 
+[32m"Bangla Modern 
+Sans"[39m[33m,[39m 
+slug[33m:[39m [32m"bangl
+a-modern-sans"[39m[33m,[
+39m category[33m:[39m 
+[32m"Sans 
+Serif"[39m[33m,[39m 
+price[33m:[39m 
+[35m499[39m[33m,[39m 
+salePrice[33m:[39m 
+[35m299[39m[33m,[39m 
+thumbnail[33m:[39m [32m"
+https://images.unsplash.com
+/photo-1618761714954-0b8cd0
+026356?w=800"[39m[33m,[3
+9m downloads[33m:[39m 
+[35m1250[39m[33m,[39m 
+views[33m:[39m 
+[35m5600[39m[33m,[39m 
+likes[33m:[39m 
+[35m340[39m[33m,[39m 
+rating[33m:[39m 
+[35m4.8[39m[33m,[39m 
+description[33m:[39m 
+[32m"A clean, modern 
+sans-serif font designed 
+specifically for 
+high-readability on 
+digital screens. Includes 
+full Bangla and Latin 
+character sets with 
+multiple 
+weights."[39m[33m,[39m 
+weights[33m:[39m [[32m"L
+ight"[39m[33m,[39m [32m
+"Regular"[39m[33m,[39m 
+[32m"Bold"[39m][33m,[39m
+ styles[33m:[39m [[32m"n
+ormal"[39m[33m,[39m [32
+m"italic"[39m][33m,[39m 
+glyphs[33m:[39m 
+[35m450[39m[33m,[39m 
+version[33m:[39m 
+[32m"2.1"[39m 
+}[33m,[39m[0m
+
+The export downloadService 
+was not found in module [pr
+oject]/src/services/api.js 
+[app-ssr] (ecmascript).
+Did you mean to import 
+uploadService?
+All exports of the module 
+are statically known (It 
+doesn't have dynamic 
+exports). So it's known 
+statically that the 
+requested export doesn't 
+exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/fonts/[slug]/
+page.jsx [Client Component 
+Browser]
+    ./src/app/fonts/[slug]/
+page.jsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/fonts/[slug]/
+page.jsx [Client Component 
+SSR]
+    ./src/app/fonts/[slug]/
+page.jsx [Server Component]
+
+
+./src/app/fonts/[slug]/page
+.jsx:18:1
+Export fontService doesn't 
+exist in target module
+[0m [90m 16 |[39m 
+[36mimport[39m { 
+addToCart } [36mfrom[39m 
+[32m"@/redux/features/cart
+Slice"[39m[33m;[39m
+ [90m 17 |[39m 
+[36mimport[39m { 
+selectIsAuthenticated } 
+[36mfrom[39m [32m"@/redu
+x/features/authSlice"[39m
+[33m;[39m
+[31m[1m>[22m[39m[90m 
+18 |[39m [36mimport[39m 
+{ fontService[33m,[39m 
+downloadService } 
+[36mfrom[39m [32m"@/serv
+ices/api"[39m[33m;[39m
+ [90m    |[39m [31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m
+ [90m 19 |[39m
+ [90m 20 |[39m 
+[36mconst[39m mockFonts 
+[33m=[39m [
+ [90m 21 |[39m     { 
+_id[33m:[39m 
+[32m"1"[39m[33m,[39m 
+title[33m:[39m 
+[32m"Bangla Modern 
+Sans"[39m[33m,[39m 
+slug[33m:[39m [32m"bangl
+a-modern-sans"[39m[33m,[
+39m category[33m:[39m 
+[32m"Sans 
+Serif"[39m[33m,[39m 
+price[33m:[39m 
+[35m499[39m[33m,[39m 
+salePrice[33m:[39m 
+[35m299[39m[33m,[39m 
+thumbnail[33m:[39m [32m"
+https://images.unsplash.com
+/photo-1618761714954-0b8cd0
+026356?w=800"[39m[33m,[3
+9m downloads[33m:[39m 
+[35m1250[39m[33m,[39m 
+views[33m:[39m 
+[35m5600[39m[33m,[39m 
+likes[33m:[39m 
+[35m340[39m[33m,[39m 
+rating[33m:[39m 
+[35m4.8[39m[33m,[39m 
+description[33m:[39m 
+[32m"A clean, modern 
+sans-serif font designed 
+specifically for 
+high-readability on 
+digital screens. Includes 
+full Bangla and Latin 
+character sets with 
+multiple 
+weights."[39m[33m,[39m 
+weights[33m:[39m [[32m"L
+ight"[39m[33m,[39m [32m
+"Regular"[39m[33m,[39m 
+[32m"Bold"[39m][33m,[39m
+ styles[33m:[39m [[32m"n
+ormal"[39m[33m,[39m [32
+m"italic"[39m][33m,[39m 
+glyphs[33m:[39m 
+[35m450[39m[33m,[39m 
+version[33m:[39m 
+[32m"2.1"[39m 
+}[33m,[39m[0m
+
+The export fontService was 
+not found in module [projec
+t]/src/services/api.js 
+[app-client] (ecmascript).
+Did you mean to import 
+blogService?
+All exports of the module 
+are statically known (It 
+doesn't have dynamic 
+exports). So it's known 
+statically that the 
+requested export doesn't 
+exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/fonts/[slug]/
+page.jsx [Client Component 
+Browser]
+    ./src/app/fonts/[slug]/
+page.jsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/fonts/[slug]/
+page.jsx [Client Component 
+SSR]
+    ./src/app/fonts/[slug]/
+page.jsx [Server Component]
+
+
+./src/app/fonts/[slug]/page
+.jsx:18:1
+Export fontService doesn't 
+exist in target module
+[0m [90m 16 |[39m 
+[36mimport[39m { 
+addToCart } [36mfrom[39m 
+[32m"@/redux/features/cart
+Slice"[39m[33m;[39m
+ [90m 17 |[39m 
+[36mimport[39m { 
+selectIsAuthenticated } 
+[36mfrom[39m [32m"@/redu
+x/features/authSlice"[39m
+[33m;[39m
+[31m[1m>[22m[39m[90m 
+18 |[39m [36mimport[39m 
+{ fontService[33m,[39m 
+downloadService } 
+[36mfrom[39m [32m"@/serv
+ices/api"[39m[33m;[39m
+ [90m    |[39m [31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m
+ [90m 19 |[39m
+ [90m 20 |[39m 
+[36mconst[39m mockFonts 
+[33m=[39m [
+ [90m 21 |[39m     { 
+_id[33m:[39m 
+[32m"1"[39m[33m,[39m 
+title[33m:[39m 
+[32m"Bangla Modern 
+Sans"[39m[33m,[39m 
+slug[33m:[39m [32m"bangl
+a-modern-sans"[39m[33m,[
+39m category[33m:[39m 
+[32m"Sans 
+Serif"[39m[33m,[39m 
+price[33m:[39m 
+[35m499[39m[33m,[39m 
+salePrice[33m:[39m 
+[35m299[39m[33m,[39m 
+thumbnail[33m:[39m [32m"
+https://images.unsplash.com
+/photo-1618761714954-0b8cd0
+026356?w=800"[39m[33m,[3
+9m downloads[33m:[39m 
+[35m1250[39m[33m,[39m 
+views[33m:[39m 
+[35m5600[39m[33m,[39m 
+likes[33m:[39m 
+[35m340[39m[33m,[39m 
+rating[33m:[39m 
+[35m4.8[39m[33m,[39m 
+description[33m:[39m 
+[32m"A clean, modern 
+sans-serif font designed 
+specifically for 
+high-readability on 
+digital screens. Includes 
+full Bangla and Latin 
+character sets with 
+multiple 
+weights."[39m[33m,[39m 
+weights[33m:[39m [[32m"L
+ight"[39m[33m,[39m [32m
+"Regular"[39m[33m,[39m 
+[32m"Bold"[39m][33m,[39m
+ styles[33m:[39m [[32m"n
+ormal"[39m[33m,[39m [32
+m"italic"[39m][33m,[39m 
+glyphs[33m:[39m 
+[35m450[39m[33m,[39m 
+version[33m:[39m 
+[32m"2.1"[39m 
+}[33m,[39m[0m
+
+The export fontService was 
+not found in module [projec
+t]/src/services/api.js 
+[app-ssr] (ecmascript).
+Did you mean to import 
+blogService?
+All exports of the module 
+are statically known (It 
+doesn't have dynamic 
+exports). So it's known 
+statically that the 
+requested export doesn't 
+exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/fonts/[slug]/
+page.jsx [Client Component 
+Browser]
+    ./src/app/fonts/[slug]/
+page.jsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/fonts/[slug]/
+page.jsx [Client Component 
+SSR]
+    ./src/app/fonts/[slug]/
+page.jsx [Server Component]
+
+
+./src/app/fonts/page.jsx:14
+:1
+Export fontService doesn't 
+exist in target module
+[0m [90m 12 |[39m 
+[36mimport[39m 
+[33mFooter[39m 
+[36mfrom[39m [32m"@/comp
+onents/shared/Footer"[39m
+[33m;[39m
+ [90m 13 |[39m 
+[36mimport[39m { 
+useLanguage } 
+[36mfrom[39m [32m"@/cont
+ext/LanguageContext"[39m[
+33m;[39m
+[31m[1m>[22m[39m[90m 
+14 |[39m [36mimport[39m 
+{ fontService[33m,[39m 
+cartService } 
+[36mfrom[39m [32m"@/serv
+ices/api"[39m[33m;[39m
+ [90m    |[39m [31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m
+ [90m 15 |[39m
+ [90m 16 |[39m [90m// 
+Font Categories[39m
+ [90m 17 |[39m 
+[36mconst[39m categories 
+[33m=[39m [[0m
+
+The export fontService was 
+not found in module [projec
+t]/src/services/api.js 
+[app-client] (ecmascript).
+Did you mean to import 
+blogService?
+All exports of the module 
+are statically known (It 
+doesn't have dynamic 
+exports). So it's known 
+statically that the 
+requested export doesn't 
+exist.
+
+Import traces:
+  Client Component Browser:
+    
+./src/app/fonts/page.jsx 
+[Client Component Browser]
+    
+./src/app/fonts/page.jsx 
+[Server Component]
+
+  Client Component SSR:
+    
+./src/app/fonts/page.jsx 
+[Client Component SSR]
+    
+./src/app/fonts/page.jsx 
+[Server Component]
+
+
+./src/app/fonts/page.jsx:14
+:1
+Export fontService doesn't 
+exist in target module
+[0m [90m 12 |[39m 
+[36mimport[39m 
+[33mFooter[39m 
+[36mfrom[39m [32m"@/comp
+onents/shared/Footer"[39m
+[33m;[39m
+ [90m 13 |[39m 
+[36mimport[39m { 
+useLanguage } 
+[36mfrom[39m [32m"@/cont
+ext/LanguageContext"[39m[
+33m;[39m
+[31m[1m>[22m[39m[90m 
+14 |[39m [36mimport[39m 
+{ fontService[33m,[39m 
+cartService } 
+[36mfrom[39m [32m"@/serv
+ices/api"[39m[33m;[39m
+ [90m    |[39m [31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m
+ [90m 15 |[39m
+ [90m 16 |[39m [90m// 
+Font Categories[39m
+ [90m 17 |[39m 
+[36mconst[39m categories 
+[33m=[39m [[0m
+
+The export fontService was 
+not found in module [projec
+t]/src/services/api.js 
+[app-ssr] (ecmascript).
+Did you mean to import 
+blogService?
+All exports of the module 
+are statically known (It 
+doesn't have dynamic 
+exports). So it's known 
+statically that the 
+requested export doesn't 
+exist.
+
+Import traces:
+  Client Component Browser:
+    
+./src/app/fonts/page.jsx 
+[Client Component Browser]
+    
+./src/app/fonts/page.jsx 
+[Server Component]
+
+  Client Component SSR:
+    
+./src/app/fonts/page.jsx 
+[Client Component SSR]
+    
+./src/app/fonts/page.jsx 
+[Server Component]
+
+
+    at <unknown> (./src/app
+/fonts/page.jsx:14:1)
+    at <unknown> (./src/app
+/fonts/page.jsx:14:1)
+    at <unknown> (./src/app
+/fonts/[slug]/page.jsx:18:1
+)
+    at <unknown> (./src/app
+/fonts/[slug]/page.jsx:18:1
+)
+    at <unknown> (./src/app
+/fonts/[slug]/page.jsx:18:1
+)
+    at <unknown> (./src/app
+/fonts/[slug]/page.jsx:18:1
+)
+    at <unknown> (./src/app
+/fonts/page.jsx:14:1)
+    at <unknown> (./src/app
+/fonts/page.jsx:14:1)

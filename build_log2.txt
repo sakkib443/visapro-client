@@ -1,0 +1,54 @@
+﻿Ôû▓ Next.js 16.1.1 (Turbopack)
+
+  Creating an optimized production build ...
+Ô£ô Compiled successfully in 2.6s
+  Running TypeScript ...
+  Collecting page data using 15 workers ...
+  Generating static pages using 15 workers (0/35) ...
+  Generating static pages using 15 workers (8/35) 
+  Generating static pages using 15 workers (17/35) 
+  Generating static pages using 15 workers (26/35) 
+Ô£ô Generating static pages using 15 workers (35/35) in 594.3ms
+  Finalizing page optimization ...
+
+Route (app)
+Ôöî Ôùï /
+Ôö£ Ôùï /_not-found
+Ôö£ Ôùï /about
+Ôö£ Ôùï /blog
+Ôö£ ãÆ /blog/[slug]
+Ôö£ Ôùï /contact
+Ôö£ Ôùï /dashboard/admin
+Ôö£ Ôùï /dashboard/admin/air-tickets
+Ôö£ Ôùï /dashboard/admin/air-tickets/create
+Ôö£ Ôùï /dashboard/admin/blog
+Ôö£ Ôùï /dashboard/admin/blog/create
+Ôö£ Ôùï /dashboard/admin/hajj-umrah
+Ôö£ Ôùï /dashboard/admin/hajj-umrah/create
+Ôö£ Ôùï /dashboard/admin/hotel-bookings
+Ôö£ Ôùï /dashboard/admin/hotel-bookings/create
+Ôö£ Ôùï /dashboard/admin/messages
+Ôö£ Ôùï /dashboard/admin/profile
+Ôö£ Ôùï /dashboard/admin/settings
+Ôö£ Ôùï /dashboard/admin/study-abroad
+Ôö£ Ôùï /dashboard/admin/study-abroad/create
+Ôö£ Ôùï /dashboard/admin/theme
+Ôö£ Ôùï /dashboard/admin/tours
+Ôö£ Ôùï /dashboard/admin/tours/create
+Ôö£ Ôùï /dashboard/admin/users
+Ôö£ Ôùï /dashboard/admin/users/create
+Ôö£ Ôùï /dashboard/admin/visa-applications
+Ôö£ Ôùï /dashboard/admin/visa-applications/create
+Ôö£ Ôùï /fonts
+Ôö£ ãÆ /fonts/[slug]
+Ôö£ Ôùï /hajj-umrah
+Ôö£ Ôùï /login
+Ôö£ Ôùï /register
+Ôö£ Ôùï /study-abroad
+Ôö£ Ôùï /tour
+Ôöö Ôùï /visa
+
+
+Ôùï  (Static)   prerendered as static content
+ãÆ  (Dynamic)  server-rendered on demand
+
