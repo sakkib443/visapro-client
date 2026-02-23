@@ -19,7 +19,7 @@ import {
     FiPlus,
     FiEye,
 } from "react-icons/fi";
-import { LuPlane, LuGraduationCap, LuHotel } from "react-icons/lu";
+import { LuPlane, LuGraduationCap } from "react-icons/lu";
 import { FaKaaba } from "react-icons/fa6";
 import { analyticsService } from "@/services/api";
 
@@ -92,8 +92,6 @@ export default function AdminDashboard() {
         tourBookings: 234,
         hajjBookings: 89,
         studyAbroadApps: 156,
-        airTickets: 432,
-        hotelBookings: 198,
         monthlyRevenue: 345000,
     });
 
@@ -176,8 +174,6 @@ export default function AdminDashboard() {
         { name: "Tour Packages", value: stats.tourBookings, icon: FiMapPin, color: "#3B82F6", href: "/dashboard/admin/tours" },
         { name: "Hajj & Umrah", value: stats.hajjBookings, icon: FaKaaba, color: "#8B5CF6", href: "/dashboard/admin/hajj-umrah" },
         { name: "Study Abroad", value: stats.studyAbroadApps, icon: LuGraduationCap, color: "#EC4899", href: "/dashboard/admin/study-abroad" },
-        { name: "Air Tickets", value: stats.airTickets, icon: LuPlane, color: "#14B8A6", href: "/dashboard/admin/air-tickets" },
-        { name: "Hotel Bookings", value: stats.hotelBookings, icon: LuHotel, color: "#F97316", href: "/dashboard/admin/hotel-bookings" },
         { name: "Approved Visas", value: stats.approvedVisas, icon: FiCheckCircle, color: "#10B981", href: "/dashboard/admin/visa-applications?status=approved" },
     ];
 

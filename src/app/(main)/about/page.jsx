@@ -99,7 +99,7 @@ export default function AboutPage() {
         <div className="min-h-screen bg-white dark:bg-gray-950">
 
             {/* Hero Section */}
-            <section className="relative pt-32 pb-20 overflow-hidden">
+            <section className="relative pt-24 md:pt-32 pb-12 md:pb-20 overflow-hidden">
                 {/* Background Pattern */}
                 <div
                     className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]"
@@ -123,7 +123,7 @@ export default function AboutPage() {
                                 </span>
                             </div>
 
-                            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white font-heading uppercase leading-[0.9] mb-6">
+                            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white font-heading uppercase leading-[0.9] mb-6">
                                 {language === 'bn' ? 'ক্রিয়েটিভ' : 'CREATIVE'}
                                 <br />
                                 <span className="text-primary">{language === 'bn' ? 'হাব প্রো।' : 'HUB PRO.'}</span>
@@ -159,17 +159,17 @@ export default function AboutPage() {
                         <motion.div
                             initial={{ opacity: 0, x: 30 }}
                             animate={{ opacity: 1, x: 0 }}
-                            className="grid grid-cols-2 gap-4"
+                            className="grid grid-cols-2 gap-3 md:gap-4"
                         >
                             <div className="space-y-4">
-                                <div className="h-[200px] rounded-3xl overflow-hidden">
+                                <div className="h-[140px] sm:h-[200px] rounded-2xl md:rounded-3xl overflow-hidden">
                                     <img
                                         src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800"
                                         alt="Team"
                                         className="w-full h-full object-cover"
                                     />
                                 </div>
-                                <div className="h-[250px] rounded-3xl overflow-hidden">
+                                <div className="h-[180px] sm:h-[250px] rounded-2xl md:rounded-3xl overflow-hidden">
                                     <img
                                         src="https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800"
                                         alt="Office"
@@ -177,15 +177,15 @@ export default function AboutPage() {
                                     />
                                 </div>
                             </div>
-                            <div className="space-y-4 pt-8">
-                                <div className="h-[250px] rounded-3xl overflow-hidden">
+                            <div className="space-y-3 md:space-y-4 pt-4 md:pt-8">
+                                <div className="h-[180px] sm:h-[250px] rounded-2xl md:rounded-3xl overflow-hidden">
                                     <img
                                         src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800"
                                         alt="Work"
                                         className="w-full h-full object-cover"
                                     />
                                 </div>
-                                <div className="h-[200px] rounded-3xl overflow-hidden bg-primary flex items-center justify-center">
+                                <div className="h-[140px] sm:h-[200px] rounded-2xl md:rounded-3xl overflow-hidden bg-primary flex items-center justify-center">
                                     <div className="text-center">
                                         <span className="text-5xl font-bold text-black font-heading">6+</span>
                                         <p className="text-black font-bold uppercase">
@@ -224,7 +224,7 @@ export default function AboutPage() {
                         </motion.div>
 
                         {/* Values */}
-                        <div className="grid grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
                             {values.map((value, index) => (
                                 <motion.div
                                     key={index}
@@ -264,7 +264,7 @@ export default function AboutPage() {
                         </h2>
                     </motion.div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
                         {milestones.map((milestone, index) => (
                             <motion.div
                                 key={index}

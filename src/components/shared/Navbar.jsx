@@ -345,32 +345,68 @@ export default function Navbar() {
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ delay: index * 0.05 }}
                                         >
-                                            <Link
-                                                href={link.href}
-                                                className={`block px-4 py-3 text-base font-semibold rounded-lg transition-colors ${isActive(link.href)
-                                                    ? "text-[#EF8C2C] bg-[#EF8C2C]/5"
-                                                    : "text-gray-700 hover:bg-gray-50"
-                                                    }`}
-                                                style={{ fontFamily: 'Poppins, sans-serif' }}
-                                                onClick={() => setIsMobileOpen(false)}
-                                            >
-                                                {link.name}
-                                            </Link>
-                                            {/* Mobile Sub-items */}
-                                            {link.hasDropdown && (
-                                                <div className="ml-4 pl-4 border-l-2 border-gray-100 space-y-1 mt-1 mb-2">
-                                                    {link.dropdownItems?.map((item) => (
+                                            {link.hasDropdown ? (
+                                                <>
+                                                    <div className="flex items-center">
                                                         <Link
-                                                            key={item.href}
-                                                            href={item.href}
-                                                            className="block px-3 py-2 text-sm text-gray-500 hover:text-[#3590CF] rounded-lg transition-colors"
+                                                            href={link.href}
+                                                            className={`flex-1 px-4 py-3 text-base font-semibold rounded-l-lg transition-colors ${isActive(link.href)
+                                                                ? "text-[#EF8C2C] bg-[#EF8C2C]/5"
+                                                                : "text-gray-700 hover:bg-gray-50"
+                                                                }`}
                                                             style={{ fontFamily: 'Poppins, sans-serif' }}
                                                             onClick={() => setIsMobileOpen(false)}
                                                         >
-                                                            {item.icon} {item.name}
+                                                            {link.name}
                                                         </Link>
-                                                    ))}
-                                                </div>
+                                                        <button
+                                                            onClick={() => setActiveDropdown(activeDropdown === link.name ? null : link.name)}
+                                                            className={`px-4 py-3 rounded-r-lg transition-colors ${activeDropdown === link.name
+                                                                ? "text-[#EF8C2C] bg-[#EF8C2C]/5"
+                                                                : "text-gray-400 hover:bg-gray-50"
+                                                                }`}
+                                                        >
+                                                            <FiChevronDown className={`w-4 h-4 transition-transform duration-200 ${activeDropdown === link.name ? "rotate-180" : ""}`} />
+                                                        </button>
+                                                    </div>
+                                                    <AnimatePresence>
+                                                        {activeDropdown === link.name && (
+                                                            <motion.div
+                                                                initial={{ height: 0, opacity: 0 }}
+                                                                animate={{ height: "auto", opacity: 1 }}
+                                                                exit={{ height: 0, opacity: 0 }}
+                                                                transition={{ duration: 0.2 }}
+                                                                className="overflow-hidden"
+                                                            >
+                                                                <div className="ml-4 pl-4 border-l-2 border-gray-100 space-y-1 mt-1 mb-2">
+                                                                    {link.dropdownItems?.map((item) => (
+                                                                        <Link
+                                                                            key={item.href}
+                                                                            href={item.href}
+                                                                            className="block px-3 py-2 text-sm text-gray-500 hover:text-[#3590CF] rounded-lg transition-colors"
+                                                                            style={{ fontFamily: 'Poppins, sans-serif' }}
+                                                                            onClick={() => setIsMobileOpen(false)}
+                                                                        >
+                                                                            {item.icon} {item.name}
+                                                                        </Link>
+                                                                    ))}
+                                                                </div>
+                                                            </motion.div>
+                                                        )}
+                                                    </AnimatePresence>
+                                                </>
+                                            ) : (
+                                                <Link
+                                                    href={link.href}
+                                                    className={`block px-4 py-3 text-base font-semibold rounded-lg transition-colors ${isActive(link.href)
+                                                        ? "text-[#EF8C2C] bg-[#EF8C2C]/5"
+                                                        : "text-gray-700 hover:bg-gray-50"
+                                                        }`}
+                                                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                                                    onClick={() => setIsMobileOpen(false)}
+                                                >
+                                                    {link.name}
+                                                </Link>
                                             )}
                                         </motion.div>
                                     ))}

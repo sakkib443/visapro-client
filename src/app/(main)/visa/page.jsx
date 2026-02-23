@@ -138,6 +138,7 @@ function VisaContent() {
     const [priceRange, setPriceRange] = useState(25000);
     const [viewMode, setViewMode] = useState("grid");
     const [sortBy, setSortBy] = useState("Recently Added");
+    const [showFilters, setShowFilters] = useState(false);
 
     const filteredVisas = useMemo(() => {
         return visaData.filter(visa => {
@@ -161,14 +162,26 @@ function VisaContent() {
     return (
         <div className="bg-[#F9FAFB] min-h-screen">
             {/* Main Header Space for consistent padding with navbar */}
-            <div className="h-32" />
+            <div className="h-24 md:h-32" />
 
             <div className="max-w-[1400px] mx-auto px-4 md:px-8 pb-20">
+                {/* Mobile Filter Toggle */}
+                <div className="lg:hidden mb-4">
+                    <button
+                        onClick={() => setShowFilters(!showFilters)}
+                        className="w-full flex items-center justify-center gap-2 py-3 bg-white rounded-xl border border-gray-200 text-sm font-bold text-gray-700 shadow-sm"
+                    >
+                        <LuSearch size={16} />
+                        {showFilters ? 'Hide Filters' : 'Show Filters'}
+                        <LuChevronDown className={`transition-transform ${showFilters ? 'rotate-180' : ''}`} size={16} />
+                    </button>
+                </div>
+
                 <div className="flex flex-col lg:flex-row gap-8">
 
                     {/* LEFT SIDEBAR - FILTERS */}
-                    <aside className="w-full lg:w-[320px] flex-shrink-0">
-                        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 sticky top-32">
+                    <aside className={`w-full lg:w-[320px] flex-shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+                        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 lg:sticky lg:top-32">
                             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center justify-between">
                                 Filter By
                                 <button
@@ -294,9 +307,9 @@ function VisaContent() {
                     </aside>
 
                     {/* RIGHT CONTENT AREA */}
-                    <main className="flex-grow">
+                    <main className="flex-grow min-w-0">
                         {/* Top Bar Navigation */}
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-8">
                             <div className="relative flex-grow max-w-lg">
                                 <LuSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#1D7EDD]" />
                                 <input
@@ -308,10 +321,10 @@ function VisaContent() {
                                 />
                             </div>
 
-                            <div className="flex items-center gap-4">
-                                <div className="relative min-w-[180px]">
+                            <div className="flex items-center gap-3">
+                                <div className="relative min-w-0 flex-1 sm:min-w-[160px]">
                                     <select
-                                        className="w-full pl-4 pr-10 py-3 bg-white border border-gray-200 rounded-xl appearance-none text-sm font-bold text-gray-700 outline-none cursor-pointer"
+                                        className="w-full pl-3 pr-8 py-3 bg-white border border-gray-200 rounded-xl appearance-none text-xs font-bold text-gray-700 outline-none cursor-pointer"
                                         value={sortBy}
                                         onChange={(e) => setSortBy(e.target.value)}
                                     >
@@ -320,10 +333,10 @@ function VisaContent() {
                                         <option>Price (High to Low)</option>
                                         <option>Most Popular</option>
                                     </select>
-                                    <LuChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                                    <LuChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                                 </div>
 
-                                <div className="flex bg-white rounded-xl border border-gray-200 p-1">
+                                <div className="hidden sm:flex bg-white rounded-xl border border-gray-200 p-1">
                                     <button
                                         onClick={() => setViewMode("grid")}
                                         className={`p-2 rounded-lg transition-all ${viewMode === "grid" ? "bg-gray-100 text-[#1D7EDD]" : "text-gray-400 hover:text-gray-600"}`}
@@ -343,7 +356,7 @@ function VisaContent() {
                         {/* Visa Cards Grid */}
                         <AnimatePresence mode="popLayout">
                             {filteredVisas.length > 0 ? (
-                                <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" : "space-y-6"}>
+                                <div className={viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-8" : "space-y-6"}>
                                     {filteredVisas.map((visa, idx) => (
                                         <motion.div
                                             layout
@@ -434,9 +447,9 @@ function VisaContent() {
             </div>
 
             {/* Support Section */}
-            <section className="bg-white border-t border-gray-100 py-24">
-                <div className="max-w-[1400px] mx-auto px-4 text-center">
-                    <h2 className="text-4xl md:text-6xl font-black text-gray-900 uppercase tracking-tight mb-8" style={{ fontFamily: '"Teko", sans-serif' }}>
+            <section className="bg-white border-t border-gray-100 py-12 md:py-24">
+                <div className="max-w-[1400px] mx-auto px-6 text-center">
+                    <h2 className="text-2xl sm:text-4xl md:text-6xl font-black text-gray-900 uppercase tracking-tight mb-6 md:mb-8" style={{ fontFamily: '"Teko", sans-serif' }}>
                         Didn't find what you are looking for?
                     </h2>
                     <p className="text-gray-500 text-lg max-w-2xl mx-auto mb-10 font-medium">

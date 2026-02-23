@@ -90,22 +90,6 @@ const menuItems = [
         ],
     },
     {
-        name: "Air Tickets",
-        icon: LuPlane,
-        children: [
-            { name: "All Bookings", href: "/dashboard/admin/air-tickets", icon: LuPlane },
-            { name: "New Booking", href: "/dashboard/admin/air-tickets/create", icon: FiPlus },
-        ],
-    },
-    {
-        name: "Hotel Bookings",
-        icon: LuHotel,
-        children: [
-            { name: "All Bookings", href: "/dashboard/admin/hotel-bookings", icon: LuHotel },
-            { name: "New Booking", href: "/dashboard/admin/hotel-bookings/create", icon: FiPlus },
-        ],
-    },
-    {
         section: "MANAGEMENT",
     },
     {

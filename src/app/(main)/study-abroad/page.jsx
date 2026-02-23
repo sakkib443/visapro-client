@@ -124,7 +124,7 @@ export default function StudyAbroadPage() {
             {/* ═══════════════════════════════════════════════════
                 1. HERO SECTION
             ═══════════════════════════════════════════════════ */}
-            <section className="relative py-20 md:py-28 flex items-center justify-center overflow-hidden">
+            <section className="relative py-14 md:py-28 flex items-center justify-center overflow-hidden">
                 <div
                     className="absolute inset-0 z-0"
                     style={{
@@ -157,7 +157,7 @@ export default function StudyAbroadPage() {
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="text-5xl md:text-7xl font-black uppercase tracking-tight mb-4"
+                        className="text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight mb-4"
                         style={{ fontFamily: 'Teko, sans-serif', color: '#FFFFFF' }}
                     >
                         Study <span style={{ color: '#EF8C2C' }}>Abroad</span>
@@ -341,7 +341,7 @@ export default function StudyAbroadPage() {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
                         {services.map((item, i) => (
                             <motion.div
                                 key={i}

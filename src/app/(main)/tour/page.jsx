@@ -100,6 +100,7 @@ function TourContent() {
     const [selectedDurations, setSelectedDurations] = useState([]);
     const [viewMode, setViewMode] = useState("grid");
     const [sortBy, setSortBy] = useState("Featured");
+    const [showFilters, setShowFilters] = useState(false);
 
     const toggleFilter = (item, state, setState) => {
         if (state.includes(item)) {
@@ -191,11 +192,11 @@ function TourContent() {
                         <input
                             type="text"
                             placeholder="Find your next destination..."
-                            className="w-full pl-12 pr-32 py-4 bg-white/95 backdrop-blur-md rounded-2xl text-sm font-normal shadow-2xl focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                            className="w-full pl-12 pr-4 sm:pr-32 py-4 bg-white/95 backdrop-blur-md rounded-2xl text-sm font-normal shadow-2xl focus:ring-4 focus:ring-primary/10 outline-none transition-all"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
-                        <button className="absolute right-2 top-1/2 -translate-y-1/2 px-6 py-2.5 bg-[#021E14] text-white rounded-xl font-bold text-[10px] uppercase tracking-wider hover:bg-primary transition-all">
+                        <button className="hidden sm:block absolute right-2 top-1/2 -translate-y-1/2 px-6 py-2.5 bg-[#021E14] text-white rounded-xl font-bold text-[10px] uppercase tracking-wider hover:bg-primary transition-all">
                             Search
                         </button>
                     </motion.div>
@@ -203,12 +204,24 @@ function TourContent() {
             </section>
 
             {/* 2. Main Body Layout */}
-            <div className="max-w-[1400px] mx-auto px-4 md:px-8 py-16">
-                <div className="flex flex-col lg:flex-row gap-10">
+            <div className="max-w-[1400px] mx-auto px-4 md:px-8 py-10 md:py-16">
+                {/* Mobile Filter Toggle */}
+                <div className="lg:hidden mb-4">
+                    <button
+                        onClick={() => setShowFilters(!showFilters)}
+                        className="w-full flex items-center justify-center gap-2 py-3 bg-white rounded-lg border border-gray-200 text-sm font-bold text-gray-700 shadow-sm"
+                    >
+                        <LuFilter size={16} />
+                        {showFilters ? 'Hide Filters' : 'Show Filters'}
+                        <LuChevronDown className={`transition-transform ${showFilters ? 'rotate-180' : ''}`} size={16} />
+                    </button>
+                </div>
+
+                <div className="flex flex-col lg:flex-row gap-8 lg:gap-10">
 
                     {/* LEFT SIDEBAR - Clean Classic Filter */}
-                    <aside className="w-full lg:w-[300px] flex-shrink-0">
-                        <div className="sticky top-32 space-y-5">
+                    <aside className={`w-full lg:w-[300px] flex-shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+                        <div className="lg:sticky lg:top-32 space-y-5">
                             <div className="bg-white rounded-lg border border-gray-200/80 shadow-sm overflow-hidden">
                                 {/* Sidebar Header */}
                                 <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
@@ -331,9 +344,9 @@ function TourContent() {
                     </aside>
 
                     {/* RIGHT CONTENT AREA - Refined Grid & Cards */}
-                    <main className="flex-grow">
+                    <main className="flex-grow min-w-0">
                         {/* Control Header */}
-                        <div className="flex items-center justify-between mb-10 pb-6 border-b border-gray-100">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 md:mb-10 pb-4 md:pb-6 border-b border-gray-100">
                             <div>
                                 <h2 className="text-2xl md:text-3xl font-black text-[#021E14] uppercase leading-none mb-1.5" style={{ fontFamily: 'Teko, sans-serif' }}>
                                     {selectedCategory}
@@ -376,8 +389,8 @@ function TourContent() {
                         <AnimatePresence mode="popLayout">
                             {filteredTours.length > 0 ? (
                                 <div className={viewMode === "grid"
-                                    ? "grid grid-cols-1 md:grid-cols-2 gap-8"
-                                    : "space-y-8"
+                                    ? "grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-8"
+                                    : "space-y-6 md:space-y-8"
                                 }>
                                     {filteredTours.map((tour, idx) => (
                                         <motion.div

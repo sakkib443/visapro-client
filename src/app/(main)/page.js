@@ -169,9 +169,9 @@ export default function HomePage() {
           </div>
 
           <div className="mt-12 flex justify-center">
-            <div className="inline-flex items-center gap-4 bg-white/50 backdrop-blur-md px-6 py-2 rounded-full border border-gray-100 shadow-sm">
-              <span className="text-[11px] text-gray-500 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>You&apos;ve Customize Your Travel Package by One Click.</span>
-              <button className="flex items-center gap-2 bg-gray-900 text-white px-5 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-primary transition-all shadow-md">
+            <div className="inline-flex flex-col sm:flex-row items-center gap-3 sm:gap-4 bg-white/50 backdrop-blur-md px-4 sm:px-6 py-3 sm:py-2 rounded-2xl sm:rounded-full border border-gray-100 shadow-sm">
+              <span className="text-[11px] text-gray-500 font-medium text-center sm:text-left" style={{ fontFamily: 'Poppins, sans-serif' }}>You&apos;ve Customize Your Travel Package by One Click.</span>
+              <button className="flex items-center gap-2 bg-gray-900 text-white px-5 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-primary transition-all shadow-md whitespace-nowrap">
                 Customize Package <LuArrowRight className="w-3 h-3" />
               </button>
             </div>
@@ -295,7 +295,7 @@ export default function HomePage() {
       </section>
 
       {/* Why Choose Us */}
-      <section className="py-24 px-4 bg-[#F8FAFC] relative overflow-hidden">
+      <section className="py-16 md:py-24 px-4 bg-[#F8FAFC] relative overflow-hidden">
         {/* Background decoration */}
         <div className="absolute top-0 right-0 w-[400px] h-[400px] rounded-full opacity-30 blur-[120px]" style={{ background: 'radial-gradient(circle, #1D7EDD15, transparent)' }} />
         <div className="absolute bottom-0 left-0 w-[300px] h-[300px] rounded-full opacity-20 blur-[100px]" style={{ background: 'radial-gradient(circle, #EF8C2C15, transparent)' }} />
@@ -395,7 +395,7 @@ export default function HomePage() {
             <div className="h-[1px] w-12 bg-gradient-to-l from-transparent to-[#EF8C2C]" />
           </div>
           <h2
-            className="text-5xl md:text-6xl font-bold mb-14"
+            className="text-4xl md:text-5xl lg:text-6xl font-bold mb-10 md:mb-14"
             style={{ fontFamily: 'Teko, sans-serif', color: '#111827', textTransform: 'uppercase' }}
           >
             VOICES OF OUR <span style={{ color: '#3590CF' }}>CLIENTS</span>

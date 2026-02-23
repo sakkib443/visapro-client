@@ -106,7 +106,7 @@ export default function HajjUmrahPage() {
             {/* ═══════════════════════════════════════════════════
                 1. HERO SECTION
             ═══════════════════════════════════════════════════ */}
-            <section className="relative py-20 md:py-28 flex items-center justify-center overflow-hidden">
+            <section className="relative py-14 md:py-28 flex items-center justify-center overflow-hidden">
                 <div
                     className="absolute inset-0 z-0"
                     style={{
@@ -144,7 +144,7 @@ export default function HajjUmrahPage() {
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="text-5xl md:text-7xl font-black uppercase tracking-tight mb-4"
+                        className="text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight mb-4"
                         style={{ fontFamily: 'Teko, sans-serif', color: '#FFFFFF' }}
                     >
                         Hajj & <span style={{ color: '#EF8C2C' }}>Umrah</span>
@@ -214,15 +214,15 @@ export default function HajjUmrahPage() {
                 </div>
 
                 {/* Tab Switcher */}
-                <div className="flex justify-center mb-12">
-                    <div className="bg-gray-100 rounded-lg p-1 flex gap-1">
+                <div className="flex justify-center mb-10 md:mb-12">
+                    <div className="bg-gray-100 rounded-lg p-1 flex flex-col sm:flex-row gap-1 w-full sm:w-auto">
                         {["hajj", "umrah"].map(tab => (
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
-                                className={`px-8 py-2.5 rounded-md text-[12px] font-bold uppercase tracking-wider transition-all ${activeTab === tab
-                                        ? "text-white shadow-sm"
-                                        : "text-gray-500 hover:text-gray-700"
+                                className={`px-6 sm:px-8 py-2.5 rounded-md text-[12px] font-bold uppercase tracking-wider transition-all ${activeTab === tab
+                                    ? "text-white shadow-sm"
+                                    : "text-gray-500 hover:text-gray-700"
                                     }`}
                                 style={activeTab === tab ? { backgroundColor: '#021E14' } : {}}
                             >
@@ -299,8 +299,8 @@ export default function HajjUmrahPage() {
 
                                         <button
                                             className={`w-full py-3 rounded-lg text-[11px] font-bold uppercase tracking-widest transition-all ${pkg.popular
-                                                    ? "text-white hover:opacity-90"
-                                                    : "border hover:bg-gray-50"
+                                                ? "text-white hover:opacity-90"
+                                                : "border hover:bg-gray-50"
                                                 }`}
                                             style={
                                                 pkg.popular
@@ -322,7 +322,7 @@ export default function HajjUmrahPage() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20 }}
-                            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5"
+                            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
                         >
                             {umrahPackages.map((pkg) => (
                                 <div
