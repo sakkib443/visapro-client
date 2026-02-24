@@ -4,341 +4,427 @@ import { createContext, useContext, useState, useEffect } from 'react';
 
 const LanguageContext = createContext();
 
-// Comprehensive Translations for all home page sections
+// Comprehensive Translations for VisaPro home page sections
 const translations = {
     en: {
+        // Top Info Bar
+        topEmail: "support@visapro.com.bd",
+        topAddress: "Panthpath, Dhaka",
+        topHours: "Sat - Thu: 9:30 AM - 8:30 PM",
+
         // Navbar
         home: "Home",
-        design: "Design",
-        course: "Course",
-        pricing: "Pricing",
-        uiKits: "UI Kits",
-        about: "About",
-        contact: "Contact",
-        products: "Products",
+        visa: "Visa",
+        tour: "Tour",
+        hajjUmrah: "Hajj & Umrah",
+        studyAbroad: "Study Abroad",
         blog: "Blog",
+        contact: "Contact",
         login: "Login",
         register: "Register",
-        letsTalk: "Let's Talk",
-        myDashboard: "My Dashboard",
-        myLearning: "My Learning",
-        orderHistory: "Order History",
-        myWishlist: "My Wishlist",
+        getStarted: "Get Started",
+        dashboard: "Dashboard",
         accountSettings: "Account Settings",
         signOut: "Sign Out",
+        languageLabel: "Language",
+
+        // Visa Dropdown
+        touristVisa: "Tourist Visa",
+        workingVisa: "Working Visa",
+        studentVisa: "Student Visa",
+        businessVisa: "Business Visa",
+        medicalVisa: "Medical Visa",
+        transitVisa: "Transit Visa",
+        consultancyMigration: "Consultancy & Migration",
 
         // Hero Section
-        heroDescription: "CreativeHub Pro, Premium graphic design templates, fonts & creative assets for designers.",
-        heroCrafting: "CRAFTING",
-        heroCreative: "CREATIVE",
-        heroGraphics: "GRAPHICS",
-        heroDesign: "DESIGN",
-        heroSolution: "SOLUTION",
-        heroSolutions: "SOLUTIONS.",
-        heroWith: "with",
-        heroAbuSayeed: "ZAYED UDDIN",
-        heroAssetsCount: "50K+",
-        heroAssetsSold: "design assets sold.",
-        heroWeAreGlobal: "We are Global",
-        heroBrandAgency: "Brand Design Agency.",
-        heroAwwwards: "Awwwards",
-        heroAwwwardsDesc: "Top Contributor since 2019 to current.",
+        openingHour: "Opening Hour: 9.30 AM To 8.30 PM",
+        heroTitle: "Your Dream to Destination",
+        bookAppointment: "Book Appointment",
+        askQuestion: "Ask Question",
+        hotline247: "Hotline 24/7",
 
-        // Agency Intro Section
-        aboutUs: "About Us",
-        premiumDesign: "PREMIUM",
-        designMarketplace: "DESIGN",
-        marketplaceText: "MARKETPLACE.",
-        introDescription: "Discover thousands of premium graphic design templates, fonts, icons, illustrations, and creative assets. Perfect for designers, marketers, and businesses worldwide.",
-        designAssets: "Design Assets",
-        topDesigners: "Top Designers",
-        happyBuyers: "Happy Buyers",
-        exploreAllAssets: "Explore All Assets",
+        // Hero Search Tabs
+        tabVisa: "Visa",
+        tabHotel: "Hotel",
+        tabTour: "Tour",
+        tabFlight: "Flight",
+        selectLabel: "Select",
+        destination: "Destination",
+        tourTypes: "Tour Types",
+        search: "SEARCH",
 
-        // Expertise Cards
-        instantDownload: "Instant Download",
-        instantDownloadDesc: "Download your purchased assets instantly. All files come in multiple formats ready for use in any design software.",
-        premiumQuality: "Premium Quality",
-        premiumQualityDesc: "Every asset is carefully curated and reviewed by our team to ensure the highest quality standards.",
-        commercialLicense: "Commercial License",
-        commercialLicenseDesc: "Use our assets in unlimited personal and commercial projects with our comprehensive licensing.",
-
-        // Scrolling Ticker
-        templates: "TEMPLATES",
-        fonts: "FONTS",
-        graphicsWord: "GRAPHICS",
-        icons: "ICONS",
-        illustrations: "ILLUSTRATIONS",
-        mockups: "MOCKUPS",
-        uiKitsWord: "UI KITS",
-        branding: "BRANDING",
-
-        // Services (Browse by Category)
-        browseBy: "BROWSE BY",
-        category: "CATEGORY.",
-        viewAllCategories: "View All Categories",
-        graphicTemplates: "Graphic Templates",
-        graphicTemplatesDesc: "Professional design templates for social media, presentations, posters, and more.",
-        socialMedia: "Social Media",
-        presentations: "Presentations",
-        printReady: "Print Ready",
-        fontsTypography: "Fonts & Typography",
-        fontsTypographyDesc: "Beautiful fonts for every project - from elegant serifs to modern sans-serifs and display typefaces.",
-        displayFonts: "Display Fonts",
-        scriptFonts: "Script Fonts",
-        sansSerif: "Sans Serif",
-        uiKitsMockups: "UI Kits & Mockups",
-        uiKitsMockupsDesc: "Complete UI kits and realistic mockups for web, mobile, and product design projects.",
-        webUI: "Web UI",
-        mobileUI: "Mobile UI",
-        mockupsWord: "Mockups",
-        illustrationsIcons: "Illustrations & Icons",
-        illustrationsIconsDesc: "Hand-crafted illustrations and icon sets to bring your designs to life.",
-        vectorIcons: "Vector Icons",
-        illustrationsWord: "Illustrations",
-        threeDAassets: "3D Assets",
-        brandIdentity: "Brand Identity",
-        brandIdentityDesc: "Complete branding packages including logos, stationery, and brand guidelines.",
-        logoTemplates: "Logo Templates",
-        brandKits: "Brand Kits",
-        stationery: "Stationery",
-
-        // Project Counter
-        designsDownloaded: "DESIGNS",
-        downloaded: "DOWNLOADED",
-
-        // Portfolio (Trending Products)
-        featured: "Featured",
-        trending: "TRENDING",
-        products: "PRODUCTS.",
+        // Services Section
+        servicesTag: "✦ Our Expertise",
+        servicesTitle: "OUR",
+        servicesTitleHighlight: "SERVICES",
+        servicesDesc: "Comprehensive travel & immigration solutions tailored to your needs.",
         viewAll: "View All",
-        premiumUIKit: "Premium UI Kit Bundle",
-        creativeFontCollection: "Creative Font Collection",
-        socialMediaTemplates: "Social Media Templates",
-        brandIdentityPack: "Brand Identity Pack",
+        exploreService: "Explore",
+
+        // Service Items
+        visaProcessing: "Visa Processing",
+        visaProcessingSub: "WORLDWIDE",
+        visaProcessingDesc: "Expert assistance for tourist, business, and study visas worldwide with a proven track record of success.",
+        visaProcessingStats: "50+ Countries",
+
+        flightBooking: "Flight Booking",
+        flightBookingSub: "BEST DEALS",
+        flightBookingDesc: "Get the best deals on domestic and international flights with our vast airline network.",
+        flightBookingStats: "100+ Airlines",
+
+        hotelReservation: "Hotel Reservation",
+        hotelReservationSub: "PREMIUM STAYS",
+        hotelReservationDesc: "Book premium hotels and resorts worldwide at competitive prices for a comfortable stay.",
+        hotelReservationStats: "5000+ Hotels",
+
+        tourPackages: "Tour Packages",
+        tourPackagesSub: "CUSTOM PLANNING",
+        tourPackagesDesc: "Customized holiday packages tailored to your preferences, budget, and dreams.",
+        tourPackagesStats: "200+ Packages",
+
+        hajjUmrahService: "Hajj & Umrah",
+        hajjUmrahSub: "HOLY JOURNEY",
+        hajjUmrahDesc: "Complete Hajj and Umrah packages with experienced guides and premium accommodations.",
+        hajjUmrahStats: "1000+ Pilgrims",
+
+        studyAbroadService: "Study Abroad",
+        studyAbroadSub: "GLOBAL EDUCATION",
+        studyAbroadDesc: "Complete guidance for studying abroad including university selection & visa assistance.",
+        studyAbroadStats: "30+ Universities",
+
+        // Trusted Partners
+        trustedPartners: "Trusted Partners",
+
+        // Benefits Section
+        whyUs: "✦ Why Us",
+        ourBenefits: "Our",
+        benefitsHighlight: "Benefits",
+        benefitsDesc: "Why thousands of travelers choose VisaPro for their journey.",
+
+        oneClickBooking: "ONE CLICK BOOKING.",
+        oneClickBookingDesc: "You can hassle-free and fast tour & travel package booking by VisaPro.",
+        learnMore: "Learn More",
+
+        discountOffer: "DISCOUNT & OFFER.",
+        discountOfferDesc: "Agencies have special discounts on flights, hotels, & packages.",
+        viewOffers: "View Offers",
+
+        localExpertise: "LOCAL EXPERTISE.",
+        localExpertiseDesc: "You can hassle-free and fast tour & travel package booking by VisaPro.",
+        meetExperts: "Meet Experts",
+
+        customizeNote: "You've Customize Your Travel Package by One Click.",
+        customizePackage: "Customize Package",
+
+        // Consultation Section
+        consultTag: "✦ We Make A Difference",
+        consultTitle: "Welcome to Immigration",
+        consultTitleHighlight: "Advisory",
+        consultTitleEnd: "Services",
+        consultDesc: "We help investors and entrepreneurs secure citizenship in major nations with our top immigration programs. We have a decade of experience assisting requirements.",
+        experienceTitle: "10+ Years of Experience in Visa & Immigration Services",
+        experienceDesc: "Our global expertise, advanced technology & customized immigration solutions will help you achieve your goals.",
+        exploreMore: "Explore More",
+        realAgents: "Real Agents",
+
+        // Why Choose Us Section
+        whyVisaPro: "✦ Why VisaPro",
+        whyChoose: "WHY CHOOSE",
+        us: "US",
+        whyChooseDesc: "With years of experience in visa consultancy and travel services, we provide accurate guidance and expert support to make your dreams come true.",
+
+        expertGuidance: "Expert Guidance",
+        expertGuidanceDesc: "Skilled professionals with deep knowledge of immigration laws and procedures.",
+        fastProcessing: "Fast Processing",
+        fastProcessingDesc: "Quick and efficient visa processing with high success rate and minimal delays.",
+        support247: "24/7 Support",
+        support247Desc: "Round-the-clock customer support for all your queries and concerns.",
+        affordablePrices: "Affordable Prices",
+        affordablePricesDesc: "Competitive pricing without compromising on service quality or support.",
+        fiftyCountries: "50+ Countries",
+        fiftyCountriesDesc: "We process visas for destinations across the globe with local expertise.",
+        successRate: "98% Success Rate",
+        successRateDesc: "Proven track record of successful visa approvals for our clients.",
+
+        // Stats
+        yearsExperience: "Years Experience",
+        visasProcessed: "Visas Processed",
+        statSuccessRate: "Success Rate",
+        countriesCovered: "Countries Covered",
+        customerSupport: "Customer Support",
 
         // Testimonials
-        customerReviews: "Customer Reviews",
-        testimonial1: "The quality of templates here is incredible. I've saved countless hours on my design projects. This is my go-to marketplace for graphics!",
-        testimonial2: "Best font collection I've ever found. The licensing is clear, the quality is top-notch, and the variety is amazing. Highly recommend!",
-        testimonial3: "As a startup founder, this marketplace saved me thousands on design costs. Professional assets at unbeatable prices!",
-        freelanceDesigner: "Freelance Designer",
-        creativeDirector: "Creative Director, Studio X",
-        founderTechStart: "Founder, TechStart",
+        testimonials: "✦ Testimonials",
+        voicesOfOur: "VOICES OF OUR",
+        clients: "CLIENTS",
+        verifiedClient: "Verified Client",
 
-        // Client Logos
-        trustedByIndustry: "Trusted by industry leaders worldwide",
-        recognizedBy: "Recognized by",
-        and: "and",
-
-        // Blog Section
-        weProvide: "WE PROVIDE SMART",
-        solutionWord: "SOLUTION.",
-        blogDescription: "Strategists dedicated to creating stunning, functional websites that align with your unique business goals.",
-        viewOurBlog: "View Our Blog",
-        webDesign: "Web Design",
-        blogTitle1: "The Future of Web Design: Trends to Watch in 2025",
-        blogTitle2: "Top 5 Mistakes to Avoid When Create Business Website.",
-        readMore: "Read More",
+        testimonial1Name: "Tanzina Rupa",
+        testimonial1Text: "VisaPro helped me get my Singapore tourist visa within a week. Their expert guidance made the entire process smooth and hassle-free!",
+        testimonial2Name: "Mabia Rahman",
+        testimonial2Text: "Amazing service! They handled my USA tourist visa application professionally. The team is very knowledgeable and responsive.",
+        testimonial3Name: "Forkan Uddin",
+        testimonial3Text: "I got my student visa for Canada through VisaPro. They guided me through every step from university selection to visa approval.",
 
         // Footer CTA
-        start: "START",
-        creating: "CREATING.",
-        footerDescription: "Join thousands of designers and get access to premium creative assets today.",
-        getDesignUpdates: "Get Design Updates",
-        subscribeDescription: "Subscribe to get notified about new assets and special deals.",
-        enterEmail: "Enter your email",
-        marketplace: "Marketplace",
-        support: "Support",
-        helpCenter: "Help Center",
-        licensing: "Licensing",
-        refundPolicy: "Refund Policy",
+        readyToStart: "Ready to Start Your Journey?",
+        footerCTADesc: "Let our experts help you with visa processing, flight booking & more",
+        callNow: "Call Now",
+        freeConsultation: "Free Consultation",
+
+        // Footer Brand
+        footerBrandDesc: "Your trusted partner for visa processing, flight booking, hotel reservation, Hajj & Umrah packages, study abroad, and tour planning in Bangladesh.",
+        hotlineTime: "Hotline (9:30 AM - 8:30 PM)",
+
+        // Footer Column Headings
+        ourServices: "Our Services",
+        visaTypes: "Visa Types",
+        quickLinks: "Quick Links",
+
+        // Footer Service Links
+        footerVisaProcessing: "Visa Processing",
+        footerFlightBooking: "Flight Booking",
+        footerHotelReservation: "Hotel Reservation",
+        footerTourPackages: "Tour Packages",
+        footerHajjUmrah: "Hajj & Umrah",
+        footerStudyAbroad: "Study Abroad",
+
+        // Footer Visa Types
+        footerTouristVisa: "Tourist Visa",
+        footerWorkingVisa: "Working Visa",
+        footerStudentVisa: "Student Visa",
+        footerBusinessVisa: "Business Visa",
+        footerMedicalVisa: "Medical Visa",
+        footerTransitVisa: "Transit Visa",
+
+        // Footer Quick Links
+        aboutUs: "About Us",
+        footerBlog: "Blog",
         contactUs: "Contact Us",
-        becomeASeller: "Become a Seller",
-        allRightsReserved: "All rights reserved.",
         privacyPolicy: "Privacy Policy",
         termsOfService: "Terms of Service",
-        licenseAgreement: "License Agreement",
+        faq: "FAQ",
 
-        // About Founder Section
-        aboutMe: "About Me",
-        creativeDesigner: "Creative Designer",
-        andEntrepreneur: "& Entrepreneur",
-        aboutFounderDesc1: "Hi, I'm Zayed Uddin — a passionate graphic designer and entrepreneur from Bangladesh. I specialize in creating premium design templates, branding assets, and creative solutions that help businesses and individuals stand out.",
-        aboutFounderDesc2: "With over 14 years of experience in the design industry, I've helped thousands of clients worldwide achieve their creative goals. My mission is to make professional design accessible to everyone through high-quality, affordable templates and resources.",
-        yearsExperience: "Years Experience",
-        happyClients: "Happy Clients",
-        downloads: "Downloads",
-        avgRating: "Average Rating",
-        learnMoreAboutMe: "Learn More About Me",
-        projectsCompleted: "Projects Completed",
+        // Footer Newsletter
+        newsletter: "Newsletter",
+        yourEmail: "Your email",
+
+        // Footer Bottom
+        acceptedPayment: "Accepted Payment Methods",
+        allRightsReserved: "All rights reserved.",
+        terms: "Terms",
+        privacy: "Privacy",
     },
     bn: {
+        // Top Info Bar
+        topEmail: "support@visapro.com.bd",
+        topAddress: "পান্থপথ, ঢাকা",
+        topHours: "শনি - বৃহঃ: সকাল ৯:৩০ - রাত ৮:৩০",
+
         // Navbar
         home: "হোম",
-        design: "ডিজাইন",
-        course: "কোর্স",
-        pricing: "প্রাইসিং",
-        uiKits: "ইউআই কিটস",
-        about: "অ্যাবাউট",
-        contact: "যোগাযোগ",
-        products: "প্রোডাক্ট",
+        visa: "ভিসা",
+        tour: "ট্যুর",
+        hajjUmrah: "হজ্জ ও ওমরাহ",
+        studyAbroad: "বিদেশে পড়াশোনা",
         blog: "ব্লগ",
+        contact: "যোগাযোগ",
         login: "লগইন",
         register: "রেজিস্টার",
-        letsTalk: "যোগাযোগ করুন",
-        myDashboard: "আমার ড্যাশবোর্ড",
-        myLearning: "আমার শিক্ষা",
-        orderHistory: "অর্ডার ইতিহাস",
-        myWishlist: "আমার উইশলিস্ট",
+        getStarted: "শুরু করুন",
+        dashboard: "ড্যাশবোর্ড",
         accountSettings: "একাউন্ট সেটিংস",
         signOut: "লগ আউট",
+        languageLabel: "ভাষা",
+
+        // Visa Dropdown
+        touristVisa: "ট্যুরিস্ট ভিসা",
+        workingVisa: "ওয়ার্কিং ভিসা",
+        studentVisa: "স্টুডেন্ট ভিসা",
+        businessVisa: "বিজনেস ভিসা",
+        medicalVisa: "মেডিকেল ভিসা",
+        transitVisa: "ট্রানজিট ভিসা",
+        consultancyMigration: "কনসালটেন্সি ও মাইগ্রেশন",
 
         // Hero Section
-        heroDescription: "ক্রিয়েটিভহাব প্রো, ডিজাইনারদের জন্য প্রিমিয়াম গ্রাফিক ডিজাইন টেমপ্লেট, ফন্ট এবং ক্রিয়েটিভ অ্যাসেট।",
-        heroCrafting: "ক্র্যাফটিং",
-        heroCreative: "ক্রিয়েটিভ",
-        heroGraphics: "গ্রাফিক্স",
-        heroDesign: "ডিজাইন",
-        heroSolution: "সল্যুশন",
-        heroSolutions: "সল্যুশন।",
-        heroWith: "সাথে",
-        heroAbuSayeed: "ZAYED UDDIN",
-        heroAssetsCount: "৫০K+",
-        heroAssetsSold: "ডিজাইন অ্যাসেট বিক্রি হয়েছে।",
-        heroWeAreGlobal: "আমরা গ্লোবাল",
-        heroBrandAgency: "ব্র্যান্ড ডিজাইন এজেন্সি।",
-        heroAwwwards: "অ্যাওয়ার্ডস",
-        heroAwwwardsDesc: "২০১৯ থেকে বর্তমান পর্যন্ত শীর্ষ অবদানকারী।",
+        openingHour: "কার্যকরী সময়: সকাল ৯.৩০ থেকে রাত ৮.৩০",
+        heroTitle: "আপনার স্বপ্ন, আপনার গন্তব্য",
+        bookAppointment: "অ্যাপয়েন্টমেন্ট বুক",
+        askQuestion: "প্রশ্ন করুন",
+        hotline247: "হটলাইন ২৪/৭",
 
-        // Agency Intro Section
-        aboutUs: "আমাদের সম্পর্কে",
-        premiumDesign: "প্রিমিয়াম",
-        designMarketplace: "ডিজাইন",
-        marketplaceText: "মার্কেটপ্লেস।",
-        introDescription: "হাজার হাজার প্রিমিয়াম গ্রাফিক ডিজাইন টেমপ্লেট, ফন্ট, আইকন, ইলাস্ট্রেশন এবং ক্রিয়েটিভ অ্যাসেট আবিষ্কার করুন। ডিজাইনার, মার্কেটার এবং বিশ্বব্যাপী ব্যবসায়ীদের জন্য উপযুক্ত।",
-        designAssets: "ডিজাইন অ্যাসেট",
-        topDesigners: "শীর্ষ ডিজাইনার",
-        happyBuyers: "সন্তুষ্ট ক্রেতা",
-        exploreAllAssets: "সব অ্যাসেট দেখুন",
+        // Hero Search Tabs
+        tabVisa: "ভিসা",
+        tabHotel: "হোটেল",
+        tabTour: "ট্যুর",
+        tabFlight: "ফ্লাইট",
+        selectLabel: "নির্বাচন",
+        destination: "গন্তব্য",
+        tourTypes: "ট্যুরের ধরন",
+        search: "সার্চ",
 
-        // Expertise Cards
-        instantDownload: "তাৎক্ষণিক ডাউনলোড",
-        instantDownloadDesc: "আপনার ক্রয়কৃত অ্যাসেট তাৎক্ষণিক ডাউনলোড করুন। সব ফাইল যেকোনো ডিজাইন সফটওয়্যারে ব্যবহারের জন্য একাধিক ফরম্যাটে প্রস্তুত।",
-        premiumQuality: "প্রিমিয়াম কোয়ালিটি",
-        premiumQualityDesc: "প্রতিটি অ্যাসেট আমাদের টিম দ্বারা সর্বোচ্চ মানদণ্ড নিশ্চিত করতে যত্নসহকারে কিউরেট এবং পর্যালোচনা করা হয়।",
-        commercialLicense: "কমার্শিয়াল লাইসেন্স",
-        commercialLicenseDesc: "আমাদের ব্যাপক লাইসেন্সিং সহ সীমাহীন ব্যক্তিগত এবং বাণিজ্যিক প্রকল্পে আমাদের অ্যাসেট ব্যবহার করুন।",
-
-        // Scrolling Ticker
-        templates: "টেমপ্লেট",
-        fonts: "ফন্ট",
-        graphicsWord: "গ্রাফিক্স",
-        icons: "আইকন",
-        illustrations: "ইলাস্ট্রেশন",
-        mockups: "মকআপ",
-        uiKitsWord: "ইউআই কিটস",
-        branding: "ব্র্যান্ডিং",
-
-        // Services (Browse by Category)
-        browseBy: "ব্রাউজ করুন",
-        category: "ক্যাটাগরি।",
-        viewAllCategories: "সব ক্যাটাগরি দেখুন",
-        graphicTemplates: "গ্রাফিক টেমপ্লেট",
-        graphicTemplatesDesc: "সোশ্যাল মিডিয়া, প্রেজেন্টেশন, পোস্টার এবং আরও অনেক কিছুর জন্য পেশাদার ডিজাইন টেমপ্লেট।",
-        socialMedia: "সোশ্যাল মিডিয়া",
-        presentations: "প্রেজেন্টেশন",
-        printReady: "প্রিন্ট রেডি",
-        fontsTypography: "ফন্ট ও টাইপোগ্রাফি",
-        fontsTypographyDesc: "প্রতিটি প্রকল্পের জন্য সুন্দর ফন্ট - এলিগ্যান্ট সেরিফ থেকে আধুনিক সান্স-সেরিফ এবং ডিসপ্লে টাইপফেস।",
-        displayFonts: "ডিসপ্লে ফন্ট",
-        scriptFonts: "স্ক্রিপ্ট ফন্ট",
-        sansSerif: "সান্স সেরিফ",
-        uiKitsMockups: "ইউআই কিটস ও মকআপ",
-        uiKitsMockupsDesc: "ওয়েব, মোবাইল এবং প্রোডাক্ট ডিজাইন প্রকল্পের জন্য সম্পূর্ণ ইউআই কিট এবং বাস্তবসম্মত মকআপ।",
-        webUI: "ওয়েব ইউআই",
-        mobileUI: "মোবাইল ইউআই",
-        mockupsWord: "মকআপ",
-        illustrationsIcons: "ইলাস্ট্রেশন ও আইকন",
-        illustrationsIconsDesc: "আপনার ডিজাইনকে জীবন্ত করতে হাতে তৈরি ইলাস্ট্রেশন এবং আইকন সেট।",
-        vectorIcons: "ভেক্টর আইকন",
-        illustrationsWord: "ইলাস্ট্রেশন",
-        threeDAassets: "থ্রিডি অ্যাসেট",
-        brandIdentity: "ব্র্যান্ড আইডেন্টিটি",
-        brandIdentityDesc: "লোগো, স্টেশনারি এবং ব্র্যান্ড গাইডলাইন সহ সম্পূর্ণ ব্র্যান্ডিং প্যাকেজ।",
-        logoTemplates: "লোগো টেমপ্লেট",
-        brandKits: "ব্র্যান্ড কিটস",
-        stationery: "স্টেশনারি",
-
-        // Project Counter
-        designsDownloaded: "ডিজাইন",
-        downloaded: "ডাউনলোড হয়েছে",
-
-        // Portfolio (Trending Products)
-        featured: "ফিচার্ড",
-        trending: "ট্রেন্ডিং",
-        products: "প্রোডাক্ট।",
+        // Services Section
+        servicesTag: "✦ আমাদের দক্ষতা",
+        servicesTitle: "আমাদের",
+        servicesTitleHighlight: "সেবাসমূহ",
+        servicesDesc: "আপনার প্রয়োজন অনুযায়ী সম্পূর্ণ ভ্রমণ ও অভিবাসন সমাধান।",
         viewAll: "সব দেখুন",
-        premiumUIKit: "প্রিমিয়াম ইউআই কিট বান্ডল",
-        creativeFontCollection: "ক্রিয়েটিভ ফন্ট কালেকশন",
-        socialMediaTemplates: "সোশ্যাল মিডিয়া টেমপ্লেট",
-        brandIdentityPack: "ব্র্যান্ড আইডেন্টিটি প্যাক",
+        exploreService: "দেখুন",
+
+        // Service Items
+        visaProcessing: "ভিসা প্রসেসিং",
+        visaProcessingSub: "বিশ্বব্যাপী",
+        visaProcessingDesc: "বিশ্বব্যাপী ট্যুরিস্ট, ব্যবসায়িক এবং স্টুডেন্ট ভিসার জন্য বিশেষজ্ঞ সহায়তা ও প্রমাণিত সাফল্যের ইতিহাস।",
+        visaProcessingStats: "৫০+ দেশ",
+
+        flightBooking: "ফ্লাইট বুকিং",
+        flightBookingSub: "সেরা ডিল",
+        flightBookingDesc: "আমাদের বিশাল এয়ারলাইন নেটওয়ার্কের মাধ্যমে দেশীয় ও আন্তর্জাতিক ফ্লাইটে সেরা ডিল পান।",
+        flightBookingStats: "১০০+ এয়ারলাইন",
+
+        hotelReservation: "হোটেল রিজার্ভেশন",
+        hotelReservationSub: "প্রিমিয়াম থাকা",
+        hotelReservationDesc: "আরামদায়ক থাকার জন্য প্রতিযোগিতামূলক মূল্যে বিশ্বব্যাপী প্রিমিয়াম হোটেল ও রিসোর্ট বুক করুন।",
+        hotelReservationStats: "৫০০০+ হোটেল",
+
+        tourPackages: "ট্যুর প্যাকেজ",
+        tourPackagesSub: "কাস্টম পরিকল্পনা",
+        tourPackagesDesc: "আপনার পছন্দ, বাজেট এবং স্বপ্ন অনুযায়ী কাস্টমাইজড ছুটির প্যাকেজ।",
+        tourPackagesStats: "২০০+ প্যাকেজ",
+
+        hajjUmrahService: "হজ্জ ও ওমরাহ",
+        hajjUmrahSub: "পবিত্র যাত্রা",
+        hajjUmrahDesc: "অভিজ্ঞ গাইড এবং প্রিমিয়াম আবাসন সহ সম্পূর্ণ হজ্জ ও ওমরাহ প্যাকেজ।",
+        hajjUmrahStats: "১০০০+ হাজী",
+
+        studyAbroadService: "বিদেশে পড়াশোনা",
+        studyAbroadSub: "বৈশ্বিক শিক্ষা",
+        studyAbroadDesc: "বিশ্ববিদ্যালয় নির্বাচন ও ভিসা সহায়তা সহ বিদেশে পড়াশোনার সম্পূর্ণ গাইডেন্স।",
+        studyAbroadStats: "৩০+ বিশ্ববিদ্যালয়",
+
+        // Trusted Partners
+        trustedPartners: "বিশ্বস্ত পার্টনার",
+
+        // Benefits Section
+        whyUs: "✦ কেন আমরা",
+        ourBenefits: "আমাদের",
+        benefitsHighlight: "সুবিধাসমূহ",
+        benefitsDesc: "কেন হাজার হাজার ভ্রমণকারী তাদের যাত্রার জন্য VisaPro বেছে নেন।",
+
+        oneClickBooking: "ওয়ান ক্লিক বুকিং।",
+        oneClickBookingDesc: "VisaPro-র মাধ্যমে ঝামেলামুক্ত ও দ্রুত ট্যুর ও ট্রাভেল প্যাকেজ বুকিং করুন।",
+        learnMore: "আরো জানুন",
+
+        discountOffer: "ডিসকাউন্ট ও অফার।",
+        discountOfferDesc: "ফ্লাইট, হোটেল এবং প্যাকেজে বিশেষ ছাড় পাওয়া যায়।",
+        viewOffers: "অফার দেখুন",
+
+        localExpertise: "স্থানীয় দক্ষতা।",
+        localExpertiseDesc: "VisaPro-র মাধ্যমে ঝামেলামুক্ত ও দ্রুত ট্যুর ও ট্রাভেল প্যাকেজ বুকিং করুন।",
+        meetExperts: "বিশেষজ্ঞদের সাথে দেখা করুন",
+
+        customizeNote: "এক ক্লিকে আপনার ট্রাভেল প্যাকেজ কাস্টমাইজ করুন।",
+        customizePackage: "প্যাকেজ কাস্টমাইজ",
+
+        // Consultation Section
+        consultTag: "✦ আমরা পার্থক্য তৈরি করি",
+        consultTitle: "ইমিগ্রেশন পরামর্শ",
+        consultTitleHighlight: "সেবায়",
+        consultTitleEnd: "স্বাগতম",
+        consultDesc: "আমরা বিনিয়োগকারী ও উদ্যোক্তাদের আমাদের শীর্ষ ইমিগ্রেশন প্রোগ্রামের মাধ্যমে প্রধান দেশগুলোতে নাগরিকত্ব অর্জনে সাহায্য করি। এ ক্ষেত্রে আমাদের এক দশকের অভিজ্ঞতা রয়েছে।",
+        experienceTitle: "ভিসা ও ইমিগ্রেশন সেবায় ১০+ বছরের অভিজ্ঞতা",
+        experienceDesc: "আমাদের বৈশ্বিক দক্ষতা, উন্নত প্রযুক্তি ও কাস্টমাইজড ইমিগ্রেশন সমাধান আপনাকে আপনার লক্ষ্য অর্জনে সাহায্য করবে।",
+        exploreMore: "আরো দেখুন",
+        realAgents: "প্রকৃত এজেন্ট",
+
+        // Why Choose Us Section
+        whyVisaPro: "✦ কেন VisaPro",
+        whyChoose: "কেন বেছে নেবেন",
+        us: "আমাদের",
+        whyChooseDesc: "ভিসা পরামর্শ ও ভ্রমণ সেবায় বছরের পর বছরের অভিজ্ঞতা নিয়ে, আমরা আপনার স্বপ্ন পূরণে সঠিক নির্দেশনা ও বিশেষজ্ঞ সহায়তা প্রদান করি।",
+
+        expertGuidance: "বিশেষজ্ঞ গাইডেন্স",
+        expertGuidanceDesc: "অভিবাসন আইন ও পদ্ধতি সম্পর্কে গভীর জ্ঞানসম্পন্ন দক্ষ পেশাদার।",
+        fastProcessing: "দ্রুত প্রসেসিং",
+        fastProcessingDesc: "উচ্চ সাফল্যের হার এবং ন্যূনতম বিলম্বে দ্রুত ও দক্ষ ভিসা প্রসেসিং।",
+        support247: "২৪/৭ সাপোর্ট",
+        support247Desc: "আপনার সকল প্রশ্ন ও উদ্বেগের জন্য সার্বক্ষণিক গ্রাহক সেবা।",
+        affordablePrices: "সাশ্রয়ী মূল্য",
+        affordablePricesDesc: "সেবার মান বা সাপোর্টে আপোষ না করে প্রতিযোগিতামূলক মূল্য।",
+        fiftyCountries: "৫০+ দেশ",
+        fiftyCountriesDesc: "আমরা স্থানীয় দক্ষতার সাথে বিশ্বজুড়ে গন্তব্যের জন্য ভিসা প্রসেস করি।",
+        successRate: "৯৮% সাফল্যের হার",
+        successRateDesc: "আমাদের ক্লায়েন্টদের জন্য সফল ভিসা অনুমোদনের প্রমাণিত ট্র্যাক রেকর্ড।",
+
+        // Stats
+        yearsExperience: "বছরের অভিজ্ঞতা",
+        visasProcessed: "ভিসা প্রসেস",
+        statSuccessRate: "সাফল্যের হার",
+        countriesCovered: "দেশ কভার",
+        customerSupport: "গ্রাহক সেবা",
 
         // Testimonials
-        customerReviews: "গ্রাহক রিভিউ",
-        testimonial1: "এখানে টেমপ্লেটের মান অবিশ্বাস্য। আমি আমার ডিজাইন প্রকল্পে অগণিত ঘন্টা বাঁচিয়েছি। গ্রাফিক্সের জন্য এটি আমার প্রধান মার্কেটপ্লেস!",
-        testimonial2: "সেরা ফন্ট কালেকশন যা আমি কখনো পেয়েছি। লাইসেন্সিং স্পষ্ট, মান শীর্ষস্থানীয় এবং বৈচিত্র্য অসাধারণ। অত্যন্ত সুপারিশ করি!",
-        testimonial3: "একজন স্টার্টআপ প্রতিষ্ঠাতা হিসাবে, এই মার্কেটপ্লেস আমার ডিজাইন খরচে হাজার হাজার টাকা বাঁচিয়েছে। অপরাজেয় মূল্যে পেশাদার অ্যাসেট!",
-        freelanceDesigner: "ফ্রিল্যান্স ডিজাইনার",
-        creativeDirector: "ক্রিয়েটিভ ডিরেক্টর, স্টুডিও এক্স",
-        founderTechStart: "প্রতিষ্ঠাতা, টেকস্টার্ট",
+        testimonials: "✦ প্রশংসাপত্র",
+        voicesOfOur: "আমাদের ক্লায়েন্টদের",
+        clients: "মতামত",
+        verifiedClient: "যাচাইকৃত ক্লায়েন্ট",
 
-        // Client Logos
-        trustedByIndustry: "বিশ্বব্যাপী শিল্প নেতাদের দ্বারা বিশ্বস্ত",
-        recognizedBy: "স্বীকৃত",
-        and: "এবং",
-
-        // Blog Section
-        weProvide: "আমরা স্মার্ট প্রদান করি",
-        solutionWord: "সমাধান।",
-        blogDescription: "আপনার অনন্য ব্যবসায়িক লক্ষ্যের সাথে সামঞ্জস্যপূর্ণ অত্যাশ্চর্য, কার্যকরী ওয়েবসাইট তৈরিতে নিবেদিত কৌশলবিদ।",
-        viewOurBlog: "আমাদের ব্লগ দেখুন",
-        webDesign: "ওয়েব ডিজাইন",
-        blogTitle1: "২০২৫ সালে ওয়েব ডিজাইনের ভবিষ্যত: যে ট্রেন্ডগুলো দেখতে হবে",
-        blogTitle2: "ব্যবসায়িক ওয়েবসাইট তৈরি করার সময় শীর্ষ ৫টি ভুল এড়িয়ে চলুন।",
-        readMore: "আরো পড়ুন",
+        testimonial1Name: "তানজিনা রুপা",
+        testimonial1Text: "VisaPro আমাকে এক সপ্তাহের মধ্যে সিঙ্গাপুর ট্যুরিস্ট ভিসা পেতে সাহায্য করেছে। তাদের বিশেষজ্ঞ গাইডেন্স পুরো প্রক্রিয়াটিকে সহজ ও ঝামেলামুক্ত করেছে!",
+        testimonial2Name: "মাবিয়া রহমান",
+        testimonial2Text: "অসাধারণ সেবা! তারা আমার USA ট্যুরিস্ট ভিসা আবেদন পেশাদারভাবে পরিচালনা করেছে। টিমটি অত্যন্ত জ্ঞানী ও সহায়ক।",
+        testimonial3Name: "ফোরকান উদ্দিন",
+        testimonial3Text: "আমি VisaPro-র মাধ্যমে কানাডায় আমার স্টুডেন্ট ভিসা পেয়েছি। তারা বিশ্ববিদ্যালয় নির্বাচন থেকে ভিসা অনুমোদন পর্যন্ত প্রতিটি ধাপে আমাকে গাইড করেছে।",
 
         // Footer CTA
-        start: "শুরু",
-        creating: "করুন।",
-        footerDescription: "হাজার হাজার ডিজাইনারদের সাথে যোগ দিন এবং আজই প্রিমিয়াম ক্রিয়েটিভ অ্যাসেট অ্যাক্সেস করুন।",
-        getDesignUpdates: "ডিজাইন আপডেট পান",
-        subscribeDescription: "নতুন অ্যাসেট এবং বিশেষ অফার সম্পর্কে তথ্য পেতে সাবস্ক্রাইব করুন।",
-        enterEmail: "আপনার ইমেইল লিখুন",
-        marketplace: "মার্কেটপ্লেস",
-        support: "সাপোর্ট",
-        helpCenter: "হেল্প সেন্টার",
-        licensing: "লাইসেন্সিং",
-        refundPolicy: "রিফান্ড পলিসি",
+        readyToStart: "আপনার যাত্রা শুরু করতে প্রস্তুত?",
+        footerCTADesc: "ভিসা প্রসেসিং, ফ্লাইট বুকিং এবং আরো অনেক কিছুতে আমাদের বিশেষজ্ঞরা আপনাকে সাহায্য করুন",
+        callNow: "এখনই কল করুন",
+        freeConsultation: "বিনামূল্যে পরামর্শ",
+
+        // Footer Brand
+        footerBrandDesc: "বাংলাদেশে ভিসা প্রসেসিং, ফ্লাইট বুকিং, হোটেল রিজার্ভেশন, হজ্জ ও ওমরাহ প্যাকেজ, বিদেশে পড়াশোনা এবং ট্যুর পরিকল্পনায় আপনার বিশ্বস্ত সঙ্গী।",
+        hotlineTime: "হটলাইন (সকাল ৯:৩০ - রাত ৮:৩০)",
+
+        // Footer Column Headings
+        ourServices: "আমাদের সেবাসমূহ",
+        visaTypes: "ভিসার ধরন",
+        quickLinks: "দ্রুত লিঙ্ক",
+
+        // Footer Service Links
+        footerVisaProcessing: "ভিসা প্রসেসিং",
+        footerFlightBooking: "ফ্লাইট বুকিং",
+        footerHotelReservation: "হোটেল রিজার্ভেশন",
+        footerTourPackages: "ট্যুর প্যাকেজ",
+        footerHajjUmrah: "হজ্জ ও ওমরাহ",
+        footerStudyAbroad: "বিদেশে পড়াশোনা",
+
+        // Footer Visa Types
+        footerTouristVisa: "ট্যুরিস্ট ভিসা",
+        footerWorkingVisa: "ওয়ার্কিং ভিসা",
+        footerStudentVisa: "স্টুডেন্ট ভিসা",
+        footerBusinessVisa: "বিজনেস ভিসা",
+        footerMedicalVisa: "মেডিকেল ভিসা",
+        footerTransitVisa: "ট্রানজিট ভিসা",
+
+        // Footer Quick Links
+        aboutUs: "আমাদের সম্পর্কে",
+        footerBlog: "ব্লগ",
         contactUs: "যোগাযোগ করুন",
-        becomeASeller: "বিক্রেতা হন",
-        allRightsReserved: "সর্বস্বত্ব সংরক্ষিত।",
         privacyPolicy: "গোপনীয়তা নীতি",
         termsOfService: "সেবার শর্তাবলী",
-        licenseAgreement: "লাইসেন্স চুক্তি",
+        faq: "সাধারণ জিজ্ঞাসা",
 
-        // About Founder Section
-        aboutMe: "আমার সম্পর্কে",
-        creativeDesigner: "ক্রিয়েটিভ ডিজাইনার",
-        andEntrepreneur: "ও উদ্যোক্তা",
-        aboutFounderDesc1: "আমি Zayed Uddin — বাংলাদেশের একজন আবেগী গ্রাফিক ডিজাইনার ও উদ্যোক্তা। আমি প্রিমিয়াম ডিজাইন টেমপ্লেট, ব্র্যান্ডিং অ্যাসেট এবং ক্রিয়েটিভ সমাধান তৈরিতে বিশেষজ্ঞ যা ব্যবসা ও ব্যক্তিদের আলাদা করে তোলে।",
-        aboutFounderDesc2: "ডিজাইন ইন্ডাস্ট্রিতে ১৪+ বছরের অভিজ্ঞতা নিয়ে, আমি বিশ্বব্যাপী হাজার হাজার ক্লায়েন্টকে তাদের ক্রিয়েটিভ লক্ষ্য অর্জনে সাহায্য করেছি। আমার লক্ষ্য হল উচ্চমানের, সাশ্রয়ী টেমপ্লেট এবং রিসোর্সের মাধ্যমে সবার কাছে পেশাদার ডিজাইন পৌঁছে দেওয়া।",
-        yearsExperience: "বছরের অভিজ্ঞতা",
-        happyClients: "সন্তুষ্ট ক্লায়েন্ট",
-        downloads: "ডাউনলোড",
-        avgRating: "গড় রেটিং",
-        learnMoreAboutMe: "আমার সম্পর্কে আরো জানুন",
-        projectsCompleted: "প্রজেক্ট সম্পন্ন",
+        // Footer Newsletter
+        newsletter: "নিউজলেটার",
+        yourEmail: "আপনার ইমেইল",
+
+        // Footer Bottom
+        acceptedPayment: "গৃহীত পেমেন্ট পদ্ধতি",
+        allRightsReserved: "সর্বস্বত্ব সংরক্ষিত।",
+        terms: "শর্তাবলী",
+        privacy: "গোপনীয়তা",
     }
 };
 

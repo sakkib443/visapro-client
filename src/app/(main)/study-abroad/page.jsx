@@ -5,133 +5,158 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
     LuGraduationCap,
     LuGlobe,
-    LuCalendar,
-    LuMapPin,
-    LuCheck,
-    LuDollarSign,
     LuBookOpen,
-    LuUsers,
-    LuBriefcase,
     LuAward,
-    LuFileText,
-    LuPlane,
+    LuBuilding,
+    LuBriefcase,
+    LuArrowRight,
+    LuCheck,
+    LuUsers,
+    LuDollarSign,
+    LuThumbsUp,
+    LuShieldCheck,
+    LuFileCheck,
+    LuStar,
+    LuCalendar,
+    LuSearch,
+    LuMessageSquare,
+    LuTrendingUp
 } from "react-icons/lu";
+import { useLanguage } from "@/context/LanguageContext";
 
-// ─── Destination Data ───
 const destinations = [
     {
         id: 1,
-        country: "United Kingdom",
+        country: "United Kingdom", countryBn: "যুক্তরাজ্য",
         flag: "🇬🇧",
         universities: "150+",
-        tuition: "$15,000 - $40,000",
-        intake: "Sep, Jan",
-        duration: "1-3 Years",
-        scholarships: true,
-        highlights: ["World-Renowned Universities", "Post-Study Work Visa (2 yrs)", "Part-time Work Allowed", "IELTS Required", "Multicultural Environment", "Research Excellence"],
-        popular: true,
-        programs: ["Business", "Engineering", "Medicine", "Law", "Arts"],
-        image: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=600&q=80",
+        tuition: "$15,000-$35,000/yr",
+        highlights: ["Top-ranked universities", "Post-study work visa", "Scholarships available"],
+        highlightsBn: ["শীর্ষ-র‍্যাংকিং বিশ্ববিদ্যালয়", "পোস্ট-স্টাডি ওয়ার্ক ভিসা", "স্কলারশিপ পাওয়া যায়"],
+        description: "The UK is home to some of the world's oldest and most prestigious universities including Oxford, Cambridge, and Imperial College.",
+        descriptionBn: "যুক্তরাজ্য অক্সফোর্ড, কেমব্রিজ এবং ইম্পেরিয়াল কলেজ সহ বিশ্বের সবচেয়ে পুরনো এবং সবচেয়ে মর্যাদাপূর্ণ কিছু বিশ্ববিদ্যালয়ের আবাসস্থল।",
+        color: "#1D4ED8",
+        popularPrograms: ["Business & Management", "Engineering", "Data Science", "Medicine"],
+        popularProgramsBn: ["ব্যবসা ও ব্যবস্থাপনা", "ইঞ্জিনিয়ারিং", "ডেটা সায়েন্স", "মেডিসিন"],
     },
     {
         id: 2,
-        country: "United States",
+        country: "United States", countryBn: "যুক্তরাষ্ট্র",
         flag: "🇺🇸",
         universities: "500+",
-        tuition: "$20,000 - $55,000",
-        intake: "Fall, Spring",
-        duration: "2-4 Years",
-        scholarships: true,
-        highlights: ["Ivy League Access", "OPT Work Permit (3 yrs)", "Flexible Curriculum", "GRE/GMAT Accepted", "Campus Life Culture", "Research Funding"],
-        popular: false,
-        programs: ["CS & IT", "Business", "Engineering", "Medicine", "Arts"],
-        image: "https://images.unsplash.com/photo-1485738422979-f5c462d49f04?w=600&q=80",
+        tuition: "$20,000-$50,000/yr",
+        highlights: ["World-class research", "OPT work opportunities", "Diverse campus life"],
+        highlightsBn: ["বিশ্বমানের গবেষণা", "ওপিটি কাজের সুযোগ", "বৈচিত্র্যময় ক্যাম্পাস জীবন"],
+        description: "The US offers the most diverse higher education system in the world, with Ivy League schools and leading research universities.",
+        descriptionBn: "যুক্তরাষ্ট্র আইভি লিগ স্কুল এবং শীর্ষস্থানীয় গবেষণা বিশ্ববিদ্যালয়গুলোর সাথে বিশ্বের সবচেয়ে বৈচিত্র্যময় উচ্চশিক্ষা ব্যবস্থা প্রদান করে।",
+        color: "#DC2626",
+        popularPrograms: ["Computer Science", "MBA", "Engineering", "Liberal Arts"],
+        popularProgramsBn: ["কম্পিউটার সায়েন্স", "এমবিএ", "ইঞ্জিনিয়ারিং", "লিবারেল আর্টস"],
     },
     {
         id: 3,
-        country: "Canada",
+        country: "Canada", countryBn: "কানাডা",
         flag: "🇨🇦",
         universities: "100+",
-        tuition: "$12,000 - $35,000",
-        intake: "Sep, Jan, May",
-        duration: "1-4 Years",
-        scholarships: true,
-        highlights: ["PR Pathway Available", "Co-op Programs", "Affordable Living", "IELTS Required", "Safe & Friendly", "Work While Study"],
-        popular: true,
-        programs: ["Business", "Engineering", "Healthcare", "IT", "Hospitality"],
-        image: "https://images.unsplash.com/photo-1517935706615-2717063c2225?w=600&q=80",
+        tuition: "$12,000-$30,000/yr",
+        highlights: ["Immigration pathways", "Affordable education", "Safe & multicultural"],
+        highlightsBn: ["ইমিগ্রেশন পথ", "সাশ্রয়ী শিক্ষা", "নিরাপদ ও বহুসাংস্কৃতিক"],
+        description: "Canada provides world-class education with pathways to permanent residency, making it a top choice for international students.",
+        descriptionBn: "কানাডা স্থায়ী বাসিন্দার পথ সহ বিশ্বমানের শিক্ষা প্রদান করে, যা আন্তর্জাতিক শিক্ষার্থীদের শীর্ষ পছন্দ।",
+        color: "#EF4444",
+        popularPrograms: ["Healthcare", "IT", "Business", "Environmental Science"],
+        popularProgramsBn: ["হেলথকেয়ার", "আইটি", "ব্যবসা", "পরিবেশ বিজ্ঞান"],
     },
     {
         id: 4,
-        country: "Australia",
+        country: "Australia", countryBn: "অস্ট্রেলিয়া",
         flag: "🇦🇺",
         universities: "40+",
-        tuition: "$18,000 - $45,000",
-        intake: "Feb, Jul",
-        duration: "1-3 Years",
-        scholarships: true,
-        highlights: ["Post-Study Work Visa (4 yrs)", "High Quality Education", "Beautiful Lifestyle", "Part-time Work", "Research Opportunities", "Diverse Culture"],
-        popular: false,
-        programs: ["Engineering", "IT", "Business", "Health", "Environment"],
-        image: "https://images.unsplash.com/photo-1523482580672-f109ba8cb9be?w=600&q=80",
+        tuition: "$15,000-$40,000/yr",
+        highlights: ["High quality of life", "Post-study work visa", "Research excellence"],
+        highlightsBn: ["উচ্চ জীবনযাত্রার মান", "পোস্ট-স্টাডি ওয়ার্ক ভিসা", "গবেষণা শ্রেষ্ঠত্ব"],
+        description: "Australia's Group of Eight universities are among the best in the world, offering cutting-edge research and vibrant student life.",
+        descriptionBn: "অস্ট্রেলিয়ার গ্রুপ অব এইট বিশ্ববিদ্যালয়গুলো বিশ্বের সেরাদের মধ্যে, অত্যাধুনিক গবেষণা এবং প্রাণবন্ত ছাত্রজীবন প্রদান করে।",
+        color: "#2563EB",
+        popularPrograms: ["Nursing", "Biotechnology", "Marine Science", "Accounting"],
+        popularProgramsBn: ["নার্সিং", "বায়োটেকনোলজি", "মেরিন সায়েন্স", "অ্যাকাউন্টিং"],
     },
     {
         id: 5,
-        country: "Germany",
+        country: "Germany", countryBn: "জার্মানি",
         flag: "🇩🇪",
-        universities: "80+",
-        tuition: "$0 - $15,000",
-        intake: "Oct, Apr",
-        duration: "2-3 Years",
-        scholarships: true,
-        highlights: ["Low/No Tuition Fees", "Strong Engineering", "18-month Job Seeker Visa", "DAAD Scholarships", "English Programs Available", "Innovation Hub"],
-        popular: false,
-        programs: ["Engineering", "IT", "Business", "Science", "Automotive"],
-        image: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=600&q=80",
-    },
-    {
-        id: 6,
-        country: "Malaysia",
-        flag: "🇲🇾",
-        universities: "50+",
-        tuition: "$3,000 - $12,000",
-        intake: "Feb, Jul, Sep",
-        duration: "1-4 Years",
-        scholarships: true,
-        highlights: ["Affordable Education", "International Branches", "Halal Friendly", "Part-time Work", "Easy Visa Process", "Cultural Diversity"],
-        popular: false,
-        programs: ["Business", "IT", "Engineering", "Medicine", "Tourism"],
-        image: "https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=600&q=80",
+        universities: "300+",
+        tuition: "Mostly Free",
+        highlights: ["Tuition-free education", "Strong engineering programs", "EU job market access"],
+        highlightsBn: ["টিউশন-ফ্রি শিক্ষা", "শক্তিশালী ইঞ্জিনিয়ারিং প্রোগ্রাম", "ইইউ চাকরি বাজার অ্যাক্সেস"],
+        description: "Germany offers tuition-free education at public universities with world-renowned engineering and technology programs.",
+        descriptionBn: "জার্মানি বিশ্ববিখ্যাত ইঞ্জিনিয়ারিং এবং প্রযুক্তি প্রোগ্রাম সহ সরকারি বিশ্ববিদ্যালয়ে বিনামূল্যে শিক্ষা প্রদান করে।",
+        color: "#FBBF24",
+        popularPrograms: ["Mechanical Engineering", "Automotive", "Physics", "AI"],
+        popularProgramsBn: ["মেকানিকাল ইঞ্জিনিয়ারিং", "অটোমোটিভ", "পদার্থবিদ্যা", "এআই"],
     },
 ];
 
-// ─── Services Data ───
 const services = [
-    { icon: <LuBookOpen size={22} />, title: "University Selection", desc: "Expert guidance to find the perfect university matching your profile and goals." },
-    { icon: <LuFileText size={22} />, title: "Application Support", desc: "End-to-end application assistance including SOP, LOR, and document preparation." },
-    { icon: <LuPlane size={22} />, title: "Visa Processing", desc: "Complete visa guidance with high success rate and mock interview preparation." },
-    { icon: <LuDollarSign size={22} />, title: "Scholarship Guidance", desc: "Identify and apply for suitable scholarships to fund your education." },
-    { icon: <LuAward size={22} />, title: "IELTS / Test Prep", desc: "Professional coaching for IELTS, TOEFL, GRE, GMAT, and SAT exams." },
-    { icon: <LuBriefcase size={22} />, title: "Pre-Departure Support", desc: "Accommodation, travel, and orientation assistance for smooth transition." },
+    {
+        icon: <LuBookOpen size={22} />,
+        title: "University Selection", titleBn: "বিশ্ববিদ্যালয় নির্বাচন",
+        desc: "Expert guidance to find the perfect university matching your profile and goals.",
+        descBn: "আপনার প্রোফাইল এবং লক্ষ্যের সাথে মানানসই নিখুঁত বিশ্ববিদ্যালয় খুঁজে পেতে বিশেষজ্ঞ নির্দেশনা।",
+    },
+    {
+        icon: <LuFileCheck size={22} />,
+        title: "Application Support", titleBn: "আবেদন সহায়তা",
+        desc: "Complete support with university applications, SOP writing, and document preparation.",
+        descBn: "বিশ্ববিদ্যালয়ের আবেদন, এসওপি লেখা এবং ডকুমেন্ট প্রস্তুতিতে সম্পূর্ণ সহায়তা।",
+    },
+    {
+        icon: <LuShieldCheck size={22} />,
+        title: "Visa Assistance", titleBn: "ভিসা সহায়তা",
+        desc: "Professional visa application processing with high success rates across all countries.",
+        descBn: "সকল দেশে উচ্চ সাফল্যের হার সহ পেশাদার ভিসা আবেদন প্রক্রিয়াকরণ।",
+    },
+    {
+        icon: <LuDollarSign size={22} />,
+        title: "Scholarship Guidance", titleBn: "স্কলারশিপ গাইডেন্স",
+        desc: "Help identifying and applying for scholarships, grants, and financial aid opportunities.",
+        descBn: "স্কলারশিপ, অনুদান এবং আর্থিক সহায়তার সুযোগ চিহ্নিতকরণ ও আবেদনে সহায়তা।",
+    },
+    {
+        icon: <LuBriefcase size={22} />,
+        title: "Pre-Departure Prep", titleBn: "প্রস্থান-পূর্ব প্রস্তুতি",
+        desc: "Comprehensive guidance for accommodation, banking, health insurance, and travel arrangements.",
+        descBn: "আবাসন, ব্যাংকিং, স্বাস্থ্য বীমা এবং ভ্রমণ ব্যবস্থার জন্য ব্যাপক নির্দেশনা।",
+    },
+    {
+        icon: <LuMessageSquare size={22} />,
+        title: "IELTS/TOEFL Prep", titleBn: "আইইএলটিএস/টোফেল প্রস্তুতি",
+        desc: "Professional coaching and mock tests for English proficiency exams required by universities.",
+        descBn: "বিশ্ববিদ্যালয়ের জন্য প্রয়োজনীয় ইংরেজি দক্ষতা পরীক্ষার জন্য পেশাদার কোচিং এবং মক টেস্ট।",
+    },
 ];
 
 export default function StudyAbroadPage() {
-    const [selectedCountry, setSelectedCountry] = useState(null);
+    const [selectedCountry, setSelectedCountry] = useState(0);
+    const { language } = useLanguage();
+    const isBn = language === 'bn';
+    const fontFamily = isBn ? 'Hind Siliguri, sans-serif' : 'Poppins, sans-serif';
+    const headingFont = isBn ? 'Hind Siliguri, sans-serif' : 'Teko, sans-serif';
+
+    const activeDestination = destinations[selectedCountry];
 
     return (
-        <div className="bg-[#F8FAFC] min-h-screen" style={{ fontFamily: 'Poppins, sans-serif' }}>
+        <div className="bg-[#F8FAFC] min-h-screen" style={{ fontFamily }}>
 
             {/* ═══════════════════════════════════════════════════
                 1. HERO SECTION
             ═══════════════════════════════════════════════════ */}
             <section className="relative py-14 md:py-28 flex items-center justify-center overflow-hidden">
-                <div
-                    className="absolute inset-0 z-0"
+                <div className="absolute inset-0 z-0"
                     style={{
-                        backgroundImage: "url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1920&q=80')",
+                        backgroundImage: "url('https://images.unsplash.com/photo-1523050854058-8df90110c476?w=1920&q=80')",
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat',
                     }}
                 >
                     <div className="absolute inset-0" style={{ backgroundColor: 'rgba(2,30,20,0.78)' }} />
@@ -139,7 +164,7 @@ export default function StudyAbroadPage() {
 
                 <div className="relative z-10 max-w-4xl w-full px-4 text-center flex flex-col items-center">
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
+                        initial={{ opacity: 0, scale: 0.7 }}
                         animate={{ opacity: 1, scale: 1 }}
                         className="mb-6"
                     >
@@ -149,27 +174,29 @@ export default function StudyAbroadPage() {
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="text-[11px] font-bold uppercase tracking-[0.3em] mb-4"
-                        style={{ color: 'rgba(239,140,44,0.8)' }}
+                        style={{ color: 'rgba(239,140,44,0.8)', fontFamily }}
                     >
-                        Your Global Education Partner
+                        {isBn ? 'আপনার গ্লোবাল ক্যারিয়ার শুরু করুন' : 'Launch Your Global Career'}
                     </motion.p>
                     <motion.h1
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight mb-4"
-                        style={{ fontFamily: 'Teko, sans-serif', color: '#FFFFFF' }}
+                        className="text-3xl md:text-6xl font-bold text-gray-900 leading-[0.9] mb-8 uppercase"
+                        style={{ fontFamily: headingFont, color: '#fff' }}
                     >
-                        Study <span style={{ color: '#EF8C2C' }}>Abroad</span>
+                        {isBn ? 'বিদেশে ' : 'Study '}<span style={{ color: '#EF8C2C' }}>{isBn ? 'পড়াশোনা' : 'Abroad'}</span>
                     </motion.h1>
                     <motion.p
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.15 }}
                         className="text-sm font-normal mb-10 max-w-lg"
-                        style={{ color: 'rgba(255,255,255,0.6)' }}
+                        style={{ color: 'rgba(255,255,255,0.6)', fontFamily }}
                     >
-                        Transform your future with world-class education. We guide you from university selection to visa approval and beyond.
+                        {isBn
+                            ? 'বিশ্বের সেরা বিশ্ববিদ্যালয়গুলোতে পড়ার স্বপ্ন পূরণ করুন। ভর্তি থেকে ভিসা পর্যন্ত সম্পূর্ণ সহায়তা।'
+                            : 'Fulfill your dream of studying at the world\'s best universities. Complete support from admission to visa.'}
                     </motion.p>
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -177,188 +204,176 @@ export default function StudyAbroadPage() {
                         transition={{ delay: 0.25 }}
                         className="flex flex-wrap gap-4 justify-center"
                     >
-                        <a href="#destinations" className="px-8 py-3 rounded-lg text-[11px] font-bold uppercase tracking-widest transition-all hover:opacity-90" style={{ backgroundColor: '#EF8C2C', color: '#FFFFFF' }}>
-                            Explore Destinations
+                        <a href="#destinations" className="px-8 py-3 rounded-lg text-[11px] font-bold uppercase tracking-widest transition-all hover:opacity-90" style={{ backgroundColor: '#EF8C2C', color: '#fff', fontFamily }}>
+                            {isBn ? 'গন্তব্য দেখুন' : 'Explore Destinations'}
                         </a>
-                        <a href="#services" className="px-8 py-3 rounded-lg border text-[11px] font-bold uppercase tracking-widest transition-all hover:bg-white/10" style={{ borderColor: 'rgba(255,255,255,0.3)', color: '#FFFFFF' }}>
-                            Free Consultation
+                        <a href="#services" className="px-8 py-3 rounded-lg border text-[11px] font-bold uppercase tracking-widest transition-all hover:bg-white/10" style={{ borderColor: 'rgba(255,255,255,0.3)', color: '#fff', fontFamily }}>
+                            {isBn ? 'বিনামূল্যে পরামর্শ' : 'Free Consultation'}
                         </a>
                     </motion.div>
                 </div>
             </section>
 
             {/* ═══════════════════════════════════════════════════
-                2. TRUST STATS BAR
-            ═══════════════════════════════════════════════════ */}
-            <section className="relative -mt-8 z-20 max-w-5xl mx-auto px-4">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="bg-white rounded-xl shadow-lg border border-gray-100 grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-100"
-                >
-                    {[
-                        { value: "5000+", label: "Students Placed" },
-                        { value: "50+", label: "Partner Universities" },
-                        { value: "15+", label: "Countries" },
-                        { value: "98%", label: "Visa Success Rate" },
-                    ].map((stat, i) => (
-                        <div key={i} className="py-6 px-4 text-center">
-                            <p className="text-2xl md:text-3xl font-black" style={{ fontFamily: 'Teko, sans-serif', color: '#021E14' }}>{stat.value}</p>
-                            <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider mt-1">{stat.label}</p>
-                        </div>
-                    ))}
-                </motion.div>
-            </section>
-
-            {/* ═══════════════════════════════════════════════════
-                3. DESTINATIONS GRID
+                2. DESTINATIONS EXPLORER
             ═══════════════════════════════════════════════════ */}
             <section id="destinations" className="max-w-[1200px] mx-auto px-4 md:px-8 py-20">
                 <div className="text-center mb-12">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.3em] mb-3" style={{ color: '#EF8C2C' }}>Top Destinations</p>
-                    <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tight mb-4" style={{ fontFamily: 'Teko, sans-serif', color: '#021E14' }}>
-                        Where Do You Want to <span style={{ color: '#EF8C2C' }}>Study</span>?
+                    <p className="text-[10px] font-bold uppercase tracking-[0.3em] mb-3" style={{ color: '#EF8C2C', fontFamily }}>{isBn ? 'জনপ্রিয় গন্তব্য' : 'Popular Destinations'}</p>
+                    <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tight mb-4" style={{ fontFamily: headingFont, color: '#021E14' }}>
+                        {isBn ? 'আপনার গন্তব্য ' : 'Choose Your '}<span style={{ color: '#EF8C2C' }}>{isBn ? 'বেছে নিন' : 'Destination'}</span>
                     </h2>
-                    <p className="text-sm text-gray-500 font-normal max-w-md mx-auto">
-                        Choose from top study destinations worldwide. Each country offers unique opportunities for academic and career growth.
-                    </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {destinations.map((dest) => (
-                        <motion.div
+                {/* Country Tabs */}
+                <div className="flex flex-wrap justify-center gap-2 mb-10">
+                    {destinations.map((dest, idx) => (
+                        <button
                             key={dest.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            className={`relative bg-white rounded-xl border overflow-hidden transition-all hover:shadow-lg cursor-pointer ${dest.popular ? "border-[#EF8C2C] shadow-md" : "border-gray-200"
+                            onClick={() => setSelectedCountry(idx)}
+                            className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-[12px] font-bold border transition-all ${selectedCountry === idx
+                                ? "text-white shadow-sm border-transparent"
+                                : "text-gray-600 border-gray-200 hover:border-gray-300 bg-white"
                                 }`}
-                            onClick={() => setSelectedCountry(selectedCountry === dest.id ? null : dest.id)}
+                            style={selectedCountry === idx ? { backgroundColor: '#021E14', fontFamily } : { fontFamily }}
                         >
-                            {dest.popular && (
-                                <div className="absolute top-3 right-3 z-10 px-2.5 py-1 rounded-full text-[8px] font-bold uppercase tracking-widest text-white" style={{ backgroundColor: '#EF8C2C' }}>
-                                    Popular
-                                </div>
-                            )}
+                            <span className="text-base">{dest.flag}</span>
+                            {isBn ? dest.countryBn : dest.country}
+                        </button>
+                    ))}
+                </div>
 
-                            {/* Country Image */}
-                            <div className="relative h-40 overflow-hidden">
-                                <img
-                                    src={dest.image}
-                                    alt={dest.country}
-                                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                                />
-                                <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(2,30,20,0.6) 0%, transparent 60%)' }} />
-                                <div className="absolute bottom-3 left-4 flex items-center gap-2">
-                                    <span className="text-2xl">{dest.flag}</span>
-                                    <h3 className="text-xl font-black uppercase tracking-wider text-white" style={{ fontFamily: 'Teko, sans-serif' }}>
-                                        {dest.country}
-                                    </h3>
+                {/* Active Destination Detail */}
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={selectedCountry}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm"
+                    >
+                        <div className="grid grid-cols-1 md:grid-cols-2">
+                            {/* Info Panel */}
+                            <div className="p-8 md:p-12">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <span className="text-4xl">{activeDestination.flag}</span>
+                                    <div>
+                                        <h3 className="text-2xl font-black uppercase tracking-wider" style={{ fontFamily: headingFont, color: '#021E14' }}>
+                                            {isBn ? activeDestination.countryBn : activeDestination.country}
+                                        </h3>
+                                        <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider" style={{ fontFamily }}>
+                                            {activeDestination.universities} {isBn ? 'বিশ্ববিদ্যালয়' : 'Universities'} • {activeDestination.tuition}
+                                        </p>
+                                    </div>
                                 </div>
+
+                                <p className="text-sm text-gray-600 font-normal leading-relaxed mb-6" style={{ fontFamily }}>
+                                    {isBn ? activeDestination.descriptionBn : activeDestination.description}
+                                </p>
+
+                                <div className="mb-6">
+                                    <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3" style={{ fontFamily }}>{isBn ? 'মূল সুবিধা' : 'Key Highlights'}</h4>
+                                    <div className="space-y-2">
+                                        {(isBn ? activeDestination.highlightsBn : activeDestination.highlights).map((h, i) => (
+                                            <div key={i} className="flex items-center gap-2.5">
+                                                <LuCheck size={14} style={{ color: '#EF8C2C' }} />
+                                                <span className="text-[12px] text-gray-600" style={{ fontFamily }}>{h}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <button className="px-8 py-3 rounded-lg text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:opacity-90 flex items-center gap-2" style={{ backgroundColor: '#EF8C2C', fontFamily }}>
+                                    {isBn ? 'আবেদন করুন' : 'Apply Now'} <LuArrowRight size={14} />
+                                </button>
                             </div>
 
-                            {/* Info */}
-                            <div className="p-5">
-                                {/* Quick Stats */}
-                                <div className="grid grid-cols-2 gap-3 mb-4">
-                                    <div className="flex items-center gap-2 text-[11px] text-gray-500">
-                                        <LuGraduationCap size={13} style={{ color: '#EF8C2C' }} />
-                                        {dest.universities} Universities
-                                    </div>
-                                    <div className="flex items-center gap-2 text-[11px] text-gray-500">
-                                        <LuDollarSign size={13} style={{ color: '#EF8C2C' }} />
-                                        {dest.tuition}/yr
-                                    </div>
-                                    <div className="flex items-center gap-2 text-[11px] text-gray-500">
-                                        <LuCalendar size={13} style={{ color: '#EF8C2C' }} />
-                                        {dest.intake}
-                                    </div>
-                                    <div className="flex items-center gap-2 text-[11px] text-gray-500">
-                                        <LuBookOpen size={13} style={{ color: '#EF8C2C' }} />
-                                        {dest.duration}
-                                    </div>
-                                </div>
-
-                                {/* Programs */}
-                                <div className="flex flex-wrap gap-1.5 mb-4">
-                                    {dest.programs.map((p, i) => (
-                                        <span key={i} className="px-2 py-0.5 rounded text-[9px] font-semibold uppercase tracking-wider bg-gray-50 text-gray-500 border border-gray-100">
-                                            {p}
-                                        </span>
+                            {/* Programs Panel */}
+                            <div className="p-8 md:p-12 border-t md:border-t-0 md:border-l border-gray-100" style={{ backgroundColor: '#FAFBFC' }}>
+                                <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-6" style={{ fontFamily }}>{isBn ? 'জনপ্রিয় প্রোগ্রাম' : 'Popular Programs'}</h4>
+                                <div className="space-y-3">
+                                    {(isBn ? activeDestination.popularProgramsBn : activeDestination.popularPrograms).map((prog, i) => (
+                                        <div key={i} className="flex items-center justify-between bg-white p-4 rounded-lg border border-gray-100 hover:shadow-sm transition-all">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold" style={{ backgroundColor: activeDestination.color }}>
+                                                    {i + 1}
+                                                </div>
+                                                <span className="text-sm font-semibold text-gray-700" style={{ fontFamily }}>{prog}</span>
+                                            </div>
+                                            <LuArrowRight className="text-gray-300" size={14} />
+                                        </div>
                                     ))}
                                 </div>
 
-                                {/* Expandable Highlights */}
-                                <AnimatePresence>
-                                    {selectedCountry === dest.id && (
-                                        <motion.div
-                                            initial={{ height: 0, opacity: 0 }}
-                                            animate={{ height: "auto", opacity: 1 }}
-                                            exit={{ height: 0, opacity: 0 }}
-                                            transition={{ duration: 0.25 }}
-                                            className="overflow-hidden"
-                                        >
-                                            <div className="border-t border-gray-100 pt-4 mb-4">
-                                                <div className="space-y-2">
-                                                    {dest.highlights.map((h, i) => (
-                                                        <div key={i} className="flex items-center gap-2">
-                                                            <LuCheck size={12} style={{ color: '#EF8C2C' }} />
-                                                            <span className="text-[11px] text-gray-600">{h}</span>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-
-                                {/* CTA */}
-                                <button
-                                    className="w-full py-2.5 rounded-lg border text-[10px] font-bold uppercase tracking-widest transition-all hover:bg-[#021E14] hover:text-white hover:border-[#021E14]"
-                                    style={{ borderColor: '#e5e7eb', color: '#021E14' }}
-                                >
-                                    {selectedCountry === dest.id ? "Apply Now" : "View Details"}
-                                </button>
+                                <div className="mt-6 p-4 rounded-lg border border-dashed border-gray-200 text-center">
+                                    <p className="text-[11px] text-gray-400 font-normal" style={{ fontFamily }}>
+                                        {isBn ? 'আরো প্রোগ্রাম জানতে চান?' : 'Want to explore more programs?'}
+                                    </p>
+                                    <button className="mt-2 text-[10px] font-bold uppercase tracking-widest hover:underline" style={{ color: '#EF8C2C', fontFamily }}>
+                                        {isBn ? 'সব প্রোগ্রাম দেখুন' : 'View All Programs'}
+                                    </button>
+                                </div>
                             </div>
-                        </motion.div>
-                    ))}
+                        </div>
+                    </motion.div>
+                </AnimatePresence>
+            </section>
+
+            {/* ═══════════════════════════════════════════════════
+                3. SERVICES SECTION 
+            ═══════════════════════════════════════════════════ */}
+            <section id="services" className="py-20" style={{ backgroundColor: '#021E14' }}>
+                <div className="max-w-[1200px] mx-auto px-4 md:px-8">
+                    <div className="text-center mb-12">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.3em] mb-3" style={{ color: '#EF8C2C', fontFamily }}>{isBn ? 'আমরা কীভাবে সাহায্য করি' : 'How We Help'}</p>
+                        <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tight mb-4" style={{ fontFamily: headingFont, color: '#FFFFFF' }}>
+                            {isBn ? 'আমাদের ' : 'Our '}<span style={{ color: '#EF8C2C' }}>{isBn ? 'সেবাসমূহ' : 'Services'}</span>
+                        </h2>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                        {services.map((item, idx) => (
+                            <motion.div
+                                key={idx}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: idx * 0.05 }}
+                                className="p-6 rounded-xl border transition-all hover:border-[#EF8C2C]/30 group"
+                                style={{ borderColor: 'rgba(255,255,255,0.08)', backgroundColor: 'rgba(255,255,255,0.03)' }}
+                            >
+                                <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-4 transition-all group-hover:scale-110" style={{ backgroundColor: 'rgba(239,140,44,0.1)', color: '#EF8C2C' }}>
+                                    {item.icon}
+                                </div>
+                                <h4 className="text-sm font-bold mb-1 text-white" style={{ fontFamily }}>{isBn ? item.titleBn : item.title}</h4>
+                                <p className="text-[10px] font-normal leading-relaxed" style={{ color: 'rgba(255,255,255,0.4)', fontFamily }}>{isBn ? item.descBn : item.desc}</p>
+                            </motion.div>
+                        ))}
+                    </div>
                 </div>
             </section>
 
             {/* ═══════════════════════════════════════════════════
-                4. OUR SERVICES
+                4. CTA SECTION
             ═══════════════════════════════════════════════════ */}
-            <section id="services" className="py-20" style={{ backgroundColor: '#021E14' }}>
-                <div className="max-w-[1200px] mx-auto px-4 md:px-8">
-                    <div className="text-center mb-14">
-                        <p className="text-[10px] font-bold uppercase tracking-[0.3em] mb-3" style={{ color: '#EF8C2C' }}>What We Offer</p>
-                        <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tight mb-4" style={{ fontFamily: 'Teko, sans-serif', color: '#FFFFFF' }}>
-                            Our <span style={{ color: '#EF8C2C' }}>Services</span>
-                        </h2>
-                        <p className="text-sm font-normal max-w-md mx-auto" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                            Comprehensive support at every step of your study abroad journey.
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
-                        {services.map((item, i) => (
-                            <motion.div
-                                key={i}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: i * 0.05 }}
-                                className="rounded-xl p-5 text-center border transition-all hover:border-[#EF8C2C]/30 group"
-                                style={{ borderColor: 'rgba(255,255,255,0.08)', backgroundColor: 'rgba(255,255,255,0.03)' }}
-                            >
-                                <div className="w-12 h-12 rounded-lg mx-auto mb-3 flex items-center justify-center transition-colors" style={{ backgroundColor: 'rgba(239,140,44,0.1)' }}>
-                                    <span style={{ color: '#EF8C2C' }}>{item.icon}</span>
-                                </div>
-                                <h4 className="text-sm font-bold mb-1 text-white">{item.title}</h4>
-                                <p className="text-[10px] font-normal leading-relaxed" style={{ color: 'rgba(255,255,255,0.4)' }}>{item.desc}</p>
-                            </motion.div>
-                        ))}
+            <section className="bg-white py-20 border-t border-gray-50">
+                <div className="max-w-3xl mx-auto px-4 text-center">
+                    <LuGlobe className="mx-auto mb-6" size={40} style={{ color: '#EF8C2C' }} />
+                    <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight mb-4" style={{ fontFamily: headingFont, color: '#021E14' }}>
+                        {isBn ? 'শুরু করতে ' : 'Ready to '}<span style={{ color: '#EF8C2C' }}>{isBn ? 'প্রস্তুত?' : 'Get Started?'}</span>
+                    </h2>
+                    <p className="text-sm text-gray-500 font-normal max-w-md mx-auto mb-10" style={{ fontFamily }}>
+                        {isBn
+                            ? 'আজই আমাদের বিশেষজ্ঞদের সাথে কথা বলুন এবং আপনার বিদেশে পড়াশোনার যাত্রা শুরু করুন।'
+                            : 'Talk to our experts today and start your journey to studying abroad at a top university.'}
+                    </p>
+                    <div className="flex flex-wrap justify-center gap-4">
+                        <button className="px-10 py-4 rounded-lg text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:opacity-90 shadow-lg" style={{ backgroundColor: '#EF8C2C', fontFamily }}>
+                            {isBn ? 'বিনামূল্যে পরামর্শ' : 'Free Consultation'}
+                        </button>
+                        <button className="px-10 py-4 rounded-lg border text-[11px] font-bold uppercase tracking-widest transition-all hover:bg-gray-50" style={{ borderColor: '#021E14', color: '#021E14', fontFamily }}>
+                            {isBn ? 'আমাদের কল করুন' : 'Call Us Now'}
+                        </button>
                     </div>
                 </div>
             </section>

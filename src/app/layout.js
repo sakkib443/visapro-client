@@ -1,35 +1,5 @@
-import {
-  Poppins,
-  Teko,
-  Hind_Siliguri,
-} from "next/font/google";
 import "./globals.css";
 import ClientProviders from "@/components/ClientProviders";
-
-// ==================== Font Setup ====================
-// Primary Font (Headings) - Teko
-const teko = Teko({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-teko",
-  display: "swap",
-});
-
-// Secondary Font (Body) - Poppins
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
-  variable: "--font-poppins",
-  display: "swap",
-});
-
-// Bangla Font - Hind Siliguri
-const hindSiliguri = Hind_Siliguri({
-  subsets: ["bengali", "latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-hind-siliguri",
-  display: "swap",
-});
 
 export const metadata = {
   title: {
@@ -70,19 +40,17 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html
-      lang="en"
-      className={`
-        ${teko.variable} 
-        ${poppins.variable} 
-        ${hindSiliguri.variable}
-      `}
-      style={{
-        "--font-heading": `var(--font-teko), "Teko", sans-serif`,
-        "--font-body": `var(--font-poppins), "Poppins", sans-serif`,
-      }}
-      suppressHydrationWarning
-    >
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Google Fonts - Preconnect for speed */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* Load Teko, Poppins, and Hind Siliguri from Google Fonts CDN */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=Teko:wght@300..700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body className="antialiased min-h-screen" suppressHydrationWarning>
         <ClientProviders>
           {children}
@@ -91,3 +59,4 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
+

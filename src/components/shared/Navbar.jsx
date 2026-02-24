@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -12,16 +12,17 @@ import {
     FiLogOut,
     FiSettings,
     FiGrid,
-    FiPhone,
     FiMail,
     FiMapPin,
     FiClock,
+    FiGlobe,
 } from "react-icons/fi";
 import {
     selectCurrentUser,
     selectIsAuthenticated,
     logout,
 } from "@/redux/features/authSlice";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -29,14 +30,31 @@ export default function Navbar() {
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [activeDropdown, setActiveDropdown] = useState(null);
     const [mounted, setMounted] = useState(false);
+    const [isLangOpen, setIsLangOpen] = useState(false);
+    const langRef = useRef(null);
+    const { language, setLanguage, t } = useLanguage();
 
     const dispatch = useDispatch();
     const user = useSelector(selectCurrentUser);
     const isAuthenticated = useSelector(selectIsAuthenticated);
     const pathname = usePathname();
 
+    const bnFont = language === 'bn' ? 'Hind Siliguri, sans-serif' : 'Poppins, sans-serif';
+    const headingFont = language === 'bn' ? 'Hind Siliguri, sans-serif' : 'Teko, sans-serif';
+
     useEffect(() => {
         setMounted(true);
+    }, []);
+
+    // Close language dropdown on outside click
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (langRef.current && !langRef.current.contains(e.target)) {
+                setIsLangOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
     // Handle scroll
@@ -54,25 +72,25 @@ export default function Navbar() {
     }, [pathname]);
 
     const navLinks = [
-        { name: "Home", href: "/" },
+        { name: t('home'), href: "/" },
         {
-            name: "Visa",
+            name: t('visa'),
             href: "/visa",
             hasDropdown: true,
             dropdownItems: [
-                { name: "Tourist Visa", href: "/visa?category=Tourist", icon: "🌴" },
-                { name: "Working Visa", href: "/visa?category=Working", icon: "💼" },
-                { name: "Student Visa", href: "/visa?category=Student", icon: "🎓" },
-                { name: "Business Visa", href: "/visa?category=Business", icon: "📊" },
-                { name: "Medical Visa", href: "/visa?category=Medical", icon: "🏥" },
-                { name: "Transit Visa", href: "/visa?category=Transit", icon: "✈️" },
+                { name: t('touristVisa'), href: "/visa?category=Tourist", icon: "🌴" },
+                { name: t('workingVisa'), href: "/visa?category=Working", icon: "💼" },
+                { name: t('studentVisa'), href: "/visa?category=Student", icon: "🎓" },
+                { name: t('businessVisa'), href: "/visa?category=Business", icon: "📊" },
+                { name: t('medicalVisa'), href: "/visa?category=Medical", icon: "🏥" },
+                { name: t('transitVisa'), href: "/visa?category=Transit", icon: "✈️" },
             ],
         },
-        { name: "Tour", href: "/tour" },
-        { name: "Hajj & Umrah", href: "/hajj-umrah" },
-        { name: "Study Abroad", href: "/study-abroad" },
-        { name: "Blog", href: "/blog" },
-        { name: "Contact", href: "/contact" },
+        { name: t('tour'), href: "/tour" },
+        { name: t('hajjUmrah'), href: "/hajj-umrah" },
+        { name: t('studyAbroad'), href: "/study-abroad" },
+        { name: t('blog'), href: "/blog" },
+        { name: t('contact'), href: "/contact" },
     ];
 
     const handleLogout = () => {
@@ -91,23 +109,19 @@ export default function Navbar() {
             <div className="hidden lg:block bg-[#1a1a2e] text-white/80 text-xs">
                 <div className="max-w-[1400px] mx-auto px-6 flex items-center justify-between h-10">
                     <div className="flex items-center gap-6">
-                        <a href="tel:+8801712114770" className="flex items-center gap-1.5 hover:text-[#EF8C2C] transition-colors">
-                            <FiPhone className="w-3 h-3" />
-                            <span style={{ fontFamily: 'Poppins, sans-serif' }}>017 1211 4770</span>
-                        </a>
                         <a href="mailto:support@visapro.com.bd" className="flex items-center gap-1.5 hover:text-[#EF8C2C] transition-colors">
                             <FiMail className="w-3 h-3" />
-                            <span style={{ fontFamily: 'Poppins, sans-serif' }}>support@visapro.com.bd</span>
+                            <span style={{ fontFamily: 'Poppins, sans-serif' }}>{t('topEmail')}</span>
                         </a>
                         <span className="flex items-center gap-1.5">
                             <FiMapPin className="w-3 h-3" />
-                            <span style={{ fontFamily: 'Poppins, sans-serif' }}>Panthpath, Dhaka</span>
+                            <span style={{ fontFamily: bnFont }}>{t('topAddress')}</span>
                         </span>
                     </div>
                     <div className="flex items-center gap-4">
                         <span className="flex items-center gap-1.5">
                             <FiClock className="w-3 h-3" />
-                            <span style={{ fontFamily: 'Poppins, sans-serif' }}>Sat - Thu: 9:30 AM - 8:30 PM</span>
+                            <span style={{ fontFamily: bnFont }}>{t('topHours')}</span>
                         </span>
                     </div>
                 </div>
@@ -140,9 +154,9 @@ export default function Navbar() {
                                 </span>
                                 <span
                                     className="text-[8px] font-medium text-gray-400 tracking-[0.2em] uppercase"
-                                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                                    style={{ fontFamily: bnFont }}
                                 >
-                                    Consultancy & Migration
+                                    {t('consultancyMigration')}
                                 </span>
                             </div>
                         </Link>
@@ -151,7 +165,7 @@ export default function Navbar() {
                         <div className="hidden lg:flex items-center gap-0.5">
                             {navLinks.map((link) => (
                                 <div
-                                    key={link.name}
+                                    key={link.href}
                                     className="relative"
                                     onMouseEnter={() => link.hasDropdown && setActiveDropdown(link.name)}
                                     onMouseLeave={() => setActiveDropdown(null)}
@@ -162,7 +176,7 @@ export default function Navbar() {
                                             ? "text-[#EF8C2C]"
                                             : "text-gray-700 hover:text-[#3590CF]"
                                             }`}
-                                        style={{ fontFamily: 'Poppins, sans-serif' }}
+                                        style={{ fontFamily: bnFont }}
                                     >
                                         {link.name}
                                         {link.hasDropdown && (
@@ -198,7 +212,7 @@ export default function Navbar() {
                                                                 <span className="text-lg">{item.icon}</span>
                                                                 <span
                                                                     className="font-medium text-gray-700 text-sm group-hover:text-[#3590CF] transition-colors"
-                                                                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                                                                    style={{ fontFamily: bnFont }}
                                                                 >
                                                                     {item.name}
                                                                 </span>
@@ -215,23 +229,50 @@ export default function Navbar() {
 
                         {/* Right Side */}
                         <div className="flex items-center gap-3">
-                            {/* Hotline Button */}
-                            <a
-                                href="tel:+8801712114770"
-                                className="hidden xl:flex items-center gap-2 px-4 py-2.5 rounded-lg border border-[#3590CF]/20 hover:border-[#3590CF]/40 transition-all"
-                            >
-                                <div className="w-8 h-8 rounded-full bg-[#3590CF]/10 flex items-center justify-center">
-                                    <FiPhone className="w-3.5 h-3.5 text-[#3590CF]" />
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-[9px] text-gray-400 font-medium uppercase tracking-wider" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                                        Hotline
-                                    </span>
-                                    <span className="text-sm font-bold text-gray-800" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                                        017 1211 4770
-                                    </span>
-                                </div>
-                            </a>
+                            {/* Language Switcher */}
+                            <div className="relative" ref={langRef}>
+                                <button
+                                    onClick={() => setIsLangOpen(!isLangOpen)}
+                                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 hover:border-[#3590CF]/40 hover:bg-gray-50 transition-all text-sm font-semibold text-gray-700"
+                                    style={{ fontFamily: bnFont }}
+                                >
+                                    <FiGlobe className="w-4 h-4 text-[#3590CF]" />
+                                    <span className="hidden sm:inline">{language === 'bn' ? 'বাংলা' : 'EN'}</span>
+                                    <FiChevronDown className={`w-3.5 h-3.5 text-gray-400 transition-transform ${isLangOpen ? 'rotate-180' : ''}`} />
+                                </button>
+                                <AnimatePresence>
+                                    {isLangOpen && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                                            transition={{ duration: 0.15 }}
+                                            className="absolute right-0 top-full mt-2 bg-white rounded-xl shadow-2xl shadow-black/10 border border-gray-100 py-1.5 min-w-[160px] z-[60]"
+                                        >
+                                            <button
+                                                onClick={() => { setLanguage('en'); setIsLangOpen(false); }}
+                                                className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${language === 'en' ? 'text-[#3590CF] bg-[#3590CF]/5' : 'text-gray-700 hover:bg-gray-50'
+                                                    }`}
+                                                style={{ fontFamily: 'Poppins, sans-serif' }}
+                                            >
+                                                <span className="text-lg">🇬🇧</span>
+                                                English
+                                                {language === 'en' && <span className="ml-auto text-[#3590CF]">✓</span>}
+                                            </button>
+                                            <button
+                                                onClick={() => { setLanguage('bn'); setIsLangOpen(false); }}
+                                                className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${language === 'bn' ? 'text-[#3590CF] bg-[#3590CF]/5' : 'text-gray-700 hover:bg-gray-50'
+                                                    }`}
+                                                style={{ fontFamily: 'Hind Siliguri, sans-serif' }}
+                                            >
+                                                <span className="text-lg">🇧🇩</span>
+                                                বাংলা
+                                                {language === 'bn' && <span className="ml-auto text-[#3590CF]">✓</span>}
+                                            </button>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
 
                             {/* Auth / Profile */}
                             {mounted && (isAuthenticated && user ? (
@@ -273,12 +314,14 @@ export default function Navbar() {
                                                     <DropdownLink
                                                         href="/dashboard/admin"
                                                         icon={FiGrid}
-                                                        label="Dashboard"
+                                                        label={t('dashboard')}
+                                                        fontFamily={bnFont}
                                                     />
                                                     <DropdownLink
                                                         href="/dashboard/admin/profile"
                                                         icon={FiSettings}
-                                                        label="Account Settings"
+                                                        label={t('accountSettings')}
+                                                        fontFamily={bnFont}
                                                     />
                                                 </div>
 
@@ -286,9 +329,10 @@ export default function Navbar() {
                                                     <button
                                                         onClick={handleLogout}
                                                         className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 transition-all"
+                                                        style={{ fontFamily: bnFont }}
                                                     >
                                                         <FiLogOut className="w-4 h-4" />
-                                                        Sign Out
+                                                        {t('signOut')}
                                                     </button>
                                                 </div>
                                             </motion.div>
@@ -300,16 +344,16 @@ export default function Navbar() {
                                     <Link
                                         href="/login"
                                         className="px-4 py-2.5 text-sm font-semibold text-gray-600 hover:text-gray-900 transition-colors"
-                                        style={{ fontFamily: 'Poppins, sans-serif' }}
+                                        style={{ fontFamily: bnFont }}
                                     >
-                                        Login
+                                        {t('login')}
                                     </Link>
                                     <Link
                                         href="/register"
                                         className="px-5 py-2.5 text-sm font-semibold text-white rounded-lg transition-all hover:-translate-y-0.5"
-                                        style={{ fontFamily: 'Poppins, sans-serif', backgroundColor: '#EF8C2C' }}
+                                        style={{ fontFamily: bnFont, backgroundColor: '#EF8C2C' }}
                                     >
-                                        Get Started
+                                        {t('getStarted')}
                                     </Link>
                                 </div>
                             ))}
@@ -340,7 +384,7 @@ export default function Navbar() {
                                 <div className="space-y-1 mb-6">
                                     {navLinks.map((link, index) => (
                                         <motion.div
-                                            key={link.name}
+                                            key={link.href}
                                             initial={{ opacity: 0, x: -20 }}
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ delay: index * 0.05 }}
@@ -354,7 +398,7 @@ export default function Navbar() {
                                                                 ? "text-[#EF8C2C] bg-[#EF8C2C]/5"
                                                                 : "text-gray-700 hover:bg-gray-50"
                                                                 }`}
-                                                            style={{ fontFamily: 'Poppins, sans-serif' }}
+                                                            style={{ fontFamily: bnFont }}
                                                             onClick={() => setIsMobileOpen(false)}
                                                         >
                                                             {link.name}
@@ -384,7 +428,7 @@ export default function Navbar() {
                                                                             key={item.href}
                                                                             href={item.href}
                                                                             className="block px-3 py-2 text-sm text-gray-500 hover:text-[#3590CF] rounded-lg transition-colors"
-                                                                            style={{ fontFamily: 'Poppins, sans-serif' }}
+                                                                            style={{ fontFamily: bnFont }}
                                                                             onClick={() => setIsMobileOpen(false)}
                                                                         >
                                                                             {item.icon} {item.name}
@@ -402,7 +446,7 @@ export default function Navbar() {
                                                         ? "text-[#EF8C2C] bg-[#EF8C2C]/5"
                                                         : "text-gray-700 hover:bg-gray-50"
                                                         }`}
-                                                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                                                    style={{ fontFamily: bnFont }}
                                                     onClick={() => setIsMobileOpen(false)}
                                                 >
                                                     {link.name}
@@ -412,12 +456,31 @@ export default function Navbar() {
                                     ))}
                                 </div>
 
-                                {/* Mobile Contact */}
+                                {/* Mobile Language Switcher */}
                                 <div className="p-4 bg-gray-50 rounded-xl mb-4">
-                                    <a href="tel:+8801712114770" className="flex items-center gap-3 text-sm font-semibold text-gray-700">
-                                        <FiPhone className="text-[#3590CF]" />
-                                        <span style={{ fontFamily: 'Poppins, sans-serif' }}>017 1211 4770</span>
-                                    </a>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2" style={{ fontFamily: bnFont }}>{t('languageLabel')}</p>
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={() => setLanguage('en')}
+                                            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all ${language === 'en'
+                                                ? 'bg-[#3590CF] text-white shadow-md'
+                                                : 'bg-white text-gray-700 border border-gray-200'
+                                                }`}
+                                            style={{ fontFamily: 'Poppins, sans-serif' }}
+                                        >
+                                            <span>🇬🇧</span> English
+                                        </button>
+                                        <button
+                                            onClick={() => setLanguage('bn')}
+                                            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all ${language === 'bn'
+                                                ? 'bg-[#3590CF] text-white shadow-md'
+                                                : 'bg-white text-gray-700 border border-gray-200'
+                                                }`}
+                                            style={{ fontFamily: 'Hind Siliguri, sans-serif' }}
+                                        >
+                                            <span>🇧🇩</span> বাংলা
+                                        </button>
+                                    </div>
                                 </div>
 
                                 {/* Mobile Auth */}
@@ -426,18 +489,18 @@ export default function Navbar() {
                                         <Link
                                             href="/login"
                                             className="py-3 text-center bg-gray-100 text-gray-800 font-semibold rounded-lg"
-                                            style={{ fontFamily: 'Poppins, sans-serif' }}
+                                            style={{ fontFamily: bnFont }}
                                             onClick={() => setIsMobileOpen(false)}
                                         >
-                                            Login
+                                            {t('login')}
                                         </Link>
                                         <Link
                                             href="/register"
                                             className="py-3 text-center text-white font-semibold rounded-lg"
-                                            style={{ fontFamily: 'Poppins, sans-serif', backgroundColor: '#EF8C2C' }}
+                                            style={{ fontFamily: bnFont, backgroundColor: '#EF8C2C' }}
                                             onClick={() => setIsMobileOpen(false)}
                                         >
-                                            Register
+                                            {t('register')}
                                         </Link>
                                     </div>
                                 )}
@@ -450,12 +513,12 @@ export default function Navbar() {
     );
 }
 
-function DropdownLink({ href, icon: Icon, label }) {
+function DropdownLink({ href, icon: Icon, label, fontFamily }) {
     return (
         <Link
             href={href}
             className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-[#3590CF] transition-all"
-            style={{ fontFamily: 'Poppins, sans-serif' }}
+            style={{ fontFamily: fontFamily || 'Poppins, sans-serif' }}
         >
             <Icon className="w-4 h-4" />
             {label}

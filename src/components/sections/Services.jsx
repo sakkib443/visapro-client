@@ -17,68 +17,72 @@ import {
     LuChevronRight,
     LuGlobe
 } from "react-icons/lu";
+import { useLanguage } from "@/context/LanguageContext";
 
 import "swiper/css";
 import "swiper/css/navigation";
 
-const services = [
-    {
-        title: "Visa Processing",
-        subtitle: "WORLDWIDE",
-        description: "Expert assistance for tourist, business, and study visas worldwide with a proven track record of success.",
-        icon: <LuTicket />,
-        image: "https://images.unsplash.com/photo-1544016768-982d1554f0b9?w=800&fit=crop",
-        color: "#1D7EDD",
-        stats: "50+ Countries"
-    },
-    {
-        title: "Flight Booking",
-        subtitle: "DOMESTIC & INT'L",
-        description: "Best available fares for all major airlines. Instant booking and 24/7 support for seamless travel.",
-        icon: <LuPlane />,
-        image: "https://images.pexels.com/photos/46148/aircraft-jet-landing-cloud-46148.jpeg?auto=compress&cs=tinysrgb&w=800",
-        color: "#EF8C2C",
-        stats: "200+ Airlines"
-    },
-    {
-        title: "Hotel Booking",
-        subtitle: "WORLDWIDE STAY",
-        description: "Curated selection of luxury to budget hotels globally. Transit stays also available.",
-        icon: <LuBed />,
-        image: "https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=800",
-        color: "#10B981",
-        stats: "5000+ Hotels"
-    },
-    {
-        title: "Tour Packages",
-        subtitle: "CUSTOM PLANNING",
-        description: "Customized holiday packages tailored to your preferences, budget, and dreams.",
-        icon: <LuMapPin />,
-        image: "https://images.pexels.com/photos/457882/pexels-photo-457882.jpeg?auto=compress&cs=tinysrgb&w=800",
-        color: "#8B5CF6",
-        stats: "100+ Packages"
-    },
-    {
-        title: "Hajj & Umrah",
-        subtitle: "SPIRITUAL JOURNEY",
-        description: "Dedicated packages for Hajj & Umrah with convenient flights and close-to-haram stays.",
-        icon: <LuMoon />,
-        image: "https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?w=800&fit=crop",
-        color: "#F59E0B",
-        stats: "Premium Packages"
-    },
-    {
-        title: "Study Abroad",
-        subtitle: "GLOBAL EDUCATION",
-        description: "Complete guidance for university selection, admission, and student visa processing.",
-        icon: <LuGraduationCap />,
-        image: "https://images.pexels.com/photos/159711/books-bookstore-book-reading-159711.jpeg?auto=compress&cs=tinysrgb&w=800",
-        color: "#EC4899",
-        stats: "30+ Universities"
-    }
-];
-
 export default function Services() {
+    const { t, language } = useLanguage();
+    const bnFont = language === 'bn' ? 'Hind Siliguri, sans-serif' : undefined;
+
+    const services = [
+        {
+            title: t('visaProcessing'),
+            subtitle: t('visaProcessingSub'),
+            description: t('visaProcessingDesc'),
+            icon: <LuTicket />,
+            image: "https://images.unsplash.com/photo-1544016768-982d1554f0b9?w=800&fit=crop",
+            color: "#1D7EDD",
+            stats: t('visaProcessingStats')
+        },
+        {
+            title: t('flightBooking'),
+            subtitle: t('flightBookingSub'),
+            description: t('flightBookingDesc'),
+            icon: <LuPlane />,
+            image: "https://images.pexels.com/photos/46148/aircraft-jet-landing-cloud-46148.jpeg?auto=compress&cs=tinysrgb&w=800",
+            color: "#EF8C2C",
+            stats: t('flightBookingStats')
+        },
+        {
+            title: t('hotelReservation'),
+            subtitle: t('hotelReservationSub'),
+            description: t('hotelReservationDesc'),
+            icon: <LuBed />,
+            image: "https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=800",
+            color: "#10B981",
+            stats: t('hotelReservationStats')
+        },
+        {
+            title: t('tourPackages'),
+            subtitle: t('tourPackagesSub'),
+            description: t('tourPackagesDesc'),
+            icon: <LuMapPin />,
+            image: "https://images.pexels.com/photos/457882/pexels-photo-457882.jpeg?auto=compress&cs=tinysrgb&w=800",
+            color: "#8B5CF6",
+            stats: t('tourPackagesStats')
+        },
+        {
+            title: t('hajjUmrahService'),
+            subtitle: t('hajjUmrahSub'),
+            description: t('hajjUmrahDesc'),
+            icon: <LuMoon />,
+            image: "https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?w=800&fit=crop",
+            color: "#F59E0B",
+            stats: t('hajjUmrahStats')
+        },
+        {
+            title: t('studyAbroadService'),
+            subtitle: t('studyAbroadSub'),
+            description: t('studyAbroadDesc'),
+            icon: <LuGraduationCap />,
+            image: "https://images.pexels.com/photos/159711/books-bookstore-book-reading-159711.jpeg?auto=compress&cs=tinysrgb&w=800",
+            color: "#EC4899",
+            stats: t('studyAbroadStats')
+        }
+    ];
+
     return (
         <section className="relative py-28 overflow-hidden bg-[#F8FAFC]">
             {/* Subtle Background Pattern */}
@@ -115,8 +119,8 @@ export default function Services() {
                         <div className="h-[1px] w-12 bg-gradient-to-r from-transparent to-[#EF8C2C]" />
                         <div className="flex items-center gap-2 px-5 py-2 rounded-full border border-[#EF8C2C]/15 bg-[#EF8C2C]/[0.05]">
                             <LuSparkles className="text-[#EF8C2C] text-sm" />
-                            <span className="text-[#EF8C2C] text-xs font-semibold tracking-[0.25em] uppercase" style={{ fontFamily: '"Poppins", sans-serif' }}>
-                                Premium Solutions
+                            <span className="text-[#EF8C2C] text-xs font-semibold tracking-[0.25em] uppercase" style={{ fontFamily: bnFont || '"Poppins", sans-serif' }}>
+                                {t('servicesTag')}
                             </span>
                         </div>
                         <div className="h-[1px] w-12 bg-gradient-to-l from-transparent to-[#EF8C2C]" />
@@ -128,9 +132,9 @@ export default function Services() {
                         viewport={{ once: true }}
                         transition={{ delay: 0.1 }}
                         className="text-3xl md:text-6xl font-black text-[#0F172A] uppercase tracking-tight leading-[0.85]"
-                        style={{ fontFamily: '"Teko", sans-serif' }}
+                        style={{ fontFamily: language === 'bn' ? '"Hind Siliguri", sans-serif' : '"Teko", sans-serif' }}
                     >
-                        Our <span className="text-[#1D7EDD]">Services</span>
+                        {t('servicesTitle')} <span className="text-[#1D7EDD]">{t('servicesTitleHighlight')}</span>
                     </motion.h2>
 
                     <motion.p
@@ -139,9 +143,9 @@ export default function Services() {
                         viewport={{ once: true }}
                         transition={{ delay: 0.2 }}
                         className="text-gray-400 text-sm max-w-lg mx-auto mt-5 leading-relaxed"
-                        style={{ fontFamily: '"Poppins", sans-serif' }}
+                        style={{ fontFamily: bnFont || '"Poppins", sans-serif' }}
                     >
-                        End-to-end travel and immigration solutions crafted with expertise.
+                        {t('servicesDesc')}
                     </motion.p>
 
                 </div>
@@ -204,7 +208,7 @@ export default function Services() {
                                     {/* Stats Pill */}
                                     <div className="absolute top-4 right-4">
                                         <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-md border border-white/20 text-white">
-                                            <span className="text-[10px] font-semibold" style={{ fontFamily: '"Poppins", sans-serif' }}>
+                                            <span className="text-[10px] font-semibold" style={{ fontFamily: bnFont || '"Poppins", sans-serif' }}>
                                                 {service.stats}
                                             </span>
                                         </div>
@@ -212,7 +216,7 @@ export default function Services() {
 
                                     {/* Subtitle on image bottom */}
                                     <div className="absolute bottom-4 left-4">
-                                        <span className="text-white/60 text-[10px] font-bold tracking-[0.2em] uppercase" style={{ fontFamily: '"Poppins", sans-serif' }}>
+                                        <span className="text-white/60 text-[10px] font-bold tracking-[0.2em] uppercase" style={{ fontFamily: bnFont || '"Poppins", sans-serif' }}>
                                             {service.subtitle}
                                         </span>
                                     </div>
@@ -222,12 +226,12 @@ export default function Services() {
                                 <div className="p-5 flex-grow flex flex-col">
                                     <h3
                                         className="text-2xl font-black text-[#0F172A] uppercase tracking-tight leading-none mb-2 group-hover:translate-x-1 transition-transform duration-500"
-                                        style={{ fontFamily: '"Teko", sans-serif' }}
+                                        style={{ fontFamily: language === 'bn' ? '"Hind Siliguri", sans-serif' : '"Teko", sans-serif' }}
                                     >
                                         {service.title}
                                     </h3>
 
-                                    <p className="text-gray-400 text-[12px] leading-relaxed mb-4 flex-grow line-clamp-2" style={{ fontFamily: '"Poppins", sans-serif' }}>
+                                    <p className="text-gray-400 text-[12px] leading-relaxed mb-4 flex-grow line-clamp-2" style={{ fontFamily: bnFont || '"Poppins", sans-serif' }}>
                                         {service.description}
                                     </p>
 
@@ -243,9 +247,9 @@ export default function Services() {
                                     <div className="flex items-center justify-between">
                                         <button
                                             className="flex items-center gap-2 text-[12px] font-bold uppercase tracking-wider transition-all duration-300 group-hover:gap-3"
-                                            style={{ color: service.color, fontFamily: '"Poppins", sans-serif' }}
+                                            style={{ color: service.color, fontFamily: bnFont || '"Poppins", sans-serif' }}
                                         >
-                                            Learn More
+                                            {t('learnMore')}
                                             <div
                                                 className="w-7 h-7 rounded-full flex items-center justify-center transition-all duration-500 group-hover:scale-110"
                                                 style={{ backgroundColor: `${service.color}12` }}
@@ -295,13 +299,13 @@ export default function Services() {
                                 </div>
                             ))}
                         </div>
-                        <p className="text-gray-400 text-xs" style={{ fontFamily: '"Poppins", sans-serif' }}>
-                            <span className="text-gray-700 font-semibold">10,000+</span> happy customers worldwide
+                        <p className="text-gray-400 text-xs" style={{ fontFamily: bnFont || '"Poppins", sans-serif' }}>
+                            <span className="text-gray-700 font-semibold">10,000+</span> {language === 'bn' ? 'সন্তুষ্ট গ্রাহক বিশ্বব্যাপী' : 'happy customers worldwide'}
                         </p>
                     </div>
 
-                    <button className="group/cta flex items-center gap-3 px-7 py-3.5 rounded-full bg-gradient-to-r from-[#1D7EDD] to-[#3BAAFF] text-white text-xs font-bold uppercase tracking-[0.15em] hover:shadow-[0_8px_32px_rgba(29,126,221,0.3)] transition-all duration-500 hover:-translate-y-0.5" style={{ fontFamily: '"Poppins", sans-serif' }}>
-                        View All Services
+                    <button className="group/cta flex items-center gap-3 px-7 py-3.5 rounded-full bg-gradient-to-r from-[#1D7EDD] to-[#3BAAFF] text-white text-xs font-bold uppercase tracking-[0.15em] hover:shadow-[0_8px_32px_rgba(29,126,221,0.3)] transition-all duration-500 hover:-translate-y-0.5" style={{ fontFamily: bnFont || '"Poppins", sans-serif' }}>
+                        {language === 'bn' ? 'সব সেবা দেখুন' : 'View All Services'}
                         <LuArrowRight className="text-sm group-hover/cta:translate-x-1 transition-transform" />
                     </button>
                 </motion.div>

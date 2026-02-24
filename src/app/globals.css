@@ -45,9 +45,10 @@
   --color-black: #000000;
   --color-white: #ffffff;
 
-  /* Dynamic Fonts */
-  --font-heading: "Poppins", sans-serif;
+  /* Dynamic Fonts - Loaded via Google Fonts CDN in layout.js */
+  --font-heading: "Teko", sans-serif;
   --font-body: "Poppins", sans-serif;
+  --font-hind-siliguri: "Hind Siliguri", sans-serif;
 
   /* Spacing */
   --container-max: 1280px;
@@ -142,29 +143,7 @@ textarea,
   cursor: text;
 }
 
-:where(h1) {
-  font-size: 2.5rem;
-}
-
-:where(h2) {
-  font-size: 2rem;
-}
-
-:where(h3) {
-  font-size: 1.5rem;
-}
-
-:where(h4) {
-  font-size: 1.25rem;
-}
-
-:where(h5) {
-  font-size: 1.125rem;
-}
-
-:where(h6) {
-  font-size: 1rem;
-}
+/* Heading sizes removed — controlled by Tailwind utility classes per component */
 
 /* Body text uses Poppins */
 p {
