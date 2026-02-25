@@ -42,8 +42,26 @@ export default function Navbar() {
     const bnFont = language === 'bn' ? 'Hind Siliguri, sans-serif' : 'Poppins, sans-serif';
     const headingFont = language === 'bn' ? 'Hind Siliguri, sans-serif' : 'Teko, sans-serif';
 
+    // Dynamic visa categories from database
+    const [visaCategories, setVisaCategories] = useState([]);
+
     useEffect(() => {
         setMounted(true);
+
+        // Fetch active visa categories from API
+        const fetchCategories = async () => {
+            try {
+                const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+                const res = await fetch(`${API_BASE}/api/visa-categories/active`);
+                const data = await res.json();
+                if (data.success && data.data) {
+                    setVisaCategories(data.data);
+                }
+            } catch (err) {
+                console.error("Failed to fetch visa categories:", err);
+            }
+        };
+        fetchCategories();
     }, []);
 
     // Close language dropdown on outside click
@@ -71,20 +89,33 @@ export default function Navbar() {
         setIsMobileOpen(false);
     }, [pathname]);
 
+    // Default icon map for categories
+    const defaultIcons = {
+        'tourist': '🌴', 'working': '💼', 'student': '🎓',
+        'business': '📊', 'medical': '🏥', 'transit': '✈️',
+        'family': '👨‍👩‍👧‍👦', 'immigration': '🏠', 'pilgrimage': '🕌',
+    };
+
+    const getCategoryIcon = (cat) => {
+        if (cat.icon) return cat.icon;
+        const slug = (cat.slug || cat.name || '').toLowerCase();
+        for (const [key, icon] of Object.entries(defaultIcons)) {
+            if (slug.includes(key)) return icon;
+        }
+        return '📋';
+    };
+
     const navLinks = [
         { name: t('home'), href: "/" },
         {
             name: t('visa'),
             href: "/visa",
             hasDropdown: true,
-            dropdownItems: [
-                { name: t('touristVisa'), href: "/visa?category=Tourist", icon: "🌴" },
-                { name: t('workingVisa'), href: "/visa?category=Working", icon: "💼" },
-                { name: t('studentVisa'), href: "/visa?category=Student", icon: "🎓" },
-                { name: t('businessVisa'), href: "/visa?category=Business", icon: "📊" },
-                { name: t('medicalVisa'), href: "/visa?category=Medical", icon: "🏥" },
-                { name: t('transitVisa'), href: "/visa?category=Transit", icon: "✈️" },
-            ],
+            dropdownItems: visaCategories.map(cat => ({
+                name: language === 'bn' && cat.nameBn ? cat.nameBn : cat.name,
+                href: `/visa?category=${encodeURIComponent(cat.name)}`,
+                icon: getCategoryIcon(cat),
+            })),
         },
         { name: t('tour'), href: "/tour" },
         { name: t('hajjUmrah'), href: "/hajj-umrah" },

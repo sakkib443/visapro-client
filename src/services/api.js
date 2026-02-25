@@ -121,6 +121,52 @@ export const uploadService = {
     },
 };
 
+// ==================== VISA CATEGORY SERVICE ====================
+export const visaCategoryService = {
+    getAll: (params = "") => {
+        const queryString = typeof params === 'object'
+            ? '?' + new URLSearchParams(params).toString()
+            : params;
+        return apiFetch(`/api/visa-categories${queryString}`);
+    },
+
+    getActive: () => apiFetch('/api/visa-categories/active'),
+
+    getById: (id) => apiFetch(`/api/visa-categories/${id}`),
+
+    getBySlug: (slug) => apiFetch(`/api/visa-categories/slug/${slug}`),
+
+    create: (data) => apiFetch('/api/visa-categories', { method: 'POST', body: JSON.stringify(data) }),
+
+    update: (id, data) => apiFetch(`/api/visa-categories/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+
+    delete: (id) => apiFetch(`/api/visa-categories/${id}`, { method: 'DELETE' }),
+};
+
+// ==================== COUNTRY SERVICE ====================
+export const countryService = {
+    getAll: (params = "") => {
+        const queryString = typeof params === 'object'
+            ? '?' + new URLSearchParams(params).toString()
+            : params;
+        return apiFetch(`/api/countries${queryString}`);
+    },
+
+    getActive: () => apiFetch('/api/countries/active'),
+
+    getFeatured: () => apiFetch('/api/countries/featured'),
+
+    getById: (id) => apiFetch(`/api/countries/${id}`),
+
+    getBySlug: (slug) => apiFetch(`/api/countries/slug/${slug}`),
+
+    create: (data) => apiFetch('/api/countries', { method: 'POST', body: JSON.stringify(data) }),
+
+    update: (id, data) => apiFetch(`/api/countries/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+
+    delete: (id) => apiFetch(`/api/countries/${id}`, { method: 'DELETE' }),
+};
+
 // ==================== ANALYTICS SERVICE ====================
 export const analyticsService = {
     getDashboard: () => apiFetch('/api/analytics/dashboard'),

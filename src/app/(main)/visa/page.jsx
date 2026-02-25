@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, Suspense } from "react";
+import { useState, useEffect, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -13,126 +13,14 @@ import {
     LuChevronDown,
     LuMapPin,
     LuCheck,
-    LuHeart,
-    LuEye
+    LuPlane,
+    LuArrowRight,
+    LuGlobe
 } from "react-icons/lu";
 import { useLanguage } from "@/context/LanguageContext";
 import Link from "next/link";
 
-// Mock Data for Visas
-const visaData = [
-    {
-        id: 1,
-        country: "Singapore", countryBn: "সিঙ্গাপুর",
-        type: "Tourist Visa", typeBn: "ট্যুরিস্ট ভিসা",
-        category: "Tourist Visa",
-        region: "Asian",
-        processingTime: "5-7 Days", processingTimeBn: "৫-৭ দিন",
-        price: 4500,
-        oldPrice: 5200,
-        image: "https://images.unsplash.com/photo-1496939376851-89342e90adcd?q=80&w=800&auto=format&fit=crop",
-        description: "Official entry permit for tourism and visiting friends or family in Singapore.",
-        descriptionBn: "সিঙ্গাপুরে পর্যটন এবং বন্ধু বা পরিবার পরিদর্শনের জন্য অফিসিয়াল এন্ট্রি পারমিট।",
-        featured: true,
-        discount: "15% Off", discountBn: "১৫% ছাড়",
-        nextSteps: ["Document Collection", "Online Application", "Visa Issuance"],
-        availability: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-    },
-    {
-        id: 2,
-        country: "Malaysia", countryBn: "মালয়েশিয়া",
-        type: "Tourist (e-Visa)", typeBn: "ট্যুরিস্ট (ই-ভিসা)",
-        category: "Tourist Visa",
-        region: "Asian",
-        processingTime: "3-5 Days", processingTimeBn: "৩-৫ দিন",
-        price: 3800,
-        oldPrice: 4200,
-        image: "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?q=80&w=800&auto=format&fit=crop",
-        description: "Electronic visa for tourism purposes, valid for a single entry stay of up to 30 days.",
-        descriptionBn: "পর্যটনের উদ্দেশ্যে ইলেকট্রনিক ভিসা, সর্বোচ্চ ৩০ দিনের একক এন্ট্রির জন্য বৈধ।",
-        featured: false,
-        discount: "10% Off", discountBn: "১০% ছাড়",
-        nextSteps: ["Data Entry", "Verification", "e-Visa Delivery"],
-        availability: ["Jan", "Feb", "Mar", "Apr", "May", "Sep", "Oct", "Nov", "Dec"]
-    },
-    {
-        id: 3,
-        country: "USA", countryBn: "যুক্তরাষ্ট্র",
-        type: "B1/B2 Visitor", typeBn: "B1/B2 ভিজিটর",
-        category: "Business Visa",
-        region: "North American",
-        processingTime: "Interview Based", processingTimeBn: "ইন্টারভিউ ভিত্তিক",
-        price: 18500,
-        oldPrice: 21000,
-        image: "https://images.unsplash.com/photo-1534430480872-3498386e7856?q=80&w=800&auto=format&fit=crop",
-        description: "Non-immigrant visa for persons wanting to enter the US for business or tourism.",
-        descriptionBn: "ব্যবসা বা পর্যটনের জন্য মার্কিন যুক্তরাষ্ট্রে প্রবেশের ননইমিগ্র্যান্ট ভিসা।",
-        featured: true,
-        discount: "20% Off", discountBn: "২০% ছাড়",
-        nextSteps: ["DS-160 Form", "Fee Payment", "Interview"],
-        availability: ["Mar", "Apr", "May", "Jun", "Jul", "Aug"]
-    },
-    {
-        id: 4,
-        country: "UK", countryBn: "যুক্তরাজ্য",
-        type: "Standard Visitor", typeBn: "স্ট্যান্ডার্ড ভিজিটর",
-        category: "Tourist Visa",
-        region: "European",
-        processingTime: "15-20 Days", processingTimeBn: "১৫-২০ দিন",
-        price: 14200,
-        oldPrice: 16000,
-        image: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?q=80&w=800&auto=format&fit=crop",
-        description: "Standard visa for travel, business meetings, or visiting family in the United Kingdom.",
-        descriptionBn: "যুক্তরাজ্যে ভ্রমণ, ব্যবসায়িক মিটিং বা পরিবার পরিদর্শনের জন্য স্ট্যান্ডার্ড ভিসা।",
-        featured: true,
-        discount: "12% Off", discountBn: "১২% ছাড়",
-        nextSteps: ["Appt. Booking", "Biometrics", "Decision"],
-        availability: ["Jan", "Feb", "Mar", "Oct", "Nov", "Dec"]
-    },
-    {
-        id: 5,
-        country: "Italy", countryBn: "ইতালি",
-        type: "Schengen Visa", typeBn: "শেনজেন ভিসা",
-        category: "Tourist Visa",
-        region: "European",
-        processingTime: "15-20 Days", processingTimeBn: "১৫-২০ দিন",
-        price: 12500,
-        oldPrice: 14500,
-        image: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?q=80&w=800&auto=format&fit=crop",
-        description: "Access 27 European countries with a single Schengen visa issued by Italy.",
-        descriptionBn: "ইতালি কর্তৃক প্রদত্ত একটি শেনজেন ভিসায় ২৭টি ইউরোপীয় দেশে প্রবেশের সুযোগ।",
-        featured: false,
-        discount: "Free Insurance", discountBn: "বিনামূল্যে বীমা",
-        nextSteps: ["Documents", "Appt. at VFS", "Processing"],
-        availability: ["May", "Jun", "Jul", "Aug", "Sep"]
-    },
-    {
-        id: 6,
-        country: "Australia", countryBn: "অস্ট্রেলিয়া",
-        type: "Subclass 600", typeBn: "সাবক্লাস ৬০০",
-        category: "Tourist Visa",
-        region: "Oceania",
-        processingTime: "25-30 Days", processingTimeBn: "২৫-৩০ দিন",
-        price: 16800,
-        oldPrice: 18500,
-        image: "https://images.unsplash.com/photo-1523482580672-f109ba8cb9be?q=80&w=800&auto=format&fit=crop",
-        description: "The Visitor visa allows you to visit Australia for a holiday or to visit friends and family.",
-        descriptionBn: "ভিজিটর ভিসা আপনাকে ছুটি কাটাতে বা বন্ধু ও পরিবার পরিদর্শনে অস্ট্রেলিয়া ভ্রমণের সুযোগ দেয়।",
-        featured: false,
-        discount: "Hot Deal", discountBn: "হট ডিল",
-        nextSteps: ["Online File", "Biometrics", "Grant"],
-        availability: ["Sep", "Oct", "Nov", "Dec"]
-    },
-];
-
-const visaCategories = [
-    { en: "Tourist Visa", bn: "ট্যুরিস্ট ভিসা", key: "Tourist Visa" },
-    { en: "Working Visa", bn: "ওয়ার্কিং ভিসা", key: "Working Visa" },
-    { en: "Student Visa", bn: "স্টুডেন্ট ভিসা", key: "Student Visa" },
-    { en: "Business Visa", bn: "বিজনেস ভিসা", key: "Business Visa" },
-    { en: "Medical Visa", bn: "মেডিকেল ভিসা", key: "Medical Visa" },
-    { en: "Transit Visa", bn: "ট্রানজিট ভিসা", key: "Transit Visa" },
-];
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 const continents = [
     { en: "Asian", bn: "এশিয়ান", key: "Asian" },
@@ -140,42 +28,81 @@ const continents = [
     { en: "North American", bn: "উত্তর আমেরিকান", key: "North American" },
     { en: "Middle East", bn: "মধ্যপ্রাচ্য", key: "Middle East" },
     { en: "Oceania", bn: "ওশেনিয়া", key: "Oceania" },
-];
-
-const durations = [
-    { en: "Short Stay", bn: "স্বল্প সময়", key: "Short Stay" },
-    { en: "Long Stay", bn: "দীর্ঘ সময়", key: "Long Stay" },
-    { en: "Permanent", bn: "স্থায়ী", key: "Permanent" },
+    { en: "African", bn: "আফ্রিকান", key: "African" },
 ];
 
 function VisaContent() {
     const searchParams = useSearchParams();
-    const initialCategory = searchParams.get("category") || "All";
+    const initialRegion = searchParams.get("region") || "";
     const { language } = useLanguage();
     const isBn = language === 'bn';
     const fontFamily = isBn ? 'Hind Siliguri, sans-serif' : 'Poppins, sans-serif';
     const headingFont = isBn ? 'Hind Siliguri, sans-serif' : 'Teko, sans-serif';
 
+    const [countries, setCountries] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState(initialCategory === "All" ? [] : [initialCategory]);
-    const [selectedRegions, setSelectedRegions] = useState([]);
-    const [priceRange, setPriceRange] = useState(25000);
+    const [selectedRegions, setSelectedRegions] = useState(initialRegion ? [initialRegion] : []);
+    const [selectedSubmissionTypes, setSelectedSubmissionTypes] = useState([]);
+    const [priceRange, setPriceRange] = useState(50000);
     const [viewMode, setViewMode] = useState("grid");
     const [sortBy, setSortBy] = useState("Recently Added");
     const [showFilters, setShowFilters] = useState(false);
 
-    const filteredVisas = useMemo(() => {
-        return visaData.filter(visa => {
-            const matchesSearch = visa.country.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                visa.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                (visa.countryBn && visa.countryBn.includes(searchQuery)) ||
-                (visa.typeBn && visa.typeBn.includes(searchQuery));
-            const matchesCategory = selectedCategory.length === 0 || selectedCategory.includes(visa.category);
-            const matchesRegion = selectedRegions.length === 0 || selectedRegions.includes(visa.region);
-            const matchesPrice = visa.price <= priceRange;
-            return matchesSearch && matchesCategory && matchesRegion && matchesPrice;
+    // Dynamic visa categories from database
+    const [visaCategories, setVisaCategories] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                const [countriesRes, categoriesRes] = await Promise.all([
+                    fetch(`${API_BASE}/api/countries/active`),
+                    fetch(`${API_BASE}/api/visa-categories/active`).catch(() => null)
+                ]);
+                const countriesData = await countriesRes.json();
+                if (countriesData.success && countriesData.data) {
+                    setCountries(countriesData.data);
+                }
+                if (categoriesRes) {
+                    const categoriesData = await categoriesRes.json();
+                    if (categoriesData.success && categoriesData.data) {
+                        setVisaCategories(categoriesData.data);
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to fetch data:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
+
+    const filteredCountries = useMemo(() => {
+        let result = countries.filter(country => {
+            const matchesSearch = country.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                country.nameBn?.includes(searchQuery) ||
+                country.region?.toLowerCase().includes(searchQuery.toLowerCase());
+            const matchesRegion = selectedRegions.length === 0 || selectedRegions.includes(country.region);
+            const matchesSubmission = selectedSubmissionTypes.length === 0 || selectedSubmissionTypes.includes(country.submissionType);
+            const matchesPrice = (country.startingPrice || country.visaTypes?.[0]?.fee || 0) <= priceRange;
+            return matchesSearch && matchesRegion && matchesSubmission && matchesPrice;
         });
-    }, [searchQuery, selectedCategory, selectedRegions, priceRange]);
+
+        // Sort
+        if (sortBy === "Price (Low to High)" || sortBy === "মূল্য (কম থেকে বেশি)") {
+            result.sort((a, b) => (a.startingPrice || 0) - (b.startingPrice || 0));
+        } else if (sortBy === "Price (High to Low)" || sortBy === "মূল্য (বেশি থেকে কম)") {
+            result.sort((a, b) => (b.startingPrice || 0) - (a.startingPrice || 0));
+        } else if (sortBy === "Most Popular" || sortBy === "সবচেয়ে জনপ্রিয়") {
+            result.sort((a, b) => (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0));
+        } else {
+            result.sort((a, b) => a.name?.localeCompare(b.name));
+        }
+
+        return result;
+    }, [countries, searchQuery, selectedRegions, selectedSubmissionTypes, priceRange, sortBy]);
 
     const toggleFilter = (item, state, setState) => {
         if (state.includes(item)) {
@@ -184,6 +111,12 @@ function VisaContent() {
             setState([...state, item]);
         }
     };
+
+    const submissionTypes = [
+        { en: "E-Visa", bn: "ই-ভিসা", key: "e-visa" },
+        { en: "In-Person", bn: "সশরীর", key: "in-person" },
+        { en: "Flexible", bn: "ফ্লেক্সিবল", key: "flexible" },
+    ];
 
     return (
         <div className="bg-[#F9FAFB] min-h-screen">
@@ -212,7 +145,7 @@ function VisaContent() {
                             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center justify-between" style={{ fontFamily }}>
                                 {isBn ? 'ফিল্টার করুন' : 'Filter By'}
                                 <button
-                                    onClick={() => { setSelectedCategory([]); setSelectedRegions([]); setPriceRange(25000); }}
+                                    onClick={() => { setSelectedRegions([]); setSelectedSubmissionTypes([]); setPriceRange(50000); }}
                                     className="text-xs font-semibold text-[#1D7EDD] hover:underline"
                                     style={{ fontFamily }}
                                 >
@@ -223,45 +156,11 @@ function VisaContent() {
                             {/* Section Divider */}
                             <div className="h-px bg-gray-100 mb-6" />
 
-                            {/* Visa Type Filter */}
+                            {/* Region/Continent Filter */}
                             <div className="mb-6">
                                 <h3 className="text-base font-bold text-gray-800 mb-4 flex items-center justify-between cursor-pointer group" style={{ fontFamily }}>
-                                    {isBn ? 'ভিসা ক্যাটেগরি' : 'Visa Category'}
-                                    <LuChevronDown className="text-gray-400 group-hover:text-gray-600 transition-all w-4 h-4" />
-                                </h3>
-                                <div className="space-y-3">
-                                    {visaCategories.map(cat => (
-                                        <label key={cat.key} className="flex items-center group cursor-pointer">
-                                            <div className="relative flex items-center">
-                                                <input
-                                                    type="checkbox"
-                                                    className="peer h-4 w-4 cursor-pointer appearance-none rounded border border-gray-300 transition-all checked:bg-[#1D7EDD] checked:border-[#1D7EDD]"
-                                                    checked={selectedCategory.includes(cat.key)}
-                                                    onChange={() => toggleFilter(cat.key, selectedCategory, setSelectedCategory)}
-                                                />
-                                                <LuCheck className="absolute left-0.5 opacity-0 text-white peer-checked:opacity-100 transition-opacity pointer-events-none" size={12} />
-                                            </div>
-                                            <span className="ml-3 text-[13px] font-normal text-gray-600 group-hover:text-gray-900 transition-colors" style={{ fontFamily }}>
-                                                {isBn ? cat.bn : cat.en}
-                                            </span>
-                                            <span className="ml-auto text-[11px] font-normal text-gray-400">
-                                                {visaData.filter(v => v.category === cat.key).length}
-                                            </span>
-                                        </label>
-                                    ))}
-                                    <button className="text-[11px] font-semibold text-[#1D7EDD] hover:underline mt-2" style={{ fontFamily }}>
-                                        {isBn ? 'আরো দেখুন' : 'Show More'}
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div className="h-px bg-gray-100 mb-6" />
-
-                            {/* Region Filter */}
-                            <div className="mb-6">
-                                <h3 className="text-base font-bold text-gray-800 mb-4 flex items-center justify-between" style={{ fontFamily }}>
                                     {isBn ? 'গন্তব্য' : 'Destination'}
-                                    <LuChevronDown className="text-gray-400 w-4 h-4" />
+                                    <LuChevronDown className="text-gray-400 group-hover:text-gray-600 transition-all w-4 h-4" />
                                 </h3>
                                 <div className="space-y-3">
                                     {continents.map(region => (
@@ -279,7 +178,38 @@ function VisaContent() {
                                                 {isBn ? region.bn : region.en}
                                             </span>
                                             <span className="ml-auto text-[11px] font-normal text-gray-400">
-                                                {visaData.filter(v => v.region === region.key).length}
+                                                {countries.filter(c => c.region === region.key).length}
+                                            </span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="h-px bg-gray-100 mb-6" />
+
+                            {/* Submission Type Filter */}
+                            <div className="mb-6">
+                                <h3 className="text-base font-bold text-gray-800 mb-4 flex items-center justify-between" style={{ fontFamily }}>
+                                    {isBn ? 'ভিসার ধরন' : 'Visa Type'}
+                                    <LuChevronDown className="text-gray-400 w-4 h-4" />
+                                </h3>
+                                <div className="space-y-3">
+                                    {submissionTypes.map(type => (
+                                        <label key={type.key} className="flex items-center group cursor-pointer">
+                                            <div className="relative flex items-center">
+                                                <input
+                                                    type="checkbox"
+                                                    className="peer h-4 w-4 cursor-pointer appearance-none rounded border border-gray-300 transition-all checked:bg-[#1D7EDD] checked:border-[#1D7EDD]"
+                                                    checked={selectedSubmissionTypes.includes(type.key)}
+                                                    onChange={() => toggleFilter(type.key, selectedSubmissionTypes, setSelectedSubmissionTypes)}
+                                                />
+                                                <LuCheck className="absolute left-0.5 opacity-0 text-white peer-checked:opacity-100 transition-opacity pointer-events-none" size={12} />
+                                            </div>
+                                            <span className="ml-3 text-[13px] font-normal text-gray-600 group-hover:text-gray-900 transition-colors" style={{ fontFamily }}>
+                                                {isBn ? type.bn : type.en}
+                                            </span>
+                                            <span className="ml-auto text-[11px] font-normal text-gray-400">
+                                                {countries.filter(c => c.submissionType === type.key).length}
                                             </span>
                                         </label>
                                     ))}
@@ -297,8 +227,8 @@ function VisaContent() {
                                 <div className="relative w-full h-1.5 bg-gray-100 rounded-lg mb-6 mt-4">
                                     <input
                                         type="range"
-                                        min="2000"
-                                        max="25000"
+                                        min="1000"
+                                        max="50000"
                                         step="500"
                                         value={priceRange}
                                         onChange={(e) => setPriceRange(parseInt(e.target.value))}
@@ -306,31 +236,12 @@ function VisaContent() {
                                     />
                                     <div
                                         className="absolute h-full bg-[#1D7EDD] rounded-lg"
-                                        style={{ width: `${((priceRange - 2000) / 23000) * 100}%` }}
+                                        style={{ width: `${((priceRange - 1000) / 49000) * 100}%` }}
                                     />
                                 </div>
                                 <div className="flex justify-between text-[11px] font-bold text-gray-700">
-                                    <span>৳2,000</span>
+                                    <span>৳1,000</span>
                                     <span>৳{priceRange.toLocaleString()}</span>
-                                </div>
-                            </div>
-
-                            {/* Duration Widget */}
-                            <div>
-                                <h3 className="text-sm font-bold text-gray-800 mb-4 flex items-center justify-between" style={{ fontFamily }}>
-                                    {isBn ? 'সময়কাল' : 'Duration'}
-                                    <LuChevronDown className="text-gray-400" />
-                                </h3>
-                                <div className="space-y-3">
-                                    {durations.map(d => (
-                                        <label key={d.key} className="flex items-center group cursor-pointer">
-                                            <div className="relative flex items-center">
-                                                <input type="checkbox" className="peer h-5 w-5 cursor-pointer appearance-none rounded border border-gray-200 transition-all checked:bg-[#1D7EDD]" />
-                                                <LuCheck className="absolute left-1 opacity-0 text-white peer-checked:opacity-100 transition-opacity" size={12} />
-                                            </div>
-                                            <span className="ml-3 text-sm font-semibold text-gray-600 group-hover:text-gray-900" style={{ fontFamily }}>{isBn ? d.bn : d.en}</span>
-                                        </label>
-                                    ))}
                                 </div>
                             </div>
                         </div>
@@ -344,7 +255,7 @@ function VisaContent() {
                                 <LuSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#1D7EDD]" />
                                 <input
                                     type="text"
-                                    placeholder={isBn ? "দেশ বা ভিসার ধরন অনুসন্ধান করুন..." : "Search country or visa type..."}
+                                    placeholder={isBn ? "দেশের নাম অনুসন্ধান করুন..." : "Search country name..."}
                                     className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-md focus:ring-2 focus:ring-[#1D7EDD]/10 focus:border-[#1D7EDD] outline-none transition-all text-sm font-semibold text-gray-700"
                                     style={{ fontFamily }}
                                     value={searchQuery}
@@ -385,99 +296,151 @@ function VisaContent() {
                             </div>
                         </div>
 
-                        {/* Visa Cards Grid */}
-                        <AnimatePresence mode="popLayout">
-                            {filteredVisas.length > 0 ? (
-                                <div className={viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-8" : "space-y-6"}>
-                                    {filteredVisas.map((visa, idx) => (
-                                        <motion.div
-                                            layout
-                                            key={visa.id}
-                                            initial={{ opacity: 0, scale: 0.95 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            exit={{ opacity: 0, scale: 0.9 }}
-                                            transition={{ duration: 0.3, delay: idx * 0.05 }}
-                                            className={`group bg-white rounded-md overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-all duration-500 flex flex-col ${viewMode === "list" ? "md:flex-row h-auto md:h-64" : ""
-                                                }`}
-                                        >
-                                            {/* Image Wrapper */}
-                                            <div className={`relative overflow-hidden ${viewMode === "grid" ? "h-48" : "w-full md:w-1/3 h-48 md:h-full"}`}>
-                                                <img
-                                                    src={visa.image}
-                                                    alt={isBn ? visa.countryBn : visa.country}
-                                                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-                                                />
-                                                {visa.featured && (
-                                                    <div className="absolute top-3 left-3 bg-[#EF8C2C] text-white text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded shadow-sm" style={{ fontFamily }}>
-                                                        {isBn ? 'ফিচার্ড' : 'Featured'}
-                                                    </div>
-                                                )}
-                                                <button className="absolute top-3 right-3 w-8 h-8 rounded-md bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-red-500 hover:border-red-500 transition-all">
-                                                    <LuHeart size={16} />
-                                                </button>
-                                            </div>
+                        {/* Country Cards */}
+                        {loading ? (
+                            <div className="flex items-center justify-center py-20">
+                                <div className="w-12 h-12 border-4 border-[#1D7EDD] border-t-transparent rounded-full animate-spin" />
+                            </div>
+                        ) : (
+                            <AnimatePresence mode="popLayout">
+                                {filteredCountries.length > 0 ? (
+                                    <div className={viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-8" : "space-y-6"}>
+                                        {filteredCountries.map((country, idx) => (
+                                            <motion.div
+                                                layout
+                                                key={country._id}
+                                                initial={{ opacity: 0, scale: 0.95 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                exit={{ opacity: 0, scale: 0.9 }}
+                                                transition={{ duration: 0.3, delay: idx * 0.05 }}
+                                                className={`group bg-white rounded-md overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-all duration-500 flex flex-col ${viewMode === "list" ? "md:flex-row h-auto md:h-64" : ""
+                                                    }`}
+                                            >
+                                                <Link href={`/visa/country/${country.slug}`} className={`block ${viewMode === "list" ? "md:flex md:w-full" : ""}`}>
+                                                    {/* Image Wrapper */}
+                                                    <div className={`relative overflow-hidden ${viewMode === "grid" ? "h-48" : "w-full md:w-1/3 h-48 md:h-full"}`}>
+                                                        {country.image ? (
+                                                            <img
+                                                                src={country.image}
+                                                                alt={isBn && country.nameBn ? country.nameBn : country.name}
+                                                                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                                                            />
+                                                        ) : (
+                                                            <div className="w-full h-full bg-gradient-to-br from-[#1a2e5a] to-[#2d4a7a] flex items-center justify-center">
+                                                                <span className="text-6xl">{country.flag || '🌍'}</span>
+                                                            </div>
+                                                        )}
+                                                        {/* Gradient overlay */}
+                                                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
 
-                                            {/* Content Wrapper */}
-                                            <div className={`p-5 flex flex-col justify-between ${viewMode === "list" ? "md:w-2/3" : ""}`}>
-                                                <div>
-                                                    <div className="flex items-center gap-2 mb-1.5">
-                                                        <LuMapPin className="text-[#EF8C2C]" size={12} />
-                                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none" style={{ fontFamily }}>{isBn ? visa.countryBn : visa.country}</span>
-                                                    </div>
+                                                        {country.isFeatured && (
+                                                            <div className="absolute top-3 left-3 bg-[#EF8C2C] text-white text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded shadow-sm" style={{ fontFamily }}>
+                                                                {isBn ? 'ফিচার্ড' : 'Featured'}
+                                                            </div>
+                                                        )}
 
-                                                    <div className="flex items-start justify-between mb-2">
-                                                        <h3 className="text-[18px]! font-bold text-gray-900 group-hover:text-[#1D7EDD] transition-colors leading-tight" style={{ fontFamily }}>
-                                                            {isBn ? visa.typeBn : visa.type}
-                                                        </h3>
-                                                        <span className="text-[#EF8C2C] text-[10px] font-black uppercase" style={{ fontFamily }}>
-                                                            {isBn ? visa.discountBn : visa.discount}
-                                                        </span>
-                                                    </div>
-
-                                                    <p className="text-gray-500 text-[12px] font-normal leading-relaxed mb-4 line-clamp-2" style={{ fontFamily }}>
-                                                        {isBn ? visa.descriptionBn : visa.description}
-                                                    </p>
-
-                                                    <div className="flex items-center gap-4 mb-4">
-                                                        <div className="flex flex-col">
-                                                            <span className="text-[9px] font-bold text-gray-300 uppercase tracking-wider leading-none mb-1.5" style={{ fontFamily }}>{isBn ? 'সময়কাল' : 'Duration'}</span>
-                                                            <span className="text-[12px] font-bold text-gray-700" style={{ fontFamily }}>{isBn ? visa.processingTimeBn : visa.processingTime}</span>
+                                                        {/* Country flag + region on image */}
+                                                        <div className="absolute bottom-3 left-3 flex items-center gap-2">
+                                                            <span className="text-2xl">{country.flag || '🌍'}</span>
+                                                            {country.region && (
+                                                                <span className="text-[9px] font-bold text-white/80 uppercase tracking-wider bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded" style={{ fontFamily }}>
+                                                                    {isBn && country.regionBn ? country.regionBn : country.region}
+                                                                </span>
+                                                            )}
                                                         </div>
-                                                        <div className="h-6 w-px bg-gray-100" />
-                                                        <div className="flex flex-col">
-                                                            <span className="text-[9px] font-bold text-gray-300 uppercase tracking-wider leading-none mb-1.5" style={{ fontFamily }}>{isBn ? 'শুরু হচ্ছে' : 'Starting From'}</span>
-                                                            <div className="flex items-baseline gap-1.5 leading-none">
-                                                                <span className="text-base font-bold text-[#1D7EDD]">৳{visa.price.toLocaleString()}</span>
-                                                                <span className="text-[10px] font-normal text-gray-300 line-through">৳{visa.oldPrice.toLocaleString()}</span>
+                                                    </div>
+
+                                                    {/* Content Wrapper */}
+                                                    <div className={`p-5 flex flex-col justify-between ${viewMode === "list" ? "md:w-2/3" : ""}`}>
+                                                        <div>
+                                                            <div className="flex items-center gap-2 mb-1.5">
+                                                                <LuMapPin className="text-[#EF8C2C]" size={12} />
+                                                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none" style={{ fontFamily }}>
+                                                                    {isBn && country.regionBn ? country.regionBn : (country.region || 'Worldwide')}
+                                                                </span>
+                                                            </div>
+
+                                                            <div className="flex items-start justify-between mb-2">
+                                                                <h3 className="text-[18px]! font-bold text-gray-900 group-hover:text-[#1D7EDD] transition-colors leading-tight" style={{ fontFamily }}>
+                                                                    {isBn && country.nameBn ? country.nameBn : country.name}
+                                                                </h3>
+                                                                {country.submissionType && (
+                                                                    <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${country.submissionType === 'e-visa'
+                                                                        ? 'bg-green-50 text-green-600'
+                                                                        : country.submissionType === 'in-person'
+                                                                            ? 'bg-blue-50 text-blue-600'
+                                                                            : 'bg-orange-50 text-orange-600'
+                                                                        }`} style={{ fontFamily }}>
+                                                                        {country.submissionType === 'e-visa' ? 'E-Visa' : country.submissionType === 'in-person' ? 'In-Person' : 'Flexible'}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+
+                                                            {/* Visa Types Tags */}
+                                                            {country.visaTypes?.length > 0 && (
+                                                                <div className="flex flex-wrap gap-1.5 mb-4">
+                                                                    {country.visaTypes.slice(0, 3).map((vt, i) => (
+                                                                        <span key={i} className="text-[10px] font-medium text-gray-500 bg-gray-50 border border-gray-100 px-2 py-0.5 rounded" style={{ fontFamily }}>
+                                                                            {isBn && vt.nameBn ? vt.nameBn : vt.name}
+                                                                        </span>
+                                                                    ))}
+                                                                    {country.visaTypes.length > 3 && (
+                                                                        <span className="text-[10px] font-semibold text-[#1D7EDD] bg-[#1D7EDD]/5 px-2 py-0.5 rounded">
+                                                                            +{country.visaTypes.length - 3} more
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            )}
+
+                                                            <div className="flex items-center gap-4 mb-4">
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-[9px] font-bold text-gray-300 uppercase tracking-wider leading-none mb-1.5" style={{ fontFamily }}>
+                                                                        {isBn ? 'ভিসার ধরন' : 'Visa Types'}
+                                                                    </span>
+                                                                    <span className="text-[12px] font-bold text-gray-700" style={{ fontFamily }}>
+                                                                        {country.visaTypes?.length || 0} {isBn ? 'টি উপলব্ধ' : 'Available'}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="h-6 w-px bg-gray-100" />
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-[9px] font-bold text-gray-300 uppercase tracking-wider leading-none mb-1.5" style={{ fontFamily }}>
+                                                                        {isBn ? 'শুরু হচ্ছে' : 'Starting From'}
+                                                                    </span>
+                                                                    <div className="flex items-baseline gap-1.5 leading-none">
+                                                                        <span className="text-base font-bold text-[#1D7EDD]">
+                                                                            ৳{(country.startingPrice || country.visaTypes?.[0]?.fee || 0).toLocaleString()}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                </div>
 
-                                                <div className="flex items-center gap-2">
-                                                    <Link href={`/visa/${visa.id}`} className="flex-grow py-2.5 bg-[#1D7EDD] hover:bg-[#1868b8] text-white rounded-md font-bold text-[11px] uppercase tracking-wider transition-all text-center" style={{ fontFamily }}>
-                                                        {isBn ? 'বিস্তারিত দেখুন' : 'View Details'}
-                                                    </Link>
-                                                    <button className="w-10 h-10 bg-gray-50 hover:bg-gray-100 rounded-md flex items-center justify-center text-gray-400 transition-all border border-gray-100">
-                                                        <LuEye size={18} />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </motion.div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="h-96 flex flex-col items-center justify-center text-center">
-                                    <LuTriangleAlert size={64} className="text-gray-200 mb-6" />
-                                    <h3 className="text-2xl font-black text-gray-400 uppercase tracking-tight" style={{ fontFamily: headingFont }}>
-                                        {isBn ? 'কোনো ফলাফল পাওয়া যায়নি' : 'No Results Found'}
-                                    </h3>
-                                    <p className="text-gray-400 text-sm font-medium mt-2 max-w-xs" style={{ fontFamily }}>
-                                        {isBn ? 'আরো অপশন খুঁজে পেতে আপনার ফিল্টার বা সার্চ কীওয়ার্ড পরিবর্তন করুন।' : 'Try changing your filters or search keywords to find more options.'}
-                                    </p>
-                                </div>
-                            )}
-                        </AnimatePresence>
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="flex-grow py-2.5 bg-[#1D7EDD] hover:bg-[#1868b8] text-white rounded-md font-bold text-[11px] uppercase tracking-wider transition-all text-center" style={{ fontFamily }}>
+                                                                {isBn ? 'বিস্তারিত দেখুন' : 'View Details'}
+                                                            </span>
+                                                            <span className="w-10 h-10 bg-gray-50 hover:bg-gray-100 rounded-md flex items-center justify-center text-gray-400 transition-all border border-gray-100">
+                                                                <LuArrowRight size={18} />
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </Link>
+                                            </motion.div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="h-96 flex flex-col items-center justify-center text-center">
+                                        <LuTriangleAlert size={64} className="text-gray-200 mb-6" />
+                                        <h3 className="text-2xl font-black text-gray-400 uppercase tracking-tight" style={{ fontFamily: headingFont }}>
+                                            {isBn ? 'কোনো ফলাফল পাওয়া যায়নি' : 'No Results Found'}
+                                        </h3>
+                                        <p className="text-gray-400 text-sm font-medium mt-2 max-w-xs" style={{ fontFamily }}>
+                                            {isBn ? 'আরো অপশন খুঁজে পেতে আপনার ফিল্টার বা সার্চ কীওয়ার্ড পরিবর্তন করুন।' : 'Try changing your filters or search keywords to find more options.'}
+                                        </p>
+                                    </div>
+                                )}
+                            </AnimatePresence>
+                        )}
                     </main>
                 </div>
             </div>

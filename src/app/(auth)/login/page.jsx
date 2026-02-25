@@ -38,10 +38,8 @@ export default function LoginPage() {
                 toast.success("Login successful!");
 
                 const role = response.data.user.role;
-                if (role === "admin" || role === "superadmin") {
+                if (role === "admin") {
                     router.push("/dashboard/admin");
-                } else if (role === "seller" || role === "mentor") {
-                    router.push("/dashboard/seller");
                 } else {
                     router.push("/dashboard/user");
                 }

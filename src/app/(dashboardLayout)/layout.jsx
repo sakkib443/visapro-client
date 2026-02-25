@@ -63,6 +63,14 @@ const menuItems = [
         ],
     },
     {
+        name: "Countries",
+        icon: FiGlobe,
+        children: [
+            { name: "All Countries", href: "/dashboard/admin/countries", icon: FiGlobe },
+            { name: "Add Country", href: "/dashboard/admin/countries/create", icon: FiPlus },
+        ],
+    },
+    {
         section: "TRAVEL & TOURS",
     },
     {
