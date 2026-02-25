@@ -15,14 +15,6 @@ import { selectToken } from "@/redux/features/authSlice";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-const mockPackages = [
-    { _id: "1", name: "Umrah Standard Package - March", type: "umrah", duration: "10 Days", price: 185000, groupSize: 40, departureDate: "2025-03-20", status: "active", bookings: 32, hotel: "3 Star Makkah + 3 Star Madinah", includes: "Visa, Hotel, Food, Transport, Guide" },
-    { _id: "2", name: "Umrah Premium Package - April", type: "umrah", duration: "12 Days", price: 265000, groupSize: 25, departureDate: "2025-04-15", status: "upcoming", bookings: 12, hotel: "5 Star Makkah + 4 Star Madinah", includes: "Visa, Hotel, Full Board, VIP Transport, Guide" },
-    { _id: "3", name: "Hajj 2025 Economy Package", type: "hajj", duration: "21 Days", price: 650000, groupSize: 50, departureDate: "2025-06-01", status: "upcoming", bookings: 28, hotel: "Economy Makkah + Economy Madinah + Mina Tent", includes: "Visa, Hotel, Meals, Transport, Sacrifice, Guide" },
-    { _id: "4", name: "Hajj 2025 Premium Package", type: "hajj", duration: "25 Days", price: 950000, groupSize: 30, departureDate: "2025-05-28", status: "upcoming", bookings: 8, hotel: "5 Star Makkah + 5 Star Madinah + VIP Mina", includes: "Visa, 5 Star Hotel, Full Board, AC VIP Transport, Sacrifice, Private Guide" },
-    { _id: "5", name: "Umrah Ramadan Special", type: "umrah", duration: "15 Days", price: 225000, groupSize: 35, departureDate: "2025-03-10", status: "active", bookings: 30, hotel: "4 Star Makkah + 3 Star Madinah", includes: "Visa, Hotel, Iftar+Suhoor, Transport, Guide" },
-];
-
 export default function HajjUmrahPage() {
     const [packages, setPackages] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -38,8 +30,10 @@ export default function HajjUmrahPage() {
                 headers: token ? { Authorization: `Bearer ${token}` } : {},
             });
             const data = await res.json();
-            setPackages(data.success && data.data ? (Array.isArray(data.data) ? data.data : data.data.data || mockPackages) : mockPackages);
-        } catch { setPackages(mockPackages); }
+            if (data.success && data.data) {
+                setPackages(Array.isArray(data.data) ? data.data : data.data.data || []);
+            }
+        } catch { setPackages([]); }
         finally { setLoading(false); }
     };
 
@@ -47,19 +41,24 @@ export default function HajjUmrahPage() {
 
     const handleDelete = async (id) => {
         if (!confirm("Delete this package?")) return;
-        try { await fetch(`${API_BASE}/api/hajj-umrah/${id}`, { method: "DELETE", headers: token ? { Authorization: `Bearer ${token}` } : {} }); } catch { }
+        try {
+            await fetch(`${API_BASE}/api/hajj-umrah/${id}`, {
+                method: "DELETE",
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
+            });
+            toast.success("Package deleted");
+        } catch { toast.error("Failed to delete"); }
         setPackages(prev => prev.filter(p => p._id !== id));
-        toast.success("Package deleted");
     };
 
     const filtered = packages.filter(p => {
-        const matchSearch = p.name?.toLowerCase().includes(search.toLowerCase());
+        const matchSearch = p.name?.toLowerCase().includes(search.toLowerCase()) ||
+            p.nameBn?.includes(search);
         const matchFilter = filter === "all" || p.type === filter || p.status === filter;
         return matchSearch && matchFilter;
     });
 
-    const totalBookings = packages.reduce((s, p) => s + p.bookings, 0);
-    const totalRevenue = packages.reduce((s, p) => s + (p.price * p.bookings), 0);
+    const totalBookings = packages.reduce((s, p) => s + (p.bookings || 0), 0);
 
     return (
         <div className="p-4 lg:p-6 space-y-5">
@@ -75,6 +74,7 @@ export default function HajjUmrahPage() {
                                     <div className="text-white">
                                         <p className="text-[10px] uppercase tracking-wider opacity-60 font-bold">{viewingPkg.type === 'hajj' ? '🕋 Hajj' : '🕌 Umrah'} Package</p>
                                         <h3 className="text-lg font-bold mt-0.5">{viewingPkg.name}</h3>
+                                        {viewingPkg.nameBn && <p className="text-sm opacity-60">{viewingPkg.nameBn}</p>}
                                     </div>
                                     <button onClick={() => setViewingPkg(null)} className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white"><FiX size={16} /></button>
                                 </div>
@@ -84,9 +84,9 @@ export default function HajjUmrahPage() {
                                     {[
                                         { label: "Duration", value: viewingPkg.duration },
                                         { label: "Price", value: `৳${viewingPkg.price?.toLocaleString()}` },
-                                        { label: "Hotel", value: viewingPkg.hotel },
-                                        { label: "Bookings", value: `${viewingPkg.bookings} / ${viewingPkg.groupSize}` },
-                                        { label: "Departure", value: viewingPkg.departureDate },
+                                        { label: "Hotel", value: viewingPkg.hotel || "N/A" },
+                                        { label: "Bookings", value: `${viewingPkg.bookings || 0} / ${viewingPkg.groupSize || 30}` },
+                                        { label: "Departure", value: viewingPkg.departureDate || "TBD" },
                                         { label: "Status", value: viewingPkg.status },
                                     ].map((item) => (
                                         <div key={item.label} className="bg-[#F8FAFC] dark:bg-gray-700/30 rounded-lg p-3">
@@ -95,10 +95,14 @@ export default function HajjUmrahPage() {
                                         </div>
                                     ))}
                                 </div>
-                                {viewingPkg.includes && (
+                                {viewingPkg.features?.length > 0 && (
                                     <div className="bg-emerald-50/50 rounded-lg p-4">
-                                        <p className="text-[10px] font-bold uppercase text-emerald-600 mb-1">Includes</p>
-                                        <p className="text-[12px] text-gray-600">{viewingPkg.includes}</p>
+                                        <p className="text-[10px] font-bold uppercase text-emerald-600 mb-2">Includes</p>
+                                        <div className="space-y-1">
+                                            {viewingPkg.features.map((f, i) => (
+                                                <p key={i} className="text-[12px] text-gray-600">✓ {f}</p>
+                                            ))}
+                                        </div>
                                     </div>
                                 )}
                             </div>
@@ -161,6 +165,11 @@ export default function HajjUmrahPage() {
             {/* Cards */}
             {loading ? (
                 <div className="flex justify-center py-20"><FiLoader className="animate-spin" size={24} style={{ color: '#021E14' }} /></div>
+            ) : filtered.length === 0 ? (
+                <div className="text-center py-20">
+                    <FaKaaba size={40} className="mx-auto mb-4 text-gray-200" />
+                    <p className="text-gray-400 text-sm">No packages found</p>
+                </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {filtered.map((pkg, i) => (
@@ -173,6 +182,7 @@ export default function HajjUmrahPage() {
                                             {pkg.type === 'hajj' ? '🕋 Hajj' : '🕌 Umrah'}
                                         </span>
                                         <h3 className="text-[14px] font-bold text-gray-800 dark:text-white">{pkg.name}</h3>
+                                        {pkg.nameBn && <p className="text-[12px] text-gray-400">{pkg.nameBn}</p>}
                                     </div>
                                     <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${pkg.status === 'active' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
                                         {pkg.status}
@@ -190,23 +200,26 @@ export default function HajjUmrahPage() {
                                     </div>
                                     <div className="bg-[#F8FAFC] rounded-lg p-2.5 text-center">
                                         <p className="text-[10px] text-gray-400">Booked</p>
-                                        <p className="text-[12px] font-semibold text-gray-700">{pkg.bookings}/{pkg.groupSize}</p>
+                                        <p className="text-[12px] font-semibold text-gray-700">{pkg.bookings || 0}/{pkg.groupSize || 30}</p>
                                     </div>
                                 </div>
 
-                                <p className="text-[11px] text-gray-400 mb-3">📍 {pkg.hotel}</p>
+                                {pkg.hotel && <p className="text-[11px] text-gray-400 mb-3">📍 {pkg.hotel}</p>}
 
                                 <div className="flex items-center gap-2 mb-3">
                                     <div className="flex-1 bg-gray-100 rounded-full h-1.5">
-                                        <div className="h-1.5 rounded-full" style={{ width: `${(pkg.bookings / pkg.groupSize) * 100}%`, backgroundColor: '#EF8C2C' }} />
+                                        <div className="h-1.5 rounded-full" style={{ width: `${((pkg.bookings || 0) / (pkg.groupSize || 30)) * 100}%`, backgroundColor: '#EF8C2C' }} />
                                     </div>
-                                    <span className="text-[10px] font-semibold text-gray-400">{Math.round((pkg.bookings / pkg.groupSize) * 100)}%</span>
+                                    <span className="text-[10px] font-semibold text-gray-400">{Math.round(((pkg.bookings || 0) / (pkg.groupSize || 30)) * 100)}%</span>
                                 </div>
 
                                 <div className="flex gap-2">
                                     <button onClick={() => setViewingPkg(pkg)} className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-semibold text-white" style={{ backgroundColor: '#021E14' }}>
                                         <FiEye size={12} /> View
                                     </button>
+                                    <Link href={`/dashboard/admin/hajj-umrah/create?id=${pkg._id}`} className="px-3 py-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 text-[11px] flex items-center gap-1">
+                                        <FiEdit size={12} /> Edit
+                                    </Link>
                                     <button onClick={() => handleDelete(pkg._id)} className="px-3 py-2 rounded-lg border border-red-200 text-red-400 hover:bg-red-50 text-[11px]">
                                         <FiTrash2 size={12} />
                                     </button>

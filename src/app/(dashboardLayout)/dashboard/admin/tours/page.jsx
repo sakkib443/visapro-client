@@ -2,26 +2,19 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 import {
     FiSearch, FiLoader, FiEdit, FiTrash2, FiEye,
-    FiRefreshCw, FiCalendar, FiPlus, FiX, FiMapPin,
+    FiRefreshCw, FiPlus, FiX, FiMapPin,
     FiUsers, FiDollarSign, FiClock, FiStar, FiFilter,
+    FiCalendar, FiTag,
 } from "react-icons/fi";
 import { useSelector } from "react-redux";
 import { selectToken } from "@/redux/features/authSlice";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-
-const mockTours = [
-    { _id: "1", name: "Cox's Bazar Premium Beach Resort", destination: "Cox's Bazar, Bangladesh", duration: "3 Days 2 Nights", price: 12500, groupSize: 24, departureDate: "2025-03-05", status: "active", rating: 4.8, bookings: 18, image: "", category: "beach" },
-    { _id: "2", name: "Sundarban Mangrove Adventure", destination: "Sundarban, Bangladesh", duration: "4 Days 3 Nights", price: 15000, groupSize: 16, departureDate: "2025-03-12", status: "active", rating: 4.6, bookings: 12, image: "", category: "adventure" },
-    { _id: "3", name: "Thailand Discovery Package", destination: "Bangkok-Pattaya, Thailand", duration: "5 Days 4 Nights", price: 45000, groupSize: 20, departureDate: "2025-04-01", status: "active", rating: 4.9, bookings: 15, image: "", category: "international" },
-    { _id: "4", name: "Malaysia Heritage Tour", destination: "KL-Langkawi, Malaysia", duration: "6 Days 5 Nights", price: 55000, groupSize: 18, departureDate: "2025-04-15", status: "upcoming", rating: 4.7, bookings: 8, image: "", category: "international" },
-    { _id: "5", name: "Sajek Valley Retreat", destination: "Sajek, Rangamati", duration: "2 Days 1 Night", price: 6500, groupSize: 30, departureDate: "2025-03-20", status: "active", rating: 4.5, bookings: 25, image: "", category: "hill" },
-    { _id: "6", name: "Dubai Luxury Experience", destination: "Dubai, UAE", duration: "5 Days 4 Nights", price: 85000, groupSize: 15, departureDate: "2025-05-01", status: "upcoming", rating: 5.0, bookings: 5, image: "", category: "luxury" },
-];
 
 export default function TourPackages() {
     const [tours, setTours] = useState([]);
@@ -29,7 +22,9 @@ export default function TourPackages() {
     const [search, setSearch] = useState("");
     const [filter, setFilter] = useState("all");
     const [viewingTour, setViewingTour] = useState(null);
+    const [deleting, setDeleting] = useState(null);
     const token = useSelector(selectToken);
+    const router = useRouter();
 
     const fetchTours = async () => {
         setLoading(true);
@@ -39,12 +34,13 @@ export default function TourPackages() {
             });
             const data = await res.json();
             if (data.success && data.data) {
-                setTours(Array.isArray(data.data) ? data.data : data.data.data || mockTours);
+                setTours(Array.isArray(data.data) ? data.data : []);
             } else {
-                setTours(mockTours);
+                setTours([]);
             }
         } catch {
-            setTours(mockTours);
+            toast.error("Failed to fetch tours");
+            setTours([]);
         } finally {
             setLoading(false);
         }
@@ -53,34 +49,55 @@ export default function TourPackages() {
     useEffect(() => { fetchTours(); }, []);
 
     const handleDelete = async (id) => {
-        if (!confirm("Delete this tour package?")) return;
+        if (!confirm("Are you sure you want to delete this tour package?")) return;
+        setDeleting(id);
         try {
-            await fetch(`${API_BASE}/api/tours/${id}`, {
+            const res = await fetch(`${API_BASE}/api/tours/${id}`, {
                 method: "DELETE",
                 headers: token ? { Authorization: `Bearer ${token}` } : {},
             });
-        } catch { }
-        setTours(prev => prev.filter(t => t._id !== id));
-        toast.success("Tour package deleted");
+            const data = await res.json();
+            if (data.success) {
+                toast.success("Tour package deleted successfully");
+                setTours(prev => prev.filter(t => t._id !== id));
+                if (viewingTour?._id === id) setViewingTour(null);
+            } else {
+                toast.error(data.message || "Failed to delete");
+            }
+        } catch {
+            toast.error("Failed to delete tour");
+        } finally {
+            setDeleting(null);
+        }
     };
 
     const filtered = tours.filter(t => {
         const matchSearch =
-            t.name?.toLowerCase().includes(search.toLowerCase()) ||
-            t.destination?.toLowerCase().includes(search.toLowerCase());
+            t.title?.toLowerCase().includes(search.toLowerCase()) ||
+            t.destination?.toLowerCase().includes(search.toLowerCase()) ||
+            t.category?.toLowerCase().includes(search.toLowerCase());
         const matchFilter = filter === "all" || t.status === filter || t.category === filter;
         return matchSearch && matchFilter;
     });
 
-    const totalRevenue = tours.reduce((sum, t) => sum + (t.price * t.bookings), 0);
-    const totalBookings = tours.reduce((sum, t) => sum + t.bookings, 0);
+    const totalRevenue = tours.reduce((sum, t) => sum + ((t.price || 0) * (t.bookings || 0)), 0);
+    const totalBookings = tours.reduce((sum, t) => sum + (t.bookings || 0), 0);
 
     const getCategoryColor = (cat) => {
         const colors = {
             beach: "#3B82F6", adventure: "#10B981", international: "#8B5CF6",
             hill: "#F59E0B", luxury: "#EF4444", religious: "#EC4899",
+            city: "#6366F1", culture: "#14B8A6", nature: "#22C55E",
+            historical: "#A855F7",
         };
         return colors[cat] || "#6B7280";
+    };
+
+    const getStatusColor = (status) => {
+        const colors = {
+            active: "#10B981", upcoming: "#3B82F6", completed: "#6B7280", cancelled: "#EF4444",
+        };
+        return colors[status] || "#6B7280";
     };
 
     return (
@@ -99,14 +116,14 @@ export default function TourPackages() {
                             initial={{ scale: 0.95 }}
                             animate={{ scale: 1 }}
                             exit={{ scale: 0.95 }}
-                            className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-lg w-full"
+                            className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-lg w-full max-h-[80vh] overflow-y-auto"
                             onClick={(e) => e.stopPropagation()}
                         >
                             <div className="p-5 border-b border-gray-100" style={{ backgroundColor: '#021E14' }}>
                                 <div className="flex items-center justify-between">
                                     <div className="text-white">
                                         <p className="text-[10px] uppercase tracking-wider opacity-60 font-bold">Tour Package</p>
-                                        <h3 className="text-lg font-bold mt-0.5">{viewingTour.name}</h3>
+                                        <h3 className="text-lg font-bold mt-0.5">{viewingTour.title}</h3>
                                     </div>
                                     <button onClick={() => setViewingTour(null)} className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white">
                                         <FiX size={16} />
@@ -114,28 +131,51 @@ export default function TourPackages() {
                                 </div>
                             </div>
                             <div className="p-5 space-y-4">
+                                {viewingTour.image && (
+                                    <img src={viewingTour.image} alt={viewingTour.title} className="w-full h-40 object-cover rounded-lg" />
+                                )}
                                 <div className="grid grid-cols-2 gap-3">
                                     {[
                                         { label: "Destination", value: viewingTour.destination, icon: FiMapPin },
                                         { label: "Duration", value: viewingTour.duration, icon: FiClock },
                                         { label: "Price", value: `৳${viewingTour.price?.toLocaleString()}`, icon: FiDollarSign },
-                                        { label: "Group Size", value: viewingTour.groupSize, icon: FiUsers },
-                                        { label: "Bookings", value: `${viewingTour.bookings} / ${viewingTour.groupSize}`, icon: FiCalendar },
-                                        { label: "Rating", value: `⭐ ${viewingTour.rating}`, icon: FiStar },
+                                        { label: "Group Size", value: viewingTour.groupSize || "N/A", icon: FiUsers },
+                                        { label: "Category", value: viewingTour.category, icon: FiTag },
+                                        { label: "Status", value: viewingTour.status, icon: FiFilter },
+                                        { label: "Bookings", value: `${viewingTour.bookings || 0}`, icon: FiCalendar },
+                                        { label: "Rating", value: viewingTour.rating ? `⭐ ${viewingTour.rating}` : "N/A", icon: FiStar },
                                     ].map((item) => (
                                         <div key={item.label} className="bg-[#F8FAFC] dark:bg-gray-700/30 rounded-lg p-3">
                                             <p className="text-[10px] text-gray-400 uppercase font-bold">{item.label}</p>
-                                            <p className="text-[13px] font-semibold text-gray-700 mt-0.5">{item.value}</p>
+                                            <p className="text-[13px] font-semibold text-gray-700 mt-0.5 capitalize">{item.value}</p>
                                         </div>
                                     ))}
                                 </div>
+                                {viewingTour.description && (
+                                    <div className="bg-[#F8FAFC] dark:bg-gray-700/30 rounded-lg p-3">
+                                        <p className="text-[10px] text-gray-400 uppercase font-bold mb-1">Description</p>
+                                        <p className="text-[12px] text-gray-600">{viewingTour.description}</p>
+                                    </div>
+                                )}
+                                {viewingTour.includes?.length > 0 && (
+                                    <div className="bg-[#F8FAFC] dark:bg-gray-700/30 rounded-lg p-3">
+                                        <p className="text-[10px] text-gray-400 uppercase font-bold mb-1">Includes</p>
+                                        <ul className="space-y-1">
+                                            {viewingTour.includes.map((inc, i) => (
+                                                <li key={i} className="text-[12px] text-gray-600 flex items-center gap-1.5">
+                                                    <span className="w-1 h-1 rounded-full bg-green-500" /> {inc}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
                                 <div className="flex gap-2 pt-2">
-                                    <Link
-                                        href={`/dashboard/admin/tours/${viewingTour._id}/edit`}
+                                    <button
+                                        onClick={() => { setViewingTour(null); router.push(`/dashboard/admin/tours/create?id=${viewingTour._id}`); }}
                                         className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-[12px] font-semibold text-white" style={{ backgroundColor: '#021E14' }}
                                     >
                                         <FiEdit size={13} /> Edit Package
-                                    </Link>
+                                    </button>
                                     <button
                                         onClick={() => { setViewingTour(null); handleDelete(viewingTour._id); }}
                                         className="px-4 py-2.5 rounded-lg text-[12px] font-semibold text-red-500 border border-red-200 hover:bg-red-50"
@@ -213,6 +253,17 @@ export default function TourPackages() {
                 <div className="flex justify-center py-20">
                     <FiLoader className="animate-spin" size={24} style={{ color: '#021E14' }} />
                 </div>
+            ) : filtered.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-20 text-center">
+                    <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
+                        <FiMapPin size={24} className="text-gray-300" />
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-400 mb-1">No Tour Packages Found</h3>
+                    <p className="text-[12px] text-gray-400 mb-4">Create your first tour package to get started</p>
+                    <Link href="/dashboard/admin/tours/create" className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[11px] font-semibold text-white" style={{ backgroundColor: '#021E14' }}>
+                        <FiPlus size={13} /> Create Tour
+                    </Link>
+                </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {filtered.map((tour, i) => (
@@ -225,28 +276,42 @@ export default function TourPackages() {
                         >
                             {/* Card Image / Placeholder */}
                             <div className="h-40 relative overflow-hidden" style={{ backgroundColor: '#021E14' }}>
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <FiMapPin size={40} className="text-white/10" />
-                                </div>
+                                {tour.image ? (
+                                    <img src={tour.image} alt={tour.title} className="w-full h-full object-cover" />
+                                ) : (
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <FiMapPin size={40} className="text-white/10" />
+                                    </div>
+                                )}
                                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent p-3">
-                                    <span className="inline-block px-2 py-0.5 rounded-full text-[9px] font-bold uppercase text-white"
-                                        style={{ backgroundColor: getCategoryColor(tour.category) }}>
-                                        {tour.category}
-                                    </span>
+                                    <div className="flex items-center gap-2">
+                                        <span className="inline-block px-2 py-0.5 rounded-full text-[9px] font-bold uppercase text-white"
+                                            style={{ backgroundColor: getCategoryColor(tour.category) }}>
+                                            {tour.category}
+                                        </span>
+                                        <span className="inline-block px-2 py-0.5 rounded-full text-[9px] font-bold uppercase text-white"
+                                            style={{ backgroundColor: getStatusColor(tour.status) }}>
+                                            {tour.status}
+                                        </span>
+                                    </div>
                                 </div>
                                 <div className="absolute top-3 right-3 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
                                     <button onClick={() => setViewingTour(tour)} className="w-8 h-8 rounded-lg bg-white/90 backdrop-blur flex items-center justify-center text-gray-600 hover:bg-white">
                                         <FiEye size={14} />
                                     </button>
-                                    <button onClick={() => handleDelete(tour._id)} className="w-8 h-8 rounded-lg bg-white/90 backdrop-blur flex items-center justify-center text-red-500 hover:bg-white">
-                                        <FiTrash2 size={14} />
+                                    <button
+                                        onClick={() => handleDelete(tour._id)}
+                                        disabled={deleting === tour._id}
+                                        className="w-8 h-8 rounded-lg bg-white/90 backdrop-blur flex items-center justify-center text-red-500 hover:bg-white disabled:opacity-50"
+                                    >
+                                        {deleting === tour._id ? <FiLoader size={14} className="animate-spin" /> : <FiTrash2 size={14} />}
                                     </button>
                                 </div>
                             </div>
 
                             {/* Card Content */}
                             <div className="p-4">
-                                <h3 className="text-[13px] font-bold text-gray-800 dark:text-white line-clamp-1">{tour.name}</h3>
+                                <h3 className="text-[13px] font-bold text-gray-800 dark:text-white line-clamp-1">{tour.title}</h3>
                                 <p className="text-[11px] text-gray-400 flex items-center gap-1 mt-1">
                                     <FiMapPin size={10} /> {tour.destination}
                                 </p>
@@ -257,33 +322,35 @@ export default function TourPackages() {
                                         <p className="text-[10px] text-gray-400">{tour.duration}</p>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-[11px] font-semibold text-gray-600">{tour.bookings}/{tour.groupSize}</p>
+                                        <p className="text-[11px] font-semibold text-gray-600">{tour.bookings || 0}/{tour.groupSize || 20}</p>
                                         <p className="text-[10px] text-gray-400">Booked</p>
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-2 mt-3">
-                                    <div className="flex-1 bg-gray-100 dark:bg-gray-700 rounded-full h-1.5">
-                                        <div
-                                            className="h-1.5 rounded-full transition-all"
-                                            style={{
-                                                width: `${Math.min((tour.bookings / tour.groupSize) * 100, 100)}%`,
-                                                backgroundColor: '#EF8C2C',
-                                            }}
-                                        />
+                                {tour.groupSize > 0 && (
+                                    <div className="flex items-center gap-2 mt-3">
+                                        <div className="flex-1 bg-gray-100 dark:bg-gray-700 rounded-full h-1.5">
+                                            <div
+                                                className="h-1.5 rounded-full transition-all"
+                                                style={{
+                                                    width: `${Math.min(((tour.bookings || 0) / (tour.groupSize || 20)) * 100, 100)}%`,
+                                                    backgroundColor: '#EF8C2C',
+                                                }}
+                                            />
+                                        </div>
+                                        <span className="text-[10px] font-semibold text-gray-400">
+                                            {Math.round(((tour.bookings || 0) / (tour.groupSize || 20)) * 100)}%
+                                        </span>
                                     </div>
-                                    <span className="text-[10px] font-semibold text-gray-400">
-                                        {Math.round((tour.bookings / tour.groupSize) * 100)}%
-                                    </span>
-                                </div>
+                                )}
 
                                 <div className="flex items-center gap-2 mt-3">
-                                    <Link
-                                        href={`/dashboard/admin/tours/${tour._id}/edit`}
+                                    <button
+                                        onClick={() => router.push(`/dashboard/admin/tours/create?id=${tour._id}`)}
                                         className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 text-[11px] font-semibold text-gray-500 hover:bg-gray-50 transition-colors"
                                     >
                                         <FiEdit size={12} /> Edit
-                                    </Link>
+                                    </button>
                                     <button
                                         onClick={() => setViewingTour(tour)}
                                         className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-semibold text-white transition-colors"

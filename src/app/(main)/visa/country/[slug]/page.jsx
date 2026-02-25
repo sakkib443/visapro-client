@@ -579,15 +579,15 @@ export default function CountryDetailPage() {
                                             </p>
                                             <div className="flex flex-wrap justify-center gap-3">
                                                 <a
-                                                    href="tel:+8801335202802"
+                                                    href="tel:+8801712114770"
                                                     className="inline-flex items-center gap-2 px-6 py-3 bg-[#1a2e5a] text-white rounded-lg text-[12px] font-semibold hover:bg-[#162650] transition-all shadow-sm"
                                                     style={{ fontFamily }}
                                                 >
                                                     <LuPhone size={13} />
-                                                    {isBn ? 'কল করুন: +880 1335-202802' : 'Call: +880 1335-202802'}
+                                                    {isBn ? 'কল করুন: 017 1211 4770' : 'Call: 017 1211 4770'}
                                                 </a>
                                                 <a
-                                                    href="https://wa.me/8801335202802"
+                                                    href="https://wa.me/8801712114770"
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="inline-flex items-center gap-2 px-6 py-3 bg-[#25D366] text-white rounded-lg text-[12px] font-semibold hover:bg-[#20b858] transition-all shadow-sm"
@@ -770,7 +770,7 @@ export default function CountryDetailPage() {
                                         </p>
                                         <div className="space-y-2">
                                             <a
-                                                href="tel:+8801335202802"
+                                                href="tel:+8801712114770"
                                                 className="w-full py-2.5 rounded-lg flex items-center justify-center gap-2 text-[11px] font-semibold text-white transition-all hover:opacity-90"
                                                 style={{ backgroundColor: '#f5a623', fontFamily }}
                                             >
@@ -778,7 +778,7 @@ export default function CountryDetailPage() {
                                                 {isBn ? 'কল করুন' : 'Call Now'}
                                             </a>
                                             <a
-                                                href="https://wa.me/8801335202802"
+                                                href="https://wa.me/8801712114770"
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="w-full py-2.5 rounded-lg flex items-center justify-center gap-2 text-[11px] font-semibold text-white border border-white/15 transition-all hover:bg-white/5"
