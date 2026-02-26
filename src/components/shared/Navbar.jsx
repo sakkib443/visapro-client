@@ -169,27 +169,8 @@ export default function Navbar() {
                     <div className="flex items-center justify-between h-16 lg:h-[72px]">
 
                         {/* Logo */}
-                        <Link href="/" className="flex items-center gap-3 group flex-shrink-0">
-                            <div
-                                className="w-11 h-11 rounded-xl flex items-center justify-center shadow-lg transition-transform group-hover:scale-105"
-                                style={{ background: "linear-gradient(135deg, #3590CF 0%, #2A74A8 100%)" }}
-                            >
-                                <span className="text-white font-bold text-xl" style={{ fontFamily: 'Teko, sans-serif' }}>VP</span>
-                            </div>
-                            <div className="flex flex-col">
-                                <span
-                                    className="text-2xl font-bold leading-none tracking-wide"
-                                    style={{ fontFamily: 'Teko, sans-serif', color: '#3590CF' }}
-                                >
-                                    VISA<span style={{ color: '#EF8C2C' }}>PRO</span>
-                                </span>
-                                <span
-                                    className="text-[8px] font-medium text-gray-400 tracking-[0.2em] uppercase"
-                                    style={{ fontFamily: bnFont }}
-                                >
-                                    {t('consultancyMigration')}
-                                </span>
-                            </div>
+                        <Link href="/" className="flex items-center group flex-shrink-0">
+                            <img src="/images/logo.png" alt="VisaPro" className="w-[120px] h-auto object-contain transition-transform group-hover:scale-105" />
                         </Link>
 
                         {/* Center Navigation - Desktop */}

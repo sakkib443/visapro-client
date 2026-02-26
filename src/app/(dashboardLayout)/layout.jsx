@@ -313,14 +313,7 @@ export default function DashboardLayout({ children }) {
                 {/* Logo */}
                 <div className="h-[60px] flex items-center justify-between px-4 border-b border-gray-100 dark:border-gray-700/50 flex-shrink-0">
                     <Link href="/" className="flex items-center gap-2.5">
-                        <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#021E14' }}>
-                            <LuPlane size={16} className="text-white" />
-                        </div>
-                        {isSidebarOpen && (
-                            <span className="text-xl font-black uppercase tracking-tight" style={{ fontFamily: 'Teko, sans-serif', color: '#021E14' }}>
-                                Visa<span style={{ color: '#EF8C2C' }}>Pro</span>
-                            </span>
-                        )}
+                        <img src="/images/logo.png" alt="VisaPro" className={`transition-all duration-300 ${isSidebarOpen ? "w-[110px]" : "w-[40px]"} h-auto object-contain`} />
                     </Link>
                 </div>
 
@@ -385,12 +378,7 @@ export default function DashboardLayout({ children }) {
                         >
                             <div className="h-[60px] flex items-center justify-between px-4 border-b border-gray-100 dark:border-gray-700/50">
                                 <Link href="/" className="flex items-center gap-2.5">
-                                    <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#021E14' }}>
-                                        <LuPlane size={16} className="text-white" />
-                                    </div>
-                                    <span className="text-xl font-black uppercase tracking-tight" style={{ fontFamily: 'Teko, sans-serif', color: '#021E14' }}>
-                                        Visa<span style={{ color: '#EF8C2C' }}>Pro</span>
-                                    </span>
+                                    <img src="/images/logo.png" alt="VisaPro" className="w-[110px] h-auto object-contain" />
                                 </Link>
                                 <button onClick={() => setIsMobileOpen(false)} className="p-1.5 rounded-md hover:bg-gray-100">
                                     <FiX className="w-5 h-5 text-gray-400" />

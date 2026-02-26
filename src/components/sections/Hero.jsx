@@ -162,7 +162,7 @@ export default function Hero() {
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: -8 }}
                                     transition={{ duration: 0.15 }}
-                                    className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-gray-200 rounded-lg shadow-xl z-50 max-h-[280px] overflow-hidden"
+                                    className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-gray-200 rounded-lg shadow-2xl z-[9999] max-h-[280px] flex flex-col"
                                 >
                                     <div className="p-2.5 border-b border-gray-100">
                                         <input
@@ -180,20 +180,22 @@ export default function Hero() {
                                             filteredCountries.map(c => (
                                                 <button
                                                     key={c._id || c.slug}
-                                                    onClick={() => {
+                                                    onMouseDown={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
                                                         setSelectedCountry(c.slug);
                                                         setShowCountryDropdown(false);
                                                         setCountrySearch("");
                                                     }}
-                                                    className={`w-full flex items-center gap-2.5 px-3 py-2 text-left hover:bg-gray-50 transition-colors text-[13px] ${selectedCountry === c.slug ? 'bg-[#1D7EDD]/5 text-[#1D7EDD]' : 'text-gray-700'}`}
+                                                    className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-left hover:bg-gray-50 transition-colors text-[13px] cursor-pointer ${selectedCountry === c.slug ? 'bg-[#1D7EDD]/5 text-[#1D7EDD]' : 'text-gray-700'}`}
                                                     style={{ fontFamily: bnFont }}
                                                 >
-                                                    {c.flag && <span className="text-base flex-shrink-0">{c.flag}</span>}
-                                                    <span className="font-medium truncate">
+                                                    {c.flag && <span className="text-base flex-shrink-0 pointer-events-none">{c.flag}</span>}
+                                                    <span className="font-medium truncate pointer-events-none">
                                                         {isBn && c.nameBn ? c.nameBn : c.name}
                                                     </span>
                                                     {c.region && (
-                                                        <span className="ml-auto text-[10px] text-gray-400 font-medium flex-shrink-0">
+                                                        <span className="ml-auto text-[10px] text-gray-400 font-medium flex-shrink-0 pointer-events-none">
                                                             {isBn && c.regionBn ? c.regionBn : c.region}
                                                         </span>
                                                     )}
@@ -267,7 +269,7 @@ export default function Hero() {
     };
 
     return (
-        <section className="relative min-h-[100svh] lg:min-h-[75vh] flex flex-col overflow-hidden bg-[#0a1a14]">
+        <section className="relative min-h-[100svh] lg:min-h-[75vh] flex flex-col bg-[#0a1a14]">
             {/* Background with Video + Gradient Fallback */}
             <div className="absolute inset-0 z-0 overflow-hidden">
                 <div
@@ -296,7 +298,7 @@ export default function Hero() {
                     }}
                     className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full w-auto h-auto object-cover"
                 >
-                    <source src="/hero.mp4" type="video/mp4" />
+                    <source src="https://res.cloudinary.com/dyjx0hfwi/video/upload/v1772076798/hero_jnba7p.mp4" type="video/mp4" />
                 </video>
                 <div className="absolute inset-0 bg-black/40 lg:bg-transparent z-10" />
             </div>
@@ -381,7 +383,7 @@ export default function Hero() {
                     </div>
 
                     {/* Search Card */}
-                    <div className="bg-white rounded-xl lg:rounded-tl-none p-3 lg:p-5 shadow-2xl relative z-20">
+                    <div className="bg-white rounded-xl lg:rounded-tl-none p-3 lg:p-5 shadow-2xl relative z-[40]" style={{ overflow: 'visible' }}>
                         <div className="flex flex-col lg:flex-row gap-2.5 lg:gap-3 items-stretch">
                             {/* Input Grid */}
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 lg:gap-2.5 flex-grow w-full">

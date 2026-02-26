@@ -87,10 +87,8 @@ export default function RegisterPage() {
                 {/* Content */}
                 <div className="relative z-10 flex flex-col justify-center px-12 xl:px-16">
                     {/* Logo */}
-                    <Link href="/" className="mb-14">
-                        <span className="text-3xl font-black uppercase tracking-tight" style={{ fontFamily: 'Teko, sans-serif', color: '#FFFFFF' }}>
-                            Visa<span style={{ color: '#EF8C2C' }}>Pro</span>
-                        </span>
+                    <Link href="/" className="mb-14 block">
+                        <img src="/images/logo.png" alt="VisaPro" className="w-[120px] h-auto object-contain" />
                     </Link>
 
                     <motion.div
@@ -156,9 +154,7 @@ export default function RegisterPage() {
                 >
                     {/* Mobile Logo */}
                     <Link href="/" className="lg:hidden flex items-center gap-2 mb-6">
-                        <span className="text-2xl font-black uppercase tracking-tight" style={{ fontFamily: 'Teko, sans-serif', color: '#021E14' }}>
-                            Visa<span style={{ color: '#EF8C2C' }}>Pro</span>
-                        </span>
+                        <img src="/images/logo.png" alt="VisaPro" className="w-[100px] h-auto object-contain" />
                     </Link>
 
                     {/* Header */}

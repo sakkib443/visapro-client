@@ -104,21 +104,8 @@ export default function Footer() {
 
                     {/* Brand & Contact */}
                     <div className="lg:col-span-2 space-y-6">
-                        <Link href="/" className="flex items-center gap-3 group">
-                            <div
-                                className="w-12 h-12 rounded-xl flex items-center justify-center"
-                                style={{ background: "linear-gradient(135deg, #3590CF 0%, #2A74A8 100%)" }}
-                            >
-                                <span className="text-white font-bold text-xl" style={{ fontFamily: 'Teko, sans-serif' }}>VP</span>
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-2xl font-bold leading-none tracking-wide" style={{ fontFamily: 'Teko, sans-serif' }}>
-                                    VISA<span style={{ color: '#EF8C2C' }}>PRO</span>
-                                </span>
-                                <span className="text-[8px] font-medium text-white/40 tracking-[0.2em] uppercase" style={{ fontFamily: bnFont }}>
-                                    {t('consultancyMigration')}
-                                </span>
-                            </div>
+                        <Link href="/" className="flex items-center group">
+                            <img src="/images/logo.png" alt="VisaPro" className="w-[120px] h-auto object-contain" />
                         </Link>
 
                         <p className="text-white/60 text-sm leading-relaxed max-w-sm" style={{ fontFamily: bnFont }}>
