@@ -12,6 +12,7 @@ import {
 } from "react-icons/fi";
 import { useSelector } from "react-redux";
 import { selectToken } from "@/redux/features/authSlice";
+import CountryFlag, { preloadFlags } from "@/components/shared/CountryFlag";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -31,7 +32,9 @@ export default function CountriesPage() {
             });
             const data = await res.json();
             if (data.success && data.data) {
-                setCountries(Array.isArray(data.data) ? data.data : []);
+                const list = Array.isArray(data.data) ? data.data : [];
+                setCountries(list);
+                preloadFlags(list.map(c => c.name));
             } else {
                 setCountries([]);
             }
@@ -227,7 +230,7 @@ export default function CountriesPage() {
                                         className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors"
                                     >
                                         <td className="px-4 py-3">
-                                            <span className="text-2xl">{country.flag || "🌐"}</span>
+                                            <CountryFlag name={country.name} flag={country.flag} size={30} />
                                         </td>
                                         <td className="px-4 py-3">
                                             <div>

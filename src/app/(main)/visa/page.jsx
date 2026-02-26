@@ -19,6 +19,7 @@ import {
 } from "react-icons/lu";
 import { useLanguage } from "@/context/LanguageContext";
 import Link from "next/link";
+import CountryFlag, { preloadFlags } from "@/components/shared/CountryFlag";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -63,6 +64,7 @@ function VisaContent() {
                 const countriesData = await countriesRes.json();
                 if (countriesData.success && countriesData.data) {
                     setCountries(countriesData.data);
+                    preloadFlags(countriesData.data.map(c => c.name));
                 }
                 if (categoriesRes) {
                     const categoriesData = await categoriesRes.json();
@@ -327,7 +329,7 @@ function VisaContent() {
                                                             />
                                                         ) : (
                                                             <div className="w-full h-full bg-gradient-to-br from-[#1a2e5a] to-[#2d4a7a] flex items-center justify-center">
-                                                                <span className="text-6xl">{country.flag || '🌍'}</span>
+                                                                <CountryFlag name={country.name} flag={country.flag} size={64} rounded={false} />
                                                             </div>
                                                         )}
                                                         {/* Gradient overlay */}
@@ -341,7 +343,7 @@ function VisaContent() {
 
                                                         {/* Country flag + region on image */}
                                                         <div className="absolute bottom-3 left-3 flex items-center gap-2">
-                                                            <span className="text-2xl">{country.flag || '🌍'}</span>
+                                                            <CountryFlag name={country.name} flag={country.flag} size={28} />
                                                             {country.region && (
                                                                 <span className="text-[9px] font-bold text-white/80 uppercase tracking-wider bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded" style={{ fontFamily }}>
                                                                     {isBn && country.regionBn ? country.regionBn : country.region}

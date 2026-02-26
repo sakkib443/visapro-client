@@ -29,6 +29,7 @@ import {
 } from "react-icons/lu";
 import { useLanguage } from "@/context/LanguageContext";
 import Link from "next/link";
+import CountryFlag from "@/components/shared/CountryFlag";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -228,8 +229,8 @@ export default function CountryDetailPage() {
 
                         {/* Traveling To */}
                         <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-[#f8f9fb] border border-gray-100 sm:flex-1">
-                            <div className="w-8 h-8 rounded-full bg-white border border-gray-100 flex items-center justify-center text-sm shadow-sm">
-                                {country.flag || '🌍'}
+                            <div className="w-8 h-8 rounded-full bg-white border border-gray-100 flex items-center justify-center overflow-hidden shadow-sm">
+                                <CountryFlag name={country.name} flag={country.flag} size={24} />
                             </div>
                             <div className="min-w-0">
                                 <p className="text-[9px] text-gray-400 font-semibold uppercase tracking-wider leading-none mb-1" style={{ fontFamily }}>

@@ -20,6 +20,7 @@ import { FaFacebookF, FaTwitter, FaYoutube } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { useRouter } from "next/navigation";
+import CountryFlag, { preloadFlags } from "@/components/shared/CountryFlag";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -33,8 +34,10 @@ export default function Hero() {
     // ==================== Dynamic Data ====================
     const [countries, setCountries] = useState([]);
     const [visaCategories, setVisaCategories] = useState([]);
+    const [tours, setTours] = useState([]);
     const [selectedCountry, setSelectedCountry] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("");
+    const [selectedTour, setSelectedTour] = useState("");
     const [countrySearch, setCountrySearch] = useState("");
     const [showCountryDropdown, setShowCountryDropdown] = useState(false);
     const countryDropdownRef = useRef(null);
@@ -43,18 +46,25 @@ export default function Hero() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [countriesRes, categoriesRes] = await Promise.all([
+                const [countriesRes, categoriesRes, toursRes] = await Promise.all([
                     fetch(`${API_BASE}/api/countries/active`),
-                    fetch(`${API_BASE}/api/visa-categories/active`)
+                    fetch(`${API_BASE}/api/visa-categories/active`),
+                    fetch(`${API_BASE}/api/tours/active`)
                 ]);
                 const countriesData = await countriesRes.json();
                 const categoriesData = await categoriesRes.json();
+                const toursData = await toursRes.json();
 
                 if (countriesData.success && countriesData.data) {
                     setCountries(countriesData.data);
+                    // Preload all flag SVGs immediately so they're cached before user opens dropdown
+                    preloadFlags(countriesData.data.map(c => c.name));
                 }
                 if (categoriesData.success && categoriesData.data) {
                     setVisaCategories(categoriesData.data);
+                }
+                if (toursData.success && toursData.data) {
+                    setTours(toursData.data);
                 }
             } catch (err) {
                 console.error("Failed to fetch hero data:", err);
@@ -76,13 +86,27 @@ export default function Hero() {
 
     // Filter countries by search
     const filteredCountries = useMemo(() => {
-        if (!countrySearch) return countries;
+        let sourceList = countries;
+
+        // If tour tab is active, only show countries that have at least one tour
+        if (activeTab === "tour") {
+            // Support partial matching (e.g., "Cox's Bazar, Bangladesh" matches "Bangladesh")
+            sourceList = countries.filter(c =>
+                tours.some(t => {
+                    const dest = t.destination.toLowerCase();
+                    const countryName = c.name.toLowerCase();
+                    return dest === countryName || dest.endsWith(`, ${countryName}`) || dest.includes(countryName);
+                })
+            );
+        }
+
+        if (!countrySearch) return sourceList;
         const q = countrySearch.toLowerCase();
-        return countries.filter(c =>
+        return sourceList.filter(c =>
             c.name.toLowerCase().includes(q) ||
             (c.nameBn && c.nameBn.includes(countrySearch))
         );
-    }, [countries, countrySearch]);
+    }, [countries, tours, countrySearch, activeTab]);
 
     // Get selected country display name
     const selectedCountryName = useMemo(() => {
@@ -92,10 +116,9 @@ export default function Hero() {
         return isBn && c.nameBn ? c.nameBn : c.name;
     }, [selectedCountry, countries, isBn]);
 
-    const selectedCountryFlag = useMemo(() => {
+    const selectedCountryData = useMemo(() => {
         if (!selectedCountry) return null;
-        const c = countries.find(c => c.slug === selectedCountry);
-        return c?.flag || null;
+        return countries.find(c => c.slug === selectedCountry) || null;
     }, [selectedCountry, countries]);
 
     // Handle visa search
@@ -107,11 +130,32 @@ export default function Hero() {
         }
     };
 
+    // Handle tour search
+    const handleTourSearch = () => {
+        if (selectedTour) {
+            router.push(`/tour/${selectedTour}`);
+        } else if (selectedCountry) {
+            router.push(`/tour?country=${selectedCountry}`);
+        } else {
+            router.push('/tour');
+        }
+    };
+
+    // Filter tours based on selected country
+    const filteredToursByCountry = useMemo(() => {
+        if (!selectedCountry) return tours;
+        const selectedCountryNameRaw = countries.find(c => c.slug === selectedCountry)?.name;
+        if (!selectedCountryNameRaw) return tours;
+        return tours.filter(t => {
+            const dest = t.destination.toLowerCase();
+            const countryName = selectedCountryNameRaw.toLowerCase();
+            return dest === countryName || dest.includes(countryName);
+        });
+    }, [tours, selectedCountry, countries]);
+
     const tabs = [
         { id: "visa", name: t('tabVisa'), icon: <LuTicket /> },
-        { id: "hotel", name: t('tabHotel'), icon: <LuBed /> },
         { id: "tour", name: t('tabTour'), icon: <LuMapPin /> },
-        { id: "flight", name: t('tabFlight'), icon: <LuPlane /> },
     ];
 
     const bnFont = language === 'bn' ? 'Hind Siliguri, sans-serif' : undefined;
@@ -122,87 +166,74 @@ export default function Hero() {
             return (
                 <>
                     {/* FROM: Bangladesh (Fixed) */}
-                    <div className="flex items-center gap-2.5 px-3 lg:px-4 py-2.5 border border-gray-100 rounded-lg bg-gray-50/50">
-                        <span className="text-lg flex-shrink-0">🇧🇩</span>
+                    <div className="flex items-center gap-3 px-4 py-3 border border-gray-200/80 rounded-xl bg-gray-50/60">
+                        <CountryFlag name="Bangladesh" size={26} />
                         <div className="text-left min-w-0">
-                            <p className="text-[10px] text-gray-400 font-medium uppercase leading-none" style={{ fontFamily: bnFont }}>
+                            <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider leading-none mb-0.5" style={{ fontFamily: bnFont }}>
                                 {isBn ? 'থেকে' : 'From'}
                             </p>
-                            <p className="text-[13px] font-semibold text-gray-800 leading-snug" style={{ fontFamily: bnFont }}>
+                            <p className="text-[13px] font-bold text-gray-800 leading-snug" style={{ fontFamily: bnFont }}>
                                 {isBn ? 'বাংলাদেশ' : 'Bangladesh'}
                             </p>
                         </div>
                     </div>
 
                     {/* TO: Country Destination */}
-                    <div className="relative" ref={countryDropdownRef}>
+                    <div className={`relative ${showCountryDropdown ? 'z-[9999]' : 'z-0'}`} ref={countryDropdownRef}>
                         <div
                             onClick={() => setShowCountryDropdown(!showCountryDropdown)}
-                            className="flex items-center gap-2.5 px-3 lg:px-4 py-2.5 border border-gray-100 rounded-lg bg-gray-50/30 hover:bg-white hover:border-[#1D7EDD]/30 transition-all cursor-pointer"
+                            className={`flex items-center gap-3 px-4 py-3 border rounded-xl transition-all cursor-pointer select-none ${showCountryDropdown ? 'border-[#1D7EDD]/50 bg-white shadow-sm' : 'border-gray-200/80 bg-white/80 hover:border-[#1D7EDD]/30 hover:bg-white'}`}
                         >
-                            <span className="text-lg flex-shrink-0">
-                                {selectedCountryFlag || <LuGlobe className="text-gray-400 w-[18px] h-[18px]" />}
+                            <span className="flex-shrink-0">
+                                {selectedCountryData ? <CountryFlag name={selectedCountryData.name} flag={selectedCountryData.flag} size={26} /> : <LuGlobe className="text-[#1D7EDD] w-5 h-5" />}
                             </span>
                             <div className="text-left flex-grow min-w-0">
-                                <p className="text-[10px] text-gray-400 font-medium uppercase leading-none" style={{ fontFamily: bnFont }}>
+                                <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider leading-none mb-0.5" style={{ fontFamily: bnFont }}>
                                     {isBn ? 'গন্তব্য' : 'Traveling To'}
                                 </p>
-                                <p className="text-[13px] font-semibold text-gray-800 leading-snug truncate" style={{ fontFamily: bnFont }}>
+                                <p className={`text-[13px] font-bold leading-snug truncate ${selectedCountry ? 'text-gray-800' : 'text-gray-400'}`} style={{ fontFamily: bnFont }}>
                                     {selectedCountryName}
                                 </p>
                             </div>
-                            <LuChevronRight className={`text-gray-400 w-3.5 h-3.5 flex-shrink-0 transition-transform ${showCountryDropdown ? 'rotate-90' : ''}`} />
+                            <LuChevronRight className={`text-gray-300 w-4 h-4 flex-shrink-0 transition-transform duration-200 ${showCountryDropdown ? 'rotate-90' : ''}`} />
                         </div>
 
                         {/* Country Dropdown */}
                         <AnimatePresence>
                             {showCountryDropdown && (
                                 <motion.div
-                                    initial={{ opacity: 0, y: -8 }}
+                                    initial={{ opacity: 0, y: -6 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -8 }}
+                                    exit={{ opacity: 0, y: -6 }}
                                     transition={{ duration: 0.15 }}
-                                    className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-gray-200 rounded-lg shadow-2xl z-[9999] max-h-[280px] flex flex-col"
+                                    className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-gray-200 rounded-xl shadow-2xl z-[9999] max-h-[280px] overflow-y-auto"
+                                    style={{ overscrollBehavior: 'contain' }}
                                 >
-                                    <div className="p-2.5 border-b border-gray-100">
-                                        <input
-                                            type="text"
-                                            placeholder={isBn ? "দেশ খুঁজুন..." : "Search country..."}
-                                            value={countrySearch}
-                                            onChange={(e) => setCountrySearch(e.target.value)}
-                                            className="w-full px-3 py-1.5 text-[13px] border border-gray-200 rounded-md outline-none focus:border-[#1D7EDD] transition-colors"
-                                            style={{ fontFamily: bnFont }}
-                                            autoFocus
-                                        />
-                                    </div>
-                                    <div className="overflow-y-auto max-h-[210px]">
+                                    <div className="py-1">
                                         {filteredCountries.length > 0 ? (
                                             filteredCountries.map(c => (
-                                                <button
+                                                <div
                                                     key={c._id || c.slug}
-                                                    onMouseDown={(e) => {
-                                                        e.preventDefault();
+                                                    onClick={(e) => {
                                                         e.stopPropagation();
-                                                        setSelectedCountry(c.slug);
+                                                        setSelectedCountry(c.slug || c._id);
                                                         setShowCountryDropdown(false);
                                                         setCountrySearch("");
                                                     }}
-                                                    className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-left hover:bg-gray-50 transition-colors text-[13px] cursor-pointer ${selectedCountry === c.slug ? 'bg-[#1D7EDD]/5 text-[#1D7EDD]' : 'text-gray-700'}`}
+                                                    className={`flex items-center gap-3 px-4 py-2.5 cursor-pointer select-none transition-colors ${selectedCountry === (c.slug || c._id) ? 'bg-[#1D7EDD]/8 text-[#1D7EDD]' : 'text-gray-700 hover:bg-gray-50'}`}
                                                     style={{ fontFamily: bnFont }}
                                                 >
-                                                    {c.flag && <span className="text-base flex-shrink-0 pointer-events-none">{c.flag}</span>}
-                                                    <span className="font-medium truncate pointer-events-none">
+                                                    <CountryFlag name={c.name} flag={c.flag} size={22} />
+                                                    <span className="text-[13px] font-semibold truncate flex-grow">
                                                         {isBn && c.nameBn ? c.nameBn : c.name}
                                                     </span>
-                                                    {c.region && (
-                                                        <span className="ml-auto text-[10px] text-gray-400 font-medium flex-shrink-0 pointer-events-none">
-                                                            {isBn && c.regionBn ? c.regionBn : c.region}
-                                                        </span>
+                                                    {selectedCountry === (c.slug || c._id) && (
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-[#1D7EDD] flex-shrink-0" />
                                                     )}
-                                                </button>
+                                                </div>
                                             ))
                                         ) : (
-                                            <div className="py-5 text-center text-gray-400 text-[13px]" style={{ fontFamily: bnFont }}>
+                                            <div className="py-6 text-center text-gray-400 text-[13px]" style={{ fontFamily: bnFont }}>
                                                 {isBn ? 'কোন দেশ পাওয়া যায়নি' : 'No countries found'}
                                             </div>
                                         )}
@@ -213,19 +244,19 @@ export default function Hero() {
                     </div>
 
                     {/* Visa Category Selector */}
-                    <div className="flex items-center gap-2.5 px-3 lg:px-4 py-2.5 border border-gray-100 rounded-lg bg-gray-50/30 hover:bg-white hover:border-[#1D7EDD]/30 transition-all cursor-pointer">
-                        <LuTicket className="text-gray-400 w-[18px] h-[18px] flex-shrink-0" />
+                    <div className="flex items-center gap-3 px-4 py-3 border border-gray-200/80 rounded-xl bg-white/80 hover:border-[#1D7EDD]/30 hover:bg-white transition-all cursor-pointer">
+                        <LuTicket className="text-[#1D7EDD] w-5 h-5 flex-shrink-0" />
                         <div className="text-left flex-grow min-w-0">
-                            <p className="text-[10px] text-gray-400 font-medium uppercase leading-none" style={{ fontFamily: bnFont }}>
+                            <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider leading-none mb-0.5" style={{ fontFamily: bnFont }}>
                                 {isBn ? 'ক্যাটাগরি' : 'Category'}
                             </p>
                             <select
                                 value={selectedCategory}
                                 onChange={(e) => setSelectedCategory(e.target.value)}
-                                className="w-full text-[13px] font-semibold text-gray-800 bg-transparent outline-none cursor-pointer leading-snug"
+                                className="w-full text-[13px] font-bold text-gray-800 bg-transparent outline-none cursor-pointer leading-snug appearance-none"
                                 style={{ fontFamily: bnFont }}
                             >
-                                <option value="">{isBn ? "ভিসার ধরন নির্বাচন" : "Select Visa Type"}</option>
+                                <option value="">{isBn ? "ভিসার ধরন" : "Visa Type"}</option>
                                 {visaCategories.map(cat => (
                                     <option key={cat._id} value={cat.slug}>
                                         {isBn && cat.nameBn ? cat.nameBn : cat.name}
@@ -233,39 +264,126 @@ export default function Hero() {
                                 ))}
                             </select>
                         </div>
+                        <LuChevronRight className="text-gray-300 w-4 h-4 flex-shrink-0 rotate-90" />
                     </div>
                 </>
             );
         }
 
-        // Default tab content (hotel, tour, flight)
-        return (
-            <>
-                <div className="flex items-center gap-2.5 px-3 lg:px-4 py-2.5 border border-gray-100 rounded-lg bg-gray-50/30 hover:bg-white transition-all cursor-pointer">
-                    <LuMapPin className="text-gray-400 w-[18px] h-[18px] flex-shrink-0" />
-                    <div className="text-left">
-                        <p className="text-[10px] text-gray-400 font-medium uppercase leading-none" style={{ fontFamily: bnFont }}>{t('destination')}</p>
-                        <p className="text-[13px] font-semibold text-gray-800 leading-snug" style={{ fontFamily: bnFont }}>{t('selectLabel')}</p>
-                    </div>
-                </div>
+        if (activeTab === "tour") {
+            return (
+                <>
+                    {/* Destination */}
+                    <div className={`relative ${showCountryDropdown ? 'z-[9999]' : 'z-0'}`} ref={countryDropdownRef}>
+                        <div
+                            onClick={() => setShowCountryDropdown(!showCountryDropdown)}
+                            className={`flex items-center gap-3 px-4 py-3 border rounded-xl transition-all cursor-pointer select-none ${showCountryDropdown ? 'border-[#F97316]/50 bg-white shadow-sm' : 'border-gray-200/80 bg-white/80 hover:border-[#F97316]/30 hover:bg-white'}`}
+                        >
+                            <span className="flex-shrink-0">
+                                {selectedCountryData ? <CountryFlag name={selectedCountryData.name} flag={selectedCountryData.flag} size={26} /> : <LuMapPin className="text-[#F97316] w-5 h-5" />}
+                            </span>
+                            <div className="text-left flex-grow min-w-0">
+                                <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider leading-none mb-0.5" style={{ fontFamily: bnFont }}>
+                                    {isBn ? 'গন্তব্য' : 'Destination'}
+                                </p>
+                                <p className={`text-[13px] font-bold leading-snug truncate ${selectedCountry ? 'text-gray-800' : 'text-gray-400'}`} style={{ fontFamily: bnFont }}>
+                                    {selectedCountryName}
+                                </p>
+                            </div>
+                            <LuChevronRight className={`text-gray-300 w-4 h-4 flex-shrink-0 transition-transform duration-200 ${showCountryDropdown ? 'rotate-90' : ''}`} />
+                        </div>
 
-                <div className="flex items-center gap-2.5 px-3 lg:px-4 py-2.5 border border-gray-100 rounded-lg bg-gray-50/30 hover:bg-white transition-all cursor-pointer">
-                    <LuCalendar className="text-gray-400 w-[18px] h-[18px] flex-shrink-0" />
-                    <div className="text-left">
-                        <p className="text-[10px] text-gray-400 font-medium uppercase leading-none">Date</p>
-                        <p className="text-[13px] font-semibold text-gray-800 leading-snug">18 February, 2026</p>
+                        {/* Dropdown */}
+                        <AnimatePresence>
+                            {showCountryDropdown && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -6 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -6 }}
+                                    transition={{ duration: 0.15 }}
+                                    className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-gray-200 rounded-xl shadow-2xl z-[9999] max-h-[280px] overflow-y-auto"
+                                    style={{ overscrollBehavior: 'contain' }}
+                                >
+                                    <div className="py-1">
+                                        {filteredCountries.length > 0 ? (
+                                            filteredCountries.map(c => (
+                                                <div
+                                                    key={c._id || c.slug}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setSelectedCountry(c.slug || c._id);
+                                                        setShowCountryDropdown(false);
+                                                        setCountrySearch("");
+                                                    }}
+                                                    className={`flex items-center gap-3 px-4 py-2.5 cursor-pointer select-none transition-colors ${selectedCountry === (c.slug || c._id) ? 'bg-[#F97316]/8 text-[#F97316]' : 'text-gray-700 hover:bg-gray-50'}`}
+                                                    style={{ fontFamily: bnFont }}
+                                                >
+                                                    <CountryFlag name={c.name} flag={c.flag} size={22} />
+                                                    <span className="text-[13px] font-semibold truncate flex-grow">
+                                                        {isBn && c.nameBn ? c.nameBn : c.name}
+                                                    </span>
+                                                    {selectedCountry === (c.slug || c._id) && (
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-[#F97316] flex-shrink-0" />
+                                                    )}
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div className="py-6 text-center text-gray-400 text-[13px]" style={{ fontFamily: bnFont }}>
+                                                {isBn ? 'কোন গন্তব্য পাওয়া যায়নি' : 'No destination found'}
+                                            </div>
+                                        )}
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
-                </div>
 
-                <div className="flex items-center gap-2.5 px-3 lg:px-4 py-2.5 border border-gray-100 rounded-lg bg-gray-50/30 hover:bg-white transition-all cursor-pointer">
-                    <LuLayoutList className="text-gray-400 w-[18px] h-[18px] flex-shrink-0" />
-                    <div className="text-left">
-                        <p className="text-[10px] text-gray-400 font-medium uppercase leading-none" style={{ fontFamily: bnFont }}>{t('tourTypes')}</p>
-                        <p className="text-[13px] font-semibold text-gray-800 leading-snug" style={{ fontFamily: bnFont }}>{t('selectLabel')}</p>
+                    {/* Select Tour */}
+                    <div className="flex items-center gap-3 px-4 py-3 border border-gray-200/80 rounded-xl bg-white/80 hover:border-[#F97316]/30 hover:bg-white transition-all cursor-pointer">
+                        <LuMapPin className="text-[#F97316] w-5 h-5 flex-shrink-0" />
+                        <div className="text-left flex-grow min-w-0">
+                            <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider leading-none mb-0.5" style={{ fontFamily: bnFont }}>{isBn ? 'ট্যুর প্যাকেজ' : 'Select Tour'}</p>
+                            <select
+                                value={selectedTour}
+                                onChange={(e) => setSelectedTour(e.target.value)}
+                                className="w-full text-[13px] font-bold text-gray-800 bg-transparent outline-none cursor-pointer leading-snug truncate appearance-none"
+                                style={{ fontFamily: bnFont }}
+                            >
+                                <option value="">{isBn ? "ট্যুর নির্বাচন" : "Pick a Tour"}</option>
+                                {filteredToursByCountry.map(t => (
+                                    <option key={t._id} value={t.slug}>
+                                        {isBn && t.titleBn ? t.titleBn : t.title}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <LuChevronRight className="text-gray-300 w-4 h-4 flex-shrink-0 rotate-90" />
                     </div>
-                </div>
-            </>
-        );
+
+                    {/* Tour Type */}
+                    <div className="flex items-center gap-3 px-4 py-3 border border-gray-200/80 rounded-xl bg-white/80 hover:border-[#F97316]/30 hover:bg-white transition-all cursor-pointer">
+                        <LuLayoutList className="text-[#F97316] w-5 h-5 flex-shrink-0" />
+                        <div className="text-left flex-grow min-w-0">
+                            <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider leading-none mb-0.5" style={{ fontFamily: bnFont }}>{isBn ? 'ট্যুর টাইপ' : 'Tour Type'}</p>
+                            <select
+                                className="w-full text-[13px] font-bold text-gray-800 bg-transparent outline-none cursor-pointer leading-snug appearance-none"
+                                style={{ fontFamily: bnFont }}
+                            >
+                                <option value="">{isBn ? "সব ধরন" : "All Types"}</option>
+                                <option value="Solo Tour">{isBn ? "একক ট্যুর" : "Solo Tour"}</option>
+                                <option value="Group Tour">{isBn ? "গ্রুপ ট্যুর" : "Group Tour"}</option>
+                                <option value="Family Tour">{isBn ? "ফ্যামিলি ট্যুর" : "Family Tour"}</option>
+                                <option value="Couple Tour">{isBn ? "কাপল ট্যুর" : "Couple Tour"}</option>
+                            </select>
+                        </div>
+                        <LuChevronRight className="text-gray-300 w-4 h-4 flex-shrink-0 rotate-90" />
+                    </div>
+                </>
+            );
+        }
+
+        // Default tab content fallback
+        return null;
     };
 
     return (
@@ -300,7 +418,8 @@ export default function Hero() {
                 >
                     <source src="https://res.cloudinary.com/dyjx0hfwi/video/upload/v1772076798/hero_jnba7p.mp4" type="video/mp4" />
                 </video>
-                <div className="absolute inset-0 bg-black/40 lg:bg-transparent z-10" />
+                {/* Dark overlay — pointer-events-none so it never blocks clicks */}
+                <div className="absolute inset-0 bg-black/40 lg:bg-transparent z-10 pointer-events-none" />
             </div>
 
             {/* Spacer for navbar */}
@@ -367,10 +486,10 @@ export default function Hero() {
                         {tabs.map((tab) => (
                             <button
                                 key={tab.id}
-                                onClick={() => setActiveTab(tab.id)}
-                                className={`flex items-center gap-1.5 px-3.5 lg:px-4 py-2 rounded-t-lg font-semibold text-[10px] lg:text-[12px] transition-all duration-200 ${activeTab === tab.id
-                                    ? "bg-white text-[#1D7EDD] shadow-md"
-                                    : "bg-white/80 backdrop-blur-md text-gray-600 hover:bg-white"
+                                onClick={() => { setActiveTab(tab.id); setSelectedCountry(""); setSelectedTour(""); setShowCountryDropdown(false); }}
+                                className={`flex items-center gap-1.5 px-4 lg:px-5 py-2.5 rounded-t-xl font-bold text-[11px] lg:text-[12px] transition-all duration-200 tracking-wide ${activeTab === tab.id
+                                    ? "bg-white text-[#1D7EDD] shadow-lg"
+                                    : "bg-white/80 backdrop-blur-md text-gray-500 hover:bg-white hover:text-gray-700"
                                     }`}
                                 style={{ fontFamily: bnFont }}
                             >
@@ -383,24 +502,28 @@ export default function Hero() {
                     </div>
 
                     {/* Search Card */}
-                    <div className="bg-white rounded-xl lg:rounded-tl-none p-3 lg:p-5 shadow-2xl relative z-[40]" style={{ overflow: 'visible' }}>
-                        <div className="flex flex-col lg:flex-row gap-2.5 lg:gap-3 items-stretch">
+                    <div className="bg-white rounded-2xl lg:rounded-tl-none p-4 lg:p-5 shadow-2xl relative z-[40]" style={{ overflow: 'visible' }}>
+                        <div className="flex flex-col lg:flex-row gap-3 lg:gap-3 items-stretch" style={{ overflow: 'visible' }}>
                             {/* Input Grid */}
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 lg:gap-2.5 flex-grow w-full">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 lg:gap-3 flex-grow w-full" style={{ overflow: 'visible' }}>
                                 {renderSearchFields()}
                             </div>
 
-                            {/* Action Button - Redesigned */}
+                            {/* Action Button */}
                             <button
-                                onClick={activeTab === "visa" ? handleVisaSearch : undefined}
-                                className="w-full lg:w-auto px-6 py-3 lg:py-0 flex items-center justify-center gap-2 text-white rounded-lg font-semibold text-[13px] transition-all active:scale-[0.97] group flex-shrink-0"
+                                onClick={activeTab === "visa" ? handleVisaSearch : handleTourSearch}
+                                className="w-full lg:w-auto px-7 py-3.5 lg:py-0 flex items-center justify-center gap-2 text-white rounded-xl font-bold text-[13px] transition-all active:scale-[0.97] hover:shadow-xl group flex-shrink-0"
                                 style={{
-                                    background: 'linear-gradient(135deg, #1D7EDD 0%, #1565c0 100%)',
+                                    background: activeTab === "visa"
+                                        ? 'linear-gradient(135deg, #1D7EDD 0%, #1565c0 100%)'
+                                        : 'linear-gradient(135deg, #F97316 0%, #EA580C 100%)',
                                     fontFamily: bnFont,
-                                    boxShadow: '0 4px 15px rgba(29, 126, 221, 0.35)',
+                                    boxShadow: activeTab === "visa"
+                                        ? '0 4px 20px rgba(29, 126, 221, 0.4)'
+                                        : '0 4px 20px rgba(249, 115, 22, 0.4)',
                                 }}
                             >
-                                {activeTab === "visa" ? (isBn ? 'আবেদন করুন' : 'Apply Now') : t('search')}
+                                {activeTab === "visa" ? (isBn ? 'আবেদন করুন' : 'Apply Now') : (isBn ? 'খুঁজুন' : 'Search')}
                                 <LuArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                             </button>
                         </div>

@@ -23,6 +23,7 @@ import {
     LuTrendingUp
 } from "react-icons/lu";
 import { useLanguage } from "@/context/LanguageContext";
+import CountryFlag from "@/components/shared/CountryFlag";
 
 const destinations = [
     {
@@ -154,12 +155,12 @@ export default function StudyAbroadPage() {
             <section className="relative py-14 md:py-28 flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 z-0"
                     style={{
-                        backgroundImage: "url('https://images.unsplash.com/photo-1523050854058-8df90110c476?w=1920&q=80')",
+                        backgroundImage: "url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1920&q=80')",
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                     }}
                 >
-                    <div className="absolute inset-0" style={{ backgroundColor: 'rgba(2,30,20,0.78)' }} />
+                    <div className="absolute inset-0" style={{ backgroundColor: 'rgba(2,15,10,0.82)' }} />
                 </div>
 
                 <div className="relative z-10 max-w-4xl w-full px-4 text-center flex flex-col items-center">
@@ -237,7 +238,7 @@ export default function StudyAbroadPage() {
                                 }`}
                             style={selectedCountry === idx ? { backgroundColor: '#021E14', fontFamily } : { fontFamily }}
                         >
-                            <span className="text-base">{dest.flag}</span>
+                            <CountryFlag name={dest.country} flag={dest.flag} size={20} />
                             {isBn ? dest.countryBn : dest.country}
                         </button>
                     ))}
@@ -256,7 +257,7 @@ export default function StudyAbroadPage() {
                             {/* Info Panel */}
                             <div className="p-8 md:p-12">
                                 <div className="flex items-center gap-3 mb-4">
-                                    <span className="text-4xl">{activeDestination.flag}</span>
+                                    <CountryFlag name={activeDestination.country} flag={activeDestination.flag} size={48} rounded={false} />
                                     <div>
                                         <h3 className="text-2xl font-black uppercase tracking-wider" style={{ fontFamily: headingFont, color: '#021E14' }}>
                                             {isBn ? activeDestination.countryBn : activeDestination.country}
