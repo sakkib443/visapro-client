@@ -24,16 +24,19 @@ export default function RegisterPage() {
 
     const password = watch("password");
 
+    const [serverError, setServerError] = useState("");
+
     const onSubmit = async (data) => {
         setIsLoading(true);
+        setServerError("");
         try {
             const userData = {
                 firstName: data.firstName,
-                lastName: data.lastName,
+                lastName: data.lastName || "",
                 email: data.email,
                 password: data.password,
-                phone: data.phone,
-                role: "buyer",
+                ...(data.phone && { phone: data.phone }),
+                role: "user",
             };
 
             const response = await authService.register(userData);
@@ -43,7 +46,13 @@ export default function RegisterPage() {
                 router.push("/login");
             }
         } catch (error) {
-            toast.error(error.message || "Registration failed");
+            // Show server validation errors properly
+            if (error?.errorSources?.length) {
+                const msg = error.errorSources[0]?.message || error.message;
+                setServerError(msg);
+            } else {
+                setServerError(error.message || "Registration failed. Please try again.");
+            }
         } finally {
             setIsLoading(false);
         }
@@ -194,18 +203,15 @@ export default function RegisterPage() {
                             </div>
                             <div>
                                 <label className="block text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-1.5">
-                                    Last Name
+                                    Last Name <span className="text-gray-300 normal-case font-normal">(optional)</span>
                                 </label>
                                 <input
                                     type="text"
-                                    {...register("lastName", { required: "Last name is required" })}
+                                    {...register("lastName")}
                                     className="w-full px-3.5 py-2.5 rounded-lg border border-gray-200 bg-white text-sm text-gray-800
                                         placeholder-gray-400 focus:outline-none focus:border-[#021E14] focus:ring-1 focus:ring-[#021E14]/10 transition-all"
                                     placeholder="Doe"
                                 />
-                                {errors.lastName && (
-                                    <p className="text-red-500 text-[10px] mt-1">{errors.lastName.message}</p>
-                                )}
                             </div>
                         </div>
 
@@ -238,27 +244,18 @@ export default function RegisterPage() {
                         {/* Phone */}
                         <div>
                             <label className="block text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-1.5">
-                                Phone Number
+                                Phone Number <span className="text-gray-300 normal-case font-normal">(optional)</span>
                             </label>
                             <div className="relative">
                                 <FiPhone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-300" size={15} />
                                 <input
                                     type="tel"
-                                    {...register("phone", {
-                                        required: "Phone number is required",
-                                        pattern: {
-                                            value: /^[0-9]{11}$/,
-                                            message: "Enter a valid 11-digit phone number",
-                                        },
-                                    })}
+                                    {...register("phone")}
                                     className="w-full pl-10 pr-3.5 py-2.5 rounded-lg border border-gray-200 bg-white text-sm text-gray-800
                                         placeholder-gray-400 focus:outline-none focus:border-[#021E14] focus:ring-1 focus:ring-[#021E14]/10 transition-all"
                                     placeholder="01XXXXXXXXX"
                                 />
                             </div>
-                            {errors.phone && (
-                                <p className="text-red-500 text-[10px] mt-1">{errors.phone.message}</p>
-                            )}
                         </div>
 
                         {/* Password */}
@@ -322,7 +319,7 @@ export default function RegisterPage() {
                         <div className="flex items-start gap-2.5 pt-1">
                             <input
                                 type="checkbox"
-                                {...register("terms", { required: "You must agree to the terms" })}
+                                {...register("terms")}
                                 className="w-3.5 h-3.5 mt-0.5 rounded border-gray-300 accent-[#021E14]"
                             />
                             <label className="text-[11px] text-gray-500 leading-relaxed">
@@ -336,8 +333,15 @@ export default function RegisterPage() {
                                 </Link>
                             </label>
                         </div>
-                        {errors.terms && (
-                            <p className="text-red-500 text-[10px]">{errors.terms.message}</p>
+
+                        {/* Server Error */}
+                        {serverError && (
+                            <div className="flex items-start gap-2 p-3 rounded-lg bg-red-50 border border-red-100">
+                                <svg className="w-3.5 h-3.5 text-red-500 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                </svg>
+                                <p className="text-red-600 text-[11px] font-medium leading-snug">{serverError}</p>
+                            </div>
                         )}
 
                         {/* Submit */}

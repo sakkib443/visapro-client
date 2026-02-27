@@ -167,6 +167,49 @@ export const countryService = {
     delete: (id) => apiFetch(`/api/countries/${id}`, { method: 'DELETE' }),
 };
 
+// ==================== HOTEL SERVICE ====================
+export const hotelService = {
+    getAll: (params = "") => {
+        const queryString = typeof params === 'object'
+            ? '?' + new URLSearchParams(params).toString()
+            : params;
+        return apiFetch(`/api/hotels${queryString}`);
+    },
+
+    getActive: () => apiFetch('/api/hotels/active'),
+
+    getFeatured: () => apiFetch('/api/hotels/featured'),
+
+    getById: (id) => apiFetch(`/api/hotels/${id}`),
+
+    getBySlug: (slug) => apiFetch(`/api/hotels/slug/${slug}`),
+
+    create: (data) => apiFetch('/api/hotels', { method: 'POST', body: JSON.stringify(data) }),
+
+    update: (id, data) => apiFetch(`/api/hotels/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+
+    delete: (id) => apiFetch(`/api/hotels/${id}`, { method: 'DELETE' }),
+};
+
+// ==================== VISA DOCUMENT SERVICE ====================
+export const visaDocumentService = {
+    // Admin: get all documents
+    getAll: (params = {}) => {
+        const q = new URLSearchParams(params).toString();
+        return apiFetch(`/api/visa-documents${q ? '?' + q : ''}`);
+    },
+    // Admin: create document
+    create: (data) => apiFetch('/api/visa-documents', { method: 'POST', body: JSON.stringify(data) }),
+    // Admin: update document
+    update: (id, data) => apiFetch(`/api/visa-documents/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+    // Admin: delete document
+    delete: (id) => apiFetch(`/api/visa-documents/${id}`, { method: 'DELETE' }),
+    // Admin/User: get by id
+    getById: (id) => apiFetch(`/api/visa-documents/${id}`),
+    // User: get own documents
+    getMy: () => apiFetch('/api/visa-documents/my'),
+};
+
 // ==================== ANALYTICS SERVICE ====================
 export const analyticsService = {
     getDashboard: () => apiFetch('/api/analytics/dashboard'),

@@ -71,6 +71,14 @@ const menuItems = [
         ],
     },
     {
+        name: "Visa Documents",
+        icon: FiFileText,
+        children: [
+            { name: "All Documents", href: "/dashboard/admin/visa-documents", icon: FiFileText },
+            { name: "Create Document", href: "/dashboard/admin/visa-documents/create", icon: FiPlus },
+        ],
+    },
+    {
         section: "TRAVEL & TOURS",
     },
     {
@@ -90,12 +98,30 @@ const menuItems = [
         ],
     },
     {
+        name: "Hotels",
+        icon: LuHotel,
+        children: [
+            { name: "All Hotels", href: "/dashboard/admin/hotels", icon: LuHotel },
+            { name: "Add Hotel", href: "/dashboard/admin/hotels/create", icon: FiPlus },
+        ],
+    },
+    {
         name: "Study Abroad",
         icon: LuGraduationCap,
         children: [
             { name: "All Programs", href: "/dashboard/admin/study-abroad", icon: LuGraduationCap },
             { name: "Add Program", href: "/dashboard/admin/study-abroad/create", icon: FiPlus },
         ],
+    },
+    {
+        section: "MY DOCUMENTS",
+        roles: ["user"],
+    },
+    {
+        name: "My Visa Documents",
+        icon: FiFileText,
+        href: "/dashboard/user/visa-documents",
+        roles: ["user"],
     },
     {
         section: "MANAGEMENT",
@@ -289,7 +315,7 @@ export default function DashboardLayout({ children }) {
 
     const renderSidebarContent = (isCollapsedMode = false) => (
         <>
-            {menuItems.map((item, index) => {
+            {menuItems.filter(item => !item.roles || item.roles.includes(user?.role)).map((item, index) => {
                 if (item.section) {
                     if (isCollapsedMode) return <div key={index} className="my-3 border-t border-gray-100 dark:border-gray-700/50" />;
                     return (
