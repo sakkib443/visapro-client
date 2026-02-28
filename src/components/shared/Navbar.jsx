@@ -39,8 +39,9 @@ export default function Navbar() {
     const isAuthenticated = useSelector(selectIsAuthenticated);
     const pathname = usePathname();
 
-    const bnFont = language === 'bn' ? 'Hind Siliguri, sans-serif' : 'Poppins, sans-serif';
-    const headingFont = language === 'bn' ? 'Hind Siliguri, sans-serif' : 'Teko, sans-serif';
+    const isBn = language === 'bn';
+    const bnFont = isBn ? 'Hind Siliguri, sans-serif' : 'Poppins, sans-serif';
+    const headingFont = isBn ? 'Hind Siliguri, sans-serif' : 'Teko, sans-serif';
 
     // Dynamic visa categories from database
     const [visaCategories, setVisaCategories] = useState([]);
@@ -118,6 +119,7 @@ export default function Navbar() {
             })),
         },
         { name: t('tour'), href: "/tour" },
+        { name: isBn ? 'হোটেল' : 'Hotel', href: "/hotel" },
         { name: t('hajjUmrah'), href: "/hajj-umrah" },
         { name: t('studyAbroad'), href: "/study-abroad" },
         { name: t('blog'), href: "/blog" },

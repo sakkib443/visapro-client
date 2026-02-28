@@ -132,7 +132,7 @@ function HotelContent() {
                 <div
                     className="absolute inset-0 z-0"
                     style={{
-                        backgroundImage: "url('/images/ture bg.webp')",
+                        backgroundImage: "url('/images/hotel-hero-bg.png')",
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'

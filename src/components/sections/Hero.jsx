@@ -334,7 +334,7 @@ export default function Hero() {
                     onLoadedMetadata={() => { if (videoRef.current) { videoRef.current.defaultPlaybackRate = 0.75; videoRef.current.playbackRate = 0.75; } }}
                     className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full w-auto h-auto object-cover"
                 >
-                    <source src="/hero.mp4" type="video/mp4" />
+                    <source src="https://res.cloudinary.com/dyjx0hfwi/video/upload/hero_jnba7p.mp4" type="video/mp4" />
                 </video>
                 <div className="absolute inset-0 bg-black/40 lg:bg-transparent z-10" />
             </div>
