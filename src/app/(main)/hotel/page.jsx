@@ -114,16 +114,7 @@ function HotelContent() {
         ));
     };
 
-    if (loading) {
-        return (
-            <div className="bg-[#F8FAFC] min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                    <LuLoader size={40} className="animate-spin mx-auto mb-4" style={{ color: '#EF8C2C' }} />
-                    <p className="text-gray-400 text-sm" style={{ fontFamily }}>{isBn ? 'হোটেল লোড হচ্ছে...' : 'Loading hotels...'}</p>
-                </div>
-            </div>
-        );
-    }
+
 
     return (
         <div className="bg-[#F8FAFC] min-h-screen text-[#021E14]" style={{ fontFamily }}>
@@ -379,159 +370,194 @@ function HotelContent() {
                             </div>
                         </div>
 
-                        <AnimatePresence mode="popLayout">
-                            {filteredHotels.length > 0 ? (
-                                <div className={viewMode === "grid"
-                                    ? "grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-8"
-                                    : "space-y-6 md:space-y-8"
-                                }>
-                                    {filteredHotels.map((hotel, idx) => {
-                                        const sym = getCurrencySymbol(hotel.currency);
-                                        return (
-                                            <motion.div
-                                                layout
-                                                key={hotel._id || idx}
-                                                initial={{ opacity: 0, y: 15 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                exit={{ opacity: 0, scale: 0.98 }}
-                                                transition={{ duration: 0.4, delay: idx * 0.05 }}
-                                                className={`group bg-white rounded-md overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-all duration-500 flex flex-col ${viewMode === "list" ? "md:flex-row h-auto md:h-64" : ""}`}
-                                            >
-                                                {/* Image Section */}
-                                                <div className={`relative overflow-hidden ${viewMode === "grid" ? "h-52" : "w-full md:w-1/3 h-52 md:h-full"}`}>
-                                                    {hotel.image ? (
-                                                        <img
-                                                            src={hotel.image}
-                                                            alt={isBn ? hotel.nameBn || hotel.name : hotel.name}
-                                                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-                                                        />
-                                                    ) : (
-                                                        <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: '#021E14' }}>
-                                                            <LuBed size={40} className="text-white/10" />
-                                                        </div>
-                                                    )}
-                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-
-                                                    {/* Featured Badge */}
-                                                    {hotel.isFeatured && (
-                                                        <div className="absolute top-3 left-3">
-                                                            <span className="px-2.5 py-1 bg-[#EF8C2C] text-white text-[8px] font-bold uppercase tracking-widest rounded-md shadow-sm" style={{ fontFamily }}>
-                                                                {isBn ? 'ফিচার্ড' : 'Featured'}
-                                                            </span>
-                                                        </div>
-                                                    )}
-
-                                                    {/* Star Rating Badge */}
-                                                    <div className="absolute top-3 right-3">
-                                                        <span className="flex items-center gap-0.5 px-2 py-1 bg-black/50 backdrop-blur-sm rounded-md text-white text-[9px] font-bold" style={{ fontFamily }}>
-                                                            {'★'.repeat(hotel.starRating || 1)}
-                                                        </span>
-                                                    </div>
-
-                                                    {/* Location on image */}
-                                                    <div className="absolute bottom-3 left-3 flex items-center gap-1.5">
-                                                        <LuMapPin size={11} className="text-[#EF8C2C]" />
-                                                        <span className="text-white text-[10px] font-bold uppercase tracking-widest drop-shadow" style={{ fontFamily }}>
-                                                            {isBn ? (hotel.cityBn || hotel.city) : hotel.city}
-                                                        </span>
-                                                    </div>
+                        {loading ? (
+                            <div className={viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-8" : "space-y-6 md:space-y-8"}>
+                                {Array.from({ length: 6 }).map((_, idx) => (
+                                    <div key={idx} className={`bg-white rounded-md overflow-hidden border border-gray-100 shadow-sm flex flex-col ${viewMode === "list" ? "md:flex-row h-auto md:h-64" : ""}`}
+                                        style={{ animation: `fadeInUp 0.4s ease-out ${idx * 0.08}s both` }}>
+                                        {/* Skeleton Image */}
+                                        <div className={`relative overflow-hidden bg-gray-100 ${viewMode === "grid" ? "h-52" : "w-full md:w-1/3 h-52 md:h-full"}`}>
+                                            <div className="absolute inset-0 skeleton-shimmer" />
+                                        </div>
+                                        {/* Skeleton Content */}
+                                        <div className={`p-5 flex flex-col justify-between flex-grow ${viewMode === "list" ? "md:w-2/3" : ""}`}>
+                                            <div>
+                                                <div className="h-5 w-4/5 rounded bg-gray-100 mb-2 skeleton-shimmer" />
+                                                <div className="h-3 w-1/3 rounded bg-gray-100 mb-3 skeleton-shimmer" />
+                                                <div className="flex items-center gap-1.5 mb-3">
+                                                    <div className="w-16 h-3 rounded bg-gray-100 skeleton-shimmer" />
                                                 </div>
-
-                                                {/* Details Section */}
-                                                <div className={`p-5 flex flex-col justify-between flex-grow ${viewMode === "list" ? "md:w-2/3" : ""}`}>
-                                                    <div>
-                                                        <h3 className="text-base font-bold text-gray-900 group-hover:text-[#3590CF] transition-colors leading-snug mb-2 line-clamp-2" style={{ fontFamily }}>
-                                                            {isBn ? (hotel.nameBn || hotel.name) : hotel.name}
-                                                        </h3>
-
-                                                        {/* Location */}
-                                                        <p className="text-[11px] text-gray-400 flex items-center gap-1 mb-3" style={{ fontFamily }}>
-                                                            <LuMapPin size={10} />
-                                                            {isBn ? (hotel.locationBn || hotel.location) : hotel.location}
-                                                        </p>
-
-                                                        {/* Stars Row */}
-                                                        <div className="flex items-center gap-2 mb-3">
-                                                            <div className="flex items-center gap-0.5">
-                                                                {renderStars(hotel.starRating || 0)}
-                                                            </div>
-                                                            {hotel.rating > 0 && (
-                                                                <span className="text-[11px] font-bold text-gray-700">{hotel.rating}</span>
-                                                            )}
-                                                            {hotel.reviewsCount > 0 && (
-                                                                <span className="text-[10px] text-gray-300">({hotel.reviewsCount})</span>
-                                                            )}
-                                                        </div>
-
-                                                        {/* Amenities Preview */}
-                                                        {hotel.amenities?.length > 0 && (
-                                                            <div className="flex flex-wrap gap-1.5 mb-3">
-                                                                {hotel.amenities.slice(0, 3).map((am, i) => (
-                                                                    <span key={i} className="flex items-center gap-1 px-2 py-0.5 bg-gray-50 rounded text-[10px] text-gray-500 border border-gray-100" style={{ fontFamily }}>
-                                                                        <LuWifi size={9} /> {isBn && hotel.amenitiesBn?.[i] ? hotel.amenitiesBn[i] : am}
-                                                                    </span>
-                                                                ))}
-                                                                {hotel.amenities.length > 3 && (
-                                                                    <span className="px-2 py-0.5 bg-gray-50 rounded text-[10px] text-gray-400 border border-gray-100" style={{ fontFamily }}>
-                                                                        +{hotel.amenities.length - 3}
-                                                                    </span>
-                                                                )}
+                                                <div className="flex flex-wrap gap-1.5">
+                                                    <div className="h-5 w-14 rounded bg-gray-50 skeleton-shimmer" />
+                                                    <div className="h-5 w-14 rounded bg-gray-50 skeleton-shimmer" />
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center justify-between pt-3 border-t border-gray-50">
+                                                <div className="flex flex-col gap-1">
+                                                    <div className="h-2.5 w-12 rounded bg-gray-100 skeleton-shimmer" />
+                                                    <div className="h-5 w-20 rounded bg-gray-100 skeleton-shimmer" />
+                                                </div>
+                                                <div className="h-9 w-28 rounded bg-gray-100 skeleton-shimmer" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <AnimatePresence mode="popLayout">
+                                {filteredHotels.length > 0 ? (
+                                    <div className={viewMode === "grid"
+                                        ? "grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-8"
+                                        : "space-y-6 md:space-y-8"
+                                    }>
+                                        {filteredHotels.map((hotel, idx) => {
+                                            const sym = getCurrencySymbol(hotel.currency);
+                                            return (
+                                                <motion.div
+                                                    layout
+                                                    key={hotel._id || idx}
+                                                    initial={{ opacity: 0, y: 15 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    exit={{ opacity: 0, scale: 0.98 }}
+                                                    transition={{ duration: 0.4, delay: idx * 0.05 }}
+                                                    className={`group bg-white rounded-md overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-all duration-500 flex flex-col ${viewMode === "list" ? "md:flex-row h-auto md:h-64" : ""}`}
+                                                >
+                                                    {/* Image Section */}
+                                                    <div className={`relative overflow-hidden ${viewMode === "grid" ? "h-52" : "w-full md:w-1/3 h-52 md:h-full"}`}>
+                                                        {hotel.image ? (
+                                                            <img
+                                                                src={hotel.image}
+                                                                alt={isBn ? hotel.nameBn || hotel.name : hotel.name}
+                                                                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                                                            />
+                                                        ) : (
+                                                            <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: '#021E14' }}>
+                                                                <LuBed size={40} className="text-white/10" />
                                                             </div>
                                                         )}
+                                                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+
+                                                        {/* Featured Badge */}
+                                                        {hotel.isFeatured && (
+                                                            <div className="absolute top-3 left-3">
+                                                                <span className="px-2.5 py-1 bg-[#EF8C2C] text-white text-[8px] font-bold uppercase tracking-widest rounded-md shadow-sm" style={{ fontFamily }}>
+                                                                    {isBn ? 'ফিচার্ড' : 'Featured'}
+                                                                </span>
+                                                            </div>
+                                                        )}
+
+                                                        {/* Star Rating Badge */}
+                                                        <div className="absolute top-3 right-3">
+                                                            <span className="flex items-center gap-0.5 px-2 py-1 bg-black/50 backdrop-blur-sm rounded-md text-white text-[9px] font-bold" style={{ fontFamily }}>
+                                                                {'★'.repeat(hotel.starRating || 1)}
+                                                            </span>
+                                                        </div>
+
+                                                        {/* Location on image */}
+                                                        <div className="absolute bottom-3 left-3 flex items-center gap-1.5">
+                                                            <LuMapPin size={11} className="text-[#EF8C2C]" />
+                                                            <span className="text-white text-[10px] font-bold uppercase tracking-widest drop-shadow" style={{ fontFamily }}>
+                                                                {isBn ? (hotel.cityBn || hotel.city) : hotel.city}
+                                                            </span>
+                                                        </div>
                                                     </div>
 
-                                                    {/* Footer: Price + CTA */}
-                                                    <div className="flex items-center justify-between pt-3 border-t border-gray-50">
+                                                    {/* Details Section */}
+                                                    <div className={`p-5 flex flex-col justify-between flex-grow ${viewMode === "list" ? "md:w-2/3" : ""}`}>
                                                         <div>
-                                                            <span className="text-[10px] text-gray-300 font-medium" style={{ fontFamily }}>{isBn ? 'প্রতি রাত' : 'per night'}</span>
-                                                            <div className="flex items-baseline gap-1.5">
-                                                                <span className="text-lg font-black" style={{ color: '#3590CF' }}>
-                                                                    {sym}{hotel.pricePerNight?.toLocaleString()}
-                                                                </span>
-                                                                {hotel.oldPrice > 0 && (
-                                                                    <span className="text-[10px] text-gray-300 line-through">{sym}{hotel.oldPrice?.toLocaleString()}</span>
+                                                            <h3 className="text-base font-bold text-gray-900 group-hover:text-[#3590CF] transition-colors leading-snug mb-2 line-clamp-2" style={{ fontFamily }}>
+                                                                {isBn ? (hotel.nameBn || hotel.name) : hotel.name}
+                                                            </h3>
+
+                                                            {/* Location */}
+                                                            <p className="text-[11px] text-gray-400 flex items-center gap-1 mb-3" style={{ fontFamily }}>
+                                                                <LuMapPin size={10} />
+                                                                {isBn ? (hotel.locationBn || hotel.location) : hotel.location}
+                                                            </p>
+
+                                                            {/* Stars Row */}
+                                                            <div className="flex items-center gap-2 mb-3">
+                                                                <div className="flex items-center gap-0.5">
+                                                                    {renderStars(hotel.starRating || 0)}
+                                                                </div>
+                                                                {hotel.rating > 0 && (
+                                                                    <span className="text-[11px] font-bold text-gray-700">{hotel.rating}</span>
+                                                                )}
+                                                                {hotel.reviewsCount > 0 && (
+                                                                    <span className="text-[10px] text-gray-300">({hotel.reviewsCount})</span>
                                                                 )}
                                                             </div>
+
+                                                            {/* Amenities Preview */}
+                                                            {hotel.amenities?.length > 0 && (
+                                                                <div className="flex flex-wrap gap-1.5 mb-3">
+                                                                    {hotel.amenities.slice(0, 3).map((am, i) => (
+                                                                        <span key={i} className="flex items-center gap-1 px-2 py-0.5 bg-gray-50 rounded text-[10px] text-gray-500 border border-gray-100" style={{ fontFamily }}>
+                                                                            <LuWifi size={9} /> {isBn && hotel.amenitiesBn?.[i] ? hotel.amenitiesBn[i] : am}
+                                                                        </span>
+                                                                    ))}
+                                                                    {hotel.amenities.length > 3 && (
+                                                                        <span className="px-2 py-0.5 bg-gray-50 rounded text-[10px] text-gray-400 border border-gray-100" style={{ fontFamily }}>
+                                                                            +{hotel.amenities.length - 3}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            )}
                                                         </div>
-                                                        <Link
-                                                            href={`/hotel/${hotel.slug || hotel._id}`}
-                                                            className="px-5 py-2.5 bg-[#EF8C2C] hover:bg-[#d97b1f] text-white rounded-md text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5"
-                                                            style={{ fontFamily }}
-                                                        >
-                                                            {isBn ? 'বিস্তারিত' : 'View Details'} <LuArrowRight size={12} />
-                                                        </Link>
+
+                                                        {/* Footer: Price + CTA */}
+                                                        <div className="flex items-center justify-between pt-3 border-t border-gray-50">
+                                                            <div>
+                                                                <span className="text-[10px] text-gray-300 font-medium" style={{ fontFamily }}>{isBn ? 'প্রতি রাত' : 'per night'}</span>
+                                                                <div className="flex items-baseline gap-1.5">
+                                                                    <span className="text-lg font-black" style={{ color: '#3590CF' }}>
+                                                                        {sym}{hotel.pricePerNight?.toLocaleString()}
+                                                                    </span>
+                                                                    {hotel.oldPrice > 0 && (
+                                                                        <span className="text-[10px] text-gray-300 line-through">{sym}{hotel.oldPrice?.toLocaleString()}</span>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                            <Link
+                                                                href={`/hotel/${hotel.slug || hotel._id}`}
+                                                                className="px-5 py-2.5 bg-[#EF8C2C] hover:bg-[#d97b1f] text-white rounded-md text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5"
+                                                                style={{ fontFamily }}
+                                                            >
+                                                                {isBn ? 'বিস্তারিত' : 'View Details'} <LuArrowRight size={12} />
+                                                            </Link>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </motion.div>
-                                        );
-                                    })}
-                                </div>
-                            ) : (
-                                <div className="h-96 flex flex-col items-center justify-center text-center py-20 bg-white rounded-md border border-dashed border-gray-200">
-                                    <motion.div
-                                        initial={{ rotate: 0 }}
-                                        animate={{ rotate: 360 }}
-                                        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                                        className="mb-8 p-6 bg-gray-50 rounded-full"
-                                    >
-                                        <LuBed size={48} className="text-gray-200" />
-                                    </motion.div>
-                                    <h3 className="text-xl font-black text-gray-300 uppercase tracking-tight" style={{ fontFamily: headingFont }}>
-                                        {isBn ? 'কিছু পাওয়া যায়নি' : 'Nothing Found'}
-                                    </h3>
-                                    <p className="text-gray-400 text-[11px] font-normal mt-2 max-w-[200px]" style={{ fontFamily }}>
-                                        {isBn ? 'আপনার শর্ত অনুযায়ী কোনো হোটেল পাওয়া যায়নি।' : "No hotels match your search criteria."}
-                                    </p>
-                                    <button
-                                        onClick={resetFilters}
-                                        className="mt-6 px-6 py-2.5 bg-[#021E14] text-white rounded-md text-[10px] font-bold uppercase tracking-widest transition-all"
-                                        style={{ fontFamily }}
-                                    >
-                                        {isBn ? 'সার্চ ক্লিয়ার করুন' : 'Clear Search'}
-                                    </button>
-                                </div>
-                            )}
-                        </AnimatePresence>
+                                                </motion.div>
+                                            );
+                                        })}
+                                    </div>
+                                ) : (
+                                    <div className="h-96 flex flex-col items-center justify-center text-center py-20 bg-white rounded-md border border-dashed border-gray-200">
+                                        <motion.div
+                                            initial={{ rotate: 0 }}
+                                            animate={{ rotate: 360 }}
+                                            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                                            className="mb-8 p-6 bg-gray-50 rounded-full"
+                                        >
+                                            <LuBed size={48} className="text-gray-200" />
+                                        </motion.div>
+                                        <h3 className="text-xl font-black text-gray-300 uppercase tracking-tight" style={{ fontFamily: headingFont }}>
+                                            {isBn ? 'কিছু পাওয়া যায়নি' : 'Nothing Found'}
+                                        </h3>
+                                        <p className="text-gray-400 text-[11px] font-normal mt-2 max-w-[200px]" style={{ fontFamily }}>
+                                            {isBn ? 'আপনার শর্ত অনুযায়ী কোনো হোটেল পাওয়া যায়নি।' : "No hotels match your search criteria."}
+                                        </p>
+                                        <button
+                                            onClick={resetFilters}
+                                            className="mt-6 px-6 py-2.5 bg-[#021E14] text-white rounded-md text-[10px] font-bold uppercase tracking-widest transition-all"
+                                            style={{ fontFamily }}
+                                        >
+                                            {isBn ? 'সার্চ ক্লিয়ার করুন' : 'Clear Search'}
+                                        </button>
+                                    </div>
+                                )}
+                            </AnimatePresence>
+                        )}
                     </main>
                 </div>
             </div>

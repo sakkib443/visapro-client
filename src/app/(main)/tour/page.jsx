@@ -110,16 +110,7 @@ function TourContent() {
         return currency === 'USD' ? '$' : '৳';
     };
 
-    if (loading) {
-        return (
-            <div className="bg-[#F8FAFC] min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                    <LuLoader size={40} className="animate-spin mx-auto mb-4" style={{ color: '#EF8C2C' }} />
-                    <p className="text-gray-400 text-sm" style={{ fontFamily }}>{isBn ? 'ট্যুর লোড হচ্ছে...' : 'Loading tours...'}</p>
-                </div>
-            </div>
-        );
-    }
+
 
     return (
         <div className="bg-[#F8FAFC] min-h-screen text-[#021E14]" style={{ fontFamily }}>
@@ -359,145 +350,182 @@ function TourContent() {
                             </div>
                         </div>
 
-                        <AnimatePresence mode="popLayout">
-                            {filteredTours.length > 0 ? (
-                                <div className={viewMode === "grid"
-                                    ? "grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-8"
-                                    : "space-y-6 md:space-y-8"
-                                }>
-                                    {filteredTours.map((tour, idx) => {
-                                        const sym = getCurrencySymbol(tour.currency);
-                                        return (
-                                            <motion.div
-                                                layout
-                                                key={tour._id || idx}
-                                                initial={{ opacity: 0, y: 15 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                exit={{ opacity: 0, scale: 0.98 }}
-                                                transition={{ duration: 0.4, delay: idx * 0.05 }}
-                                                className={`group bg-white rounded-md overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-all duration-500 flex flex-col ${viewMode === "list" ? "md:flex-row h-auto md:h-64" : ""
-                                                    }`}
-                                            >
-                                                {/* Image Section */}
-                                                <div className={`relative overflow-hidden ${viewMode === "grid" ? "h-52" : "w-full md:w-1/3 h-52 md:h-full"}`}>
-                                                    {tour.image ? (
-                                                        <img
-                                                            src={tour.image}
-                                                            alt={isBn ? tour.titleBn || tour.title : tour.title}
-                                                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-                                                        />
-                                                    ) : (
-                                                        <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: '#021E14' }}>
-                                                            <LuCompass size={40} className="text-white/10" />
-                                                        </div>
-                                                    )}
-                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-
-                                                    {/* Featured Badge */}
-                                                    {tour.isFeatured && (
-                                                        <div className="absolute top-3 left-3">
-                                                            <span className="px-2.5 py-1 bg-[#EF8C2C] text-white text-[8px] font-bold uppercase tracking-widest rounded-md shadow-sm" style={{ fontFamily }}>
-                                                                {isBn ? 'ফিচার্ড' : 'Featured'}
-                                                            </span>
-                                                        </div>
-                                                    )}
-
-                                                    {tour.tourType && (
-                                                        <div className="absolute top-3 right-3">
-                                                            <span className="px-2.5 py-1 bg-white/90 backdrop-blur-sm text-gray-800 text-[9px] font-bold rounded-md shadow-sm" style={{ fontFamily }}>
-                                                                {isBn ? (tour.tourTypeBn || tour.tourType) : tour.tourType}
-                                                            </span>
-                                                        </div>
-                                                    )}
-
-                                                    {/* Location on image */}
-                                                    <div className="absolute bottom-3 left-3 flex items-center gap-1.5">
-                                                        <LuMapPin size={11} className="text-[#EF8C2C]" />
-                                                        <span className="text-white text-[10px] font-bold uppercase tracking-widest drop-shadow" style={{ fontFamily }}>
-                                                            {isBn ? (tour.destinationBn || tour.destination) : tour.destination}
-                                                        </span>
+                        {loading ? (
+                            <div className={viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-8" : "space-y-6 md:space-y-8"}>
+                                {Array.from({ length: 6 }).map((_, idx) => (
+                                    <div key={idx} className={`bg-white rounded-md overflow-hidden border border-gray-100 shadow-sm flex flex-col ${viewMode === "list" ? "md:flex-row h-auto md:h-64" : ""}`}
+                                        style={{ animation: `fadeInUp 0.4s ease-out ${idx * 0.08}s both` }}>
+                                        {/* Skeleton Image */}
+                                        <div className={`relative overflow-hidden bg-gray-100 ${viewMode === "grid" ? "h-52" : "w-full md:w-1/3 h-52 md:h-full"}`}>
+                                            <div className="absolute inset-0 skeleton-shimmer" />
+                                        </div>
+                                        {/* Skeleton Content */}
+                                        <div className={`p-5 flex flex-col justify-between flex-grow ${viewMode === "list" ? "md:w-2/3" : ""}`}>
+                                            <div>
+                                                <div className="h-5 w-4/5 rounded bg-gray-100 mb-3 skeleton-shimmer" />
+                                                <div className="flex items-center gap-4 mb-4">
+                                                    <div className="flex items-center gap-1.5">
+                                                        <div className="w-3 h-3 rounded-full bg-gray-100 skeleton-shimmer" />
+                                                        <div className="h-3 w-16 rounded bg-gray-100 skeleton-shimmer" />
+                                                    </div>
+                                                    <div className="flex items-center gap-1">
+                                                        <div className="w-3 h-3 rounded-full bg-gray-100 skeleton-shimmer" />
+                                                        <div className="h-3 w-8 rounded bg-gray-100 skeleton-shimmer" />
                                                     </div>
                                                 </div>
+                                            </div>
+                                            <div className="flex items-center justify-between pt-3 border-t border-gray-50">
+                                                <div className="flex flex-col gap-1">
+                                                    <div className="h-2.5 w-12 rounded bg-gray-100 skeleton-shimmer" />
+                                                    <div className="h-5 w-20 rounded bg-gray-100 skeleton-shimmer" />
+                                                </div>
+                                                <div className="h-9 w-28 rounded-md bg-gray-100 skeleton-shimmer" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <AnimatePresence mode="popLayout">
+                                {filteredTours.length > 0 ? (
+                                    <div className={viewMode === "grid"
+                                        ? "grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-8"
+                                        : "space-y-6 md:space-y-8"
+                                    }>
+                                        {filteredTours.map((tour, idx) => {
+                                            const sym = getCurrencySymbol(tour.currency);
+                                            return (
+                                                <motion.div
+                                                    layout
+                                                    key={tour._id || idx}
+                                                    initial={{ opacity: 0, y: 15 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    exit={{ opacity: 0, scale: 0.98 }}
+                                                    transition={{ duration: 0.4, delay: idx * 0.05 }}
+                                                    className={`group bg-white rounded-md overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-all duration-500 flex flex-col ${viewMode === "list" ? "md:flex-row h-auto md:h-64" : ""
+                                                        }`}
+                                                >
+                                                    {/* Image Section */}
+                                                    <div className={`relative overflow-hidden ${viewMode === "grid" ? "h-52" : "w-full md:w-1/3 h-52 md:h-full"}`}>
+                                                        {tour.image ? (
+                                                            <img
+                                                                src={tour.image}
+                                                                alt={isBn ? tour.titleBn || tour.title : tour.title}
+                                                                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                                                            />
+                                                        ) : (
+                                                            <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: '#021E14' }}>
+                                                                <LuCompass size={40} className="text-white/10" />
+                                                            </div>
+                                                        )}
+                                                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
 
-                                                {/* Details Section */}
-                                                <div className={`p-5 flex flex-col justify-between flex-grow ${viewMode === "list" ? "md:w-2/3" : ""}`}>
-                                                    <div>
-                                                        <h3 className="text-base font-bold text-gray-900 group-hover:text-[#3590CF] transition-colors leading-snug mb-3 line-clamp-2" style={{ fontFamily }}>
-                                                            {isBn ? (tour.titleBn || tour.title) : tour.title}
-                                                        </h3>
-
-                                                        {/* Meta Info */}
-                                                        <div className="flex items-center gap-4 text-gray-400 mb-4">
-                                                            <div className="flex items-center gap-1.5">
-                                                                <LuClock size={13} />
-                                                                <span className="text-[11px] font-medium" style={{ fontFamily }}>
-                                                                    {isBn ? (tour.durationBn || tour.duration) : tour.duration}
+                                                        {/* Featured Badge */}
+                                                        {tour.isFeatured && (
+                                                            <div className="absolute top-3 left-3">
+                                                                <span className="px-2.5 py-1 bg-[#EF8C2C] text-white text-[8px] font-bold uppercase tracking-widest rounded-md shadow-sm" style={{ fontFamily }}>
+                                                                    {isBn ? 'ফিচার্ড' : 'Featured'}
                                                                 </span>
                                                             </div>
-                                                            {tour.rating > 0 && (
-                                                                <div className="flex items-center gap-1">
-                                                                    <LuStar size={13} className="text-[#EF8C2C] fill-[#EF8C2C]" />
-                                                                    <span className="text-[11px] font-bold text-gray-700">{tour.rating}</span>
-                                                                    {tour.reviewsCount > 0 && (
-                                                                        <span className="text-[10px] text-gray-300">({tour.reviewsCount})</span>
-                                                                    )}
-                                                                </div>
-                                                            )}
+                                                        )}
+
+                                                        {tour.tourType && (
+                                                            <div className="absolute top-3 right-3">
+                                                                <span className="px-2.5 py-1 bg-white/90 backdrop-blur-sm text-gray-800 text-[9px] font-bold rounded-md shadow-sm" style={{ fontFamily }}>
+                                                                    {isBn ? (tour.tourTypeBn || tour.tourType) : tour.tourType}
+                                                                </span>
+                                                            </div>
+                                                        )}
+
+                                                        {/* Location on image */}
+                                                        <div className="absolute bottom-3 left-3 flex items-center gap-1.5">
+                                                            <LuMapPin size={11} className="text-[#EF8C2C]" />
+                                                            <span className="text-white text-[10px] font-bold uppercase tracking-widest drop-shadow" style={{ fontFamily }}>
+                                                                {isBn ? (tour.destinationBn || tour.destination) : tour.destination}
+                                                            </span>
                                                         </div>
                                                     </div>
 
-                                                    {/* Footer: Price + CTA */}
-                                                    <div className="flex items-center justify-between pt-3 border-t border-gray-50">
+                                                    {/* Details Section */}
+                                                    <div className={`p-5 flex flex-col justify-between flex-grow ${viewMode === "list" ? "md:w-2/3" : ""}`}>
                                                         <div>
-                                                            <span className="text-[10px] text-gray-300 font-medium" style={{ fontFamily }}>{isBn ? 'প্রতি জন' : 'per person'}</span>
-                                                            <div className="flex items-baseline gap-1.5">
-                                                                <span className="text-lg font-black" style={{ color: '#3590CF' }}>
-                                                                    {sym}{tour.price?.toLocaleString()}
-                                                                </span>
-                                                                {tour.oldPrice > 0 && (
-                                                                    <span className="text-[10px] text-gray-300 line-through">{sym}{tour.oldPrice?.toLocaleString()}</span>
+                                                            <h3 className="text-base font-bold text-gray-900 group-hover:text-[#3590CF] transition-colors leading-snug mb-3 line-clamp-2" style={{ fontFamily }}>
+                                                                {isBn ? (tour.titleBn || tour.title) : tour.title}
+                                                            </h3>
+
+                                                            {/* Meta Info */}
+                                                            <div className="flex items-center gap-4 text-gray-400 mb-4">
+                                                                <div className="flex items-center gap-1.5">
+                                                                    <LuClock size={13} />
+                                                                    <span className="text-[11px] font-medium" style={{ fontFamily }}>
+                                                                        {isBn ? (tour.durationBn || tour.duration) : tour.duration}
+                                                                    </span>
+                                                                </div>
+                                                                {tour.rating > 0 && (
+                                                                    <div className="flex items-center gap-1">
+                                                                        <LuStar size={13} className="text-[#EF8C2C] fill-[#EF8C2C]" />
+                                                                        <span className="text-[11px] font-bold text-gray-700">{tour.rating}</span>
+                                                                        {tour.reviewsCount > 0 && (
+                                                                            <span className="text-[10px] text-gray-300">({tour.reviewsCount})</span>
+                                                                        )}
+                                                                    </div>
                                                                 )}
                                                             </div>
                                                         </div>
-                                                        <Link
-                                                            href={`/tour/${tour.slug || tour._id}`}
-                                                            className="px-5 py-2.5 bg-[#EF8C2C] hover:bg-[#d97b1f] text-white rounded-md text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5"
-                                                            style={{ fontFamily }}
-                                                        >
-                                                            {isBn ? 'বিস্তারিত' : 'View Details'} <LuArrowRight size={12} />
-                                                        </Link>
+
+                                                        {/* Footer: Price + CTA */}
+                                                        <div className="flex items-center justify-between pt-3 border-t border-gray-50">
+                                                            <div>
+                                                                <span className="text-[10px] text-gray-300 font-medium" style={{ fontFamily }}>{isBn ? 'প্রতি জন' : 'per person'}</span>
+                                                                <div className="flex items-baseline gap-1.5">
+                                                                    <span className="text-lg font-black" style={{ color: '#3590CF' }}>
+                                                                        {sym}{tour.price?.toLocaleString()}
+                                                                    </span>
+                                                                    {tour.oldPrice > 0 && (
+                                                                        <span className="text-[10px] text-gray-300 line-through">{sym}{tour.oldPrice?.toLocaleString()}</span>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                            <Link
+                                                                href={`/tour/${tour.slug || tour._id}`}
+                                                                className="px-5 py-2.5 bg-[#EF8C2C] hover:bg-[#d97b1f] text-white rounded-md text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5"
+                                                                style={{ fontFamily }}
+                                                            >
+                                                                {isBn ? 'বিস্তারিত' : 'View Details'} <LuArrowRight size={12} />
+                                                            </Link>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </motion.div>
-                                        );
-                                    })}
-                                </div>
-                            ) : (
-                                <div className="h-96 flex flex-col items-center justify-center text-center py-20 bg-white rounded-md border border-dashed border-gray-200">
-                                    <motion.div
-                                        initial={{ rotate: 0 }}
-                                        animate={{ rotate: 360 }}
-                                        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                                        className="mb-8 p-6 bg-gray-50 rounded-full"
-                                    >
-                                        <LuCompass size={48} className="text-gray-200" />
-                                    </motion.div>
-                                    <h3 className="text-xl font-black text-gray-300 uppercase tracking-tight" style={{ fontFamily: headingFont }}>
-                                        {isBn ? 'কিছু পাওয়া যায়নি' : 'Nothing Found'}
-                                    </h3>
-                                    <p className="text-gray-400 text-[11px] font-normal mt-2 max-w-[200px]" style={{ fontFamily }}>
-                                        {isBn ? 'আপনার শর্ত অনুযায়ী কোনো ট্যুর পাওয়া যায়নি।' : "We couldn't find any tours matching your criteria."}
-                                    </p>
-                                    <button
-                                        onClick={() => { setSearchQuery(""); setSelectedCategory("all"); }}
-                                        className="mt-6 px-6 py-2.5 bg-[#021E14] text-white rounded-md text-[10px] font-bold uppercase tracking-widest transition-all"
-                                        style={{ fontFamily }}
-                                    >
-                                        {isBn ? 'সার্চ ক্লিয়ার করুন' : 'Clear Search'}
-                                    </button>
-                                </div>
-                            )}
-                        </AnimatePresence>
+                                                </motion.div>
+                                            );
+                                        })}
+                                    </div>
+                                ) : (
+                                    <div className="h-96 flex flex-col items-center justify-center text-center py-20 bg-white rounded-md border border-dashed border-gray-200">
+                                        <motion.div
+                                            initial={{ rotate: 0 }}
+                                            animate={{ rotate: 360 }}
+                                            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                                            className="mb-8 p-6 bg-gray-50 rounded-full"
+                                        >
+                                            <LuCompass size={48} className="text-gray-200" />
+                                        </motion.div>
+                                        <h3 className="text-xl font-black text-gray-300 uppercase tracking-tight" style={{ fontFamily: headingFont }}>
+                                            {isBn ? 'কিছু পাওয়া যায়নি' : 'Nothing Found'}
+                                        </h3>
+                                        <p className="text-gray-400 text-[11px] font-normal mt-2 max-w-[200px]" style={{ fontFamily }}>
+                                            {isBn ? 'আপনার শর্ত অনুযায়ী কোনো ট্যুর পাওয়া যায়নি।' : "We couldn't find any tours matching your criteria."}
+                                        </p>
+                                        <button
+                                            onClick={() => { setSearchQuery(""); setSelectedCategory("all"); }}
+                                            className="mt-6 px-6 py-2.5 bg-[#021E14] text-white rounded-md text-[10px] font-bold uppercase tracking-widest transition-all"
+                                            style={{ fontFamily }}
+                                        >
+                                            {isBn ? 'সার্চ ক্লিয়ার করুন' : 'Clear Search'}
+                                        </button>
+                                    </div>
+                                )}
+                            </AnimatePresence>
+                        )}
                     </main>
                 </div>
             </div>

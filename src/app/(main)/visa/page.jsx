@@ -300,8 +300,45 @@ function VisaContent() {
 
                         {/* Country Cards */}
                         {loading ? (
-                            <div className="flex items-center justify-center py-20">
-                                <div className="w-12 h-12 border-4 border-[#1D7EDD] border-t-transparent rounded-full animate-spin" />
+                            <div className={viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-8" : "space-y-6"}>
+                                {Array.from({ length: 6 }).map((_, idx) => (
+                                    <div key={idx} className={`bg-white rounded-md overflow-hidden border border-gray-100 shadow-sm flex flex-col ${viewMode === "list" ? "md:flex-row h-auto md:h-64" : ""}`}
+                                        style={{ animation: `fadeInUp 0.4s ease-out ${idx * 0.08}s both` }}>
+                                        {/* Skeleton Image */}
+                                        <div className={`relative overflow-hidden bg-gray-100 ${viewMode === "grid" ? "h-48" : "w-full md:w-1/3 h-48 md:h-full"}`}>
+                                            <div className="absolute inset-0 skeleton-shimmer" />
+                                        </div>
+                                        {/* Skeleton Content */}
+                                        <div className={`p-5 flex flex-col justify-between ${viewMode === "list" ? "md:w-2/3" : ""}`}>
+                                            <div>
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <div className="w-3 h-3 rounded-full bg-gray-100 skeleton-shimmer" />
+                                                    <div className="h-3 w-16 rounded bg-gray-100 skeleton-shimmer" />
+                                                </div>
+                                                <div className="h-5 w-3/4 rounded bg-gray-100 mb-3 skeleton-shimmer" />
+                                                <div className="flex gap-1.5 mb-4">
+                                                    <div className="h-5 w-16 rounded bg-gray-50 skeleton-shimmer" />
+                                                    <div className="h-5 w-20 rounded bg-gray-50 skeleton-shimmer" />
+                                                </div>
+                                                <div className="flex items-center gap-4 mb-4">
+                                                    <div className="flex flex-col gap-1.5">
+                                                        <div className="h-2.5 w-14 rounded bg-gray-100 skeleton-shimmer" />
+                                                        <div className="h-4 w-20 rounded bg-gray-100 skeleton-shimmer" />
+                                                    </div>
+                                                    <div className="h-6 w-px bg-gray-100" />
+                                                    <div className="flex flex-col gap-1.5">
+                                                        <div className="h-2.5 w-14 rounded bg-gray-100 skeleton-shimmer" />
+                                                        <div className="h-4 w-16 rounded bg-gray-100 skeleton-shimmer" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <div className="flex-grow h-10 rounded-md bg-gray-100 skeleton-shimmer" />
+                                                <div className="w-10 h-10 rounded-md bg-gray-50 skeleton-shimmer" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         ) : (
                             <AnimatePresence mode="popLayout">

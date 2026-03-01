@@ -853,3 +853,25 @@ video {
 .bg-circle-secondary {
   background: radial-gradient(circle at center, var(--color-secondary-10) 0%, transparent 70%);
 }
+
+/* Custom Skeleton & Animations */
+.skeleton-shimmer {
+  background: linear-gradient(90deg, 
+    var(--color-gray-100) 25%, 
+    var(--color-gray-50) 50%, 
+    var(--color-gray-100) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
