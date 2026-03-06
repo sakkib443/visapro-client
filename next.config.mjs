@@ -22,6 +22,10 @@ const nextConfig = {
   },
   // Enable React Strict Mode
   reactStrictMode: true,
+  webpack: (config) => {
+    config.resolve.alias.canvas = false;
+    return config;
+  },
 };
 
 export default nextConfig;

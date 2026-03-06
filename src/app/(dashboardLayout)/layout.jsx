@@ -82,6 +82,11 @@ const menuItems = [
         section: "TRAVEL & TOURS",
     },
     {
+        name: "Ticket Generator",
+        icon: LuPlane,
+        href: "/dashboard/admin/ticket-generator",
+    },
+    {
         name: "Tour Packages",
         icon: FiMapPin,
         children: [
