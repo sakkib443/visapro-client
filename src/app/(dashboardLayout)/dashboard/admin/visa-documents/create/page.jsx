@@ -39,89 +39,77 @@ const INIT = {
     agencyOffice: "Dhaka, Bangladesh",
 };
 
-/* ─── E-Ticket Preview — pixel-exact match ──────────────── */
+/* ─── E-Ticket Preview — uses eticket.gif as background template ──────────────── */
 function ETicketPreview({ data: p }) {
-    // Colors matching the reference image exactly
-    const TEAL = "#2a9d8f";     // header/footer bg
-    const DARK_TEAL = "#1a7a6e"; // darker footer row
-    const TEAL_LIGHT = "#e6f5f3"; // light teal background
-    const BORDER = "#c8c8c8";    // table borders
-    const HEADER_BG = "#e8ecef"; // table header gray
+    const BORDER = "#c8c8c8";
+    const HEADER_BG = "#e8ecef";
+    const BLUE = "#2980b9";
+    const BLUE_LIGHT = "#eaf4fc";
 
     return (
-        <div id="doc-preview" style={{ fontFamily: "'Segoe UI', Tahoma, Arial, sans-serif", background: "#fff", width: 760, color: "#222" }}>
+        <div id="doc-preview" style={{ fontFamily: "'Segoe UI', Tahoma, Arial, sans-serif", position: "relative", width: 760, color: "#222" }}>
+            {/* ════ BACKGROUND TEMPLATE IMAGE ════ */}
+            <img
+                src="/documents/eticket.gif"
+                alt="e-Ticket Template"
+                style={{ width: "100%", display: "block" }}
+                crossOrigin="anonymous"
+            />
 
-            {/* ════ HEADER ════ */}
-            <div style={{ background: TEAL, padding: "14px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <div style={{ width: 50, height: 50, background: "rgba(255,255,255,0.15)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <span style={{ fontSize: 26, color: "#fff" }}>✈</span>
-                    </div>
-                    <div>
-                        <div style={{ color: "#fff", fontWeight: 900, fontSize: 14, letterSpacing: 0.5 }}>{p.agencyWebsite?.toUpperCase() || "VISAPROCM.COM"}</div>
-                        <div style={{ color: "#d1fae5", fontSize: 9 }}>{p.agencyTagline || ""}</div>
-                    </div>
-                </div>
-                <div style={{ textAlign: "right" }}>
-                    <div style={{ color: "#fff", fontWeight: 900, fontSize: 20, letterSpacing: 1 }}>{p.agencyName?.toUpperCase() || "VISAPRO"}</div>
-                    <div style={{ color: "#d1fae5", fontSize: 9 }}>{p.agencyTagline || ""}</div>
-                </div>
-            </div>
-
-            {/* ════ TITLE: e-Ticket Itinerary ════ */}
-            <div style={{ padding: "12px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div style={{ border: `2px solid ${TEAL}`, borderRadius: 20, padding: "4px 18px", display: "inline-flex", alignItems: "center", gap: 6 }}>
-                    <span style={{ fontSize: 15, fontStyle: "italic", fontWeight: 600, color: "#333" }}>e-Ticket Itinerary</span>
-                    <span style={{ fontSize: 14 }}>✈</span>
-                </div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#444", letterSpacing: 2 }}>{p.bookingRef || ""}</div>
-            </div>
-
-            {/* ════ BOOKING INFO TABLE ════ */}
-            <table style={{ width: "100%", borderCollapse: "collapse", border: `1px solid ${BORDER}` }}>
-                <thead>
-                    <tr style={{ background: TEAL }}>
-                        <th style={{ padding: "7px 12px", color: "#fff", fontSize: 10, fontWeight: 700, textAlign: "left", border: `1px solid ${TEAL}` }}>Booking Reference</th>
-                        <th style={{ padding: "7px 12px", color: "#fff", fontSize: 10, fontWeight: 700, textAlign: "left", border: `1px solid ${TEAL}` }}>Airline PNR</th>
-                        <th style={{ padding: "7px 12px", color: "#fff", fontSize: 10, fontWeight: 700, textAlign: "left", border: `1px solid ${TEAL}` }}>Date of Issue</th>
-                        <th style={{ padding: "7px 12px", color: "#fff", fontSize: 10, fontWeight: 700, textAlign: "left", border: `1px solid ${TEAL}` }}>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr style={{ background: TEAL_LIGHT }}>
-                        <td style={{ padding: "7px 12px", fontSize: 11, fontWeight: 600, border: `1px solid ${BORDER}` }}>{p.bookingRef || ""}</td>
-                        <td style={{ padding: "7px 12px", fontSize: 11, fontWeight: 600, border: `1px solid ${BORDER}` }}>{p.airlinePnr || ""}</td>
-                        <td style={{ padding: "7px 12px", fontSize: 11, fontWeight: 600, border: `1px solid ${BORDER}` }}>{p.issueDate || ""}</td>
-                        <td style={{ padding: "7px 12px", fontSize: 11, border: `1px solid ${BORDER}` }}>
-                            <span style={{ background: TEAL, color: "#fff", padding: "2px 12px", borderRadius: 12, fontSize: 10, fontWeight: 700 }}>{p.status || "Confirmed"}</span>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <div style={{ padding: "0 20px" }}>
+            {/* ════ DATA OVERLAY ════ */}
+            <div style={{
+                position: "absolute",
+                top: "12.5%",
+                left: "3.5%",
+                right: "3.5%",
+                bottom: "28%",
+                display: "flex",
+                flexDirection: "column",
+                gap: 8,
+            }}>
+                {/* ════ BOOKING INFO TABLE ════ */}
+                <table style={{ width: "100%", borderCollapse: "collapse", border: `1px solid ${BORDER}` }}>
+                    <thead>
+                        <tr style={{ background: BLUE }}>
+                            <th style={{ padding: "6px 10px", color: "#fff", fontSize: 9, fontWeight: 700, textAlign: "left", border: `1px solid ${BLUE}` }}>Booking Reference</th>
+                            <th style={{ padding: "6px 10px", color: "#fff", fontSize: 9, fontWeight: 700, textAlign: "left", border: `1px solid ${BLUE}` }}>Airline PNR</th>
+                            <th style={{ padding: "6px 10px", color: "#fff", fontSize: 9, fontWeight: 700, textAlign: "left", border: `1px solid ${BLUE}` }}>Date of Issue</th>
+                            <th style={{ padding: "6px 10px", color: "#fff", fontSize: 9, fontWeight: 700, textAlign: "left", border: `1px solid ${BLUE}` }}>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style={{ background: BLUE_LIGHT }}>
+                            <td style={{ padding: "6px 10px", fontSize: 10, fontWeight: 700, border: `1px solid ${BORDER}` }}>{p.bookingRef || ""}</td>
+                            <td style={{ padding: "6px 10px", fontSize: 10, fontWeight: 700, border: `1px solid ${BORDER}` }}>{p.airlinePnr || ""}</td>
+                            <td style={{ padding: "6px 10px", fontSize: 10, fontWeight: 600, border: `1px solid ${BORDER}` }}>{p.issueDate || ""}</td>
+                            <td style={{ padding: "6px 10px", fontSize: 10, border: `1px solid ${BORDER}` }}>
+                                <span style={{ background: BLUE, color: "#fff", padding: "2px 10px", borderRadius: 10, fontSize: 9, fontWeight: 700 }}>{p.status || "Confirmed"}</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
 
                 {/* ════ PASSENGER INFORMATION ════ */}
-                <div style={{ marginTop: 16 }}>
-                    <div style={{ fontWeight: 800, fontSize: 13, color: "#222", marginBottom: 8 }}>Passenger Information</div>
+                <div>
+                    <div style={{ fontWeight: 800, fontSize: 11, color: "#222", marginBottom: 4 }}>Passenger Information</div>
                     <table style={{ width: "100%", borderCollapse: "collapse", border: `1px solid ${BORDER}` }}>
                         <thead>
                             <tr style={{ background: HEADER_BG }}>
                                 {["Passenger Name", "Type", "Gender", "Passport Number", "Cabin", "Checked", "E-Ticket"].map(h => (
-                                    <th key={h} style={{ padding: "6px 8px", fontSize: 9, fontWeight: 700, textAlign: "left", border: `1px solid ${BORDER}`, color: "#333" }}>{h}</th>
+                                    <th key={h} style={{ padding: "5px 6px", fontSize: 8, fontWeight: 700, textAlign: "left", border: `1px solid ${BORDER}`, color: "#333" }}>{h}</th>
                                 ))}
                             </tr>
                         </thead>
                         <tbody>
                             {(p.passengers || [{ ...emptyPassenger }]).map((px, i) => (
                                 <tr key={i}>
-                                    <td style={{ padding: "6px 8px", fontSize: 10, fontWeight: 600, border: `1px solid ${BORDER}` }}>{px.name || ""}</td>
-                                    <td style={{ padding: "6px 8px", fontSize: 10, textAlign: "center", border: `1px solid ${BORDER}` }}>{px.type || ""}</td>
-                                    <td style={{ padding: "6px 8px", fontSize: 10, textAlign: "center", fontWeight: 700, border: `1px solid ${BORDER}`, color: px.gender === "FEMALE" ? "#d6336c" : "#1971c2" }}>{px.gender || ""}</td>
-                                    <td style={{ padding: "6px 8px", fontSize: 10, border: `1px solid ${BORDER}` }}>{px.passportNo || ""}</td>
-                                    <td style={{ padding: "6px 8px", fontSize: 10, textAlign: "center", border: `1px solid ${BORDER}` }}>{px.cabin || ""}</td>
-                                    <td style={{ padding: "6px 8px", fontSize: 10, textAlign: "center", border: `1px solid ${BORDER}` }}>{px.checked || ""}</td>
-                                    <td style={{ padding: "6px 8px", fontSize: 10, border: `1px solid ${BORDER}` }}>{px.eTicket || ""}</td>
+                                    <td style={{ padding: "5px 6px", fontSize: 9, fontWeight: 600, border: `1px solid ${BORDER}` }}>{px.name || ""}</td>
+                                    <td style={{ padding: "5px 6px", fontSize: 9, textAlign: "center", border: `1px solid ${BORDER}` }}>{px.type || ""}</td>
+                                    <td style={{ padding: "5px 6px", fontSize: 9, textAlign: "center", fontWeight: 700, border: `1px solid ${BORDER}`, color: px.gender === "FEMALE" ? "#d6336c" : "#1971c2" }}>{px.gender || ""}</td>
+                                    <td style={{ padding: "5px 6px", fontSize: 9, border: `1px solid ${BORDER}` }}>{px.passportNo || ""}</td>
+                                    <td style={{ padding: "5px 6px", fontSize: 9, textAlign: "center", border: `1px solid ${BORDER}` }}>{px.cabin || ""}</td>
+                                    <td style={{ padding: "5px 6px", fontSize: 9, textAlign: "center", border: `1px solid ${BORDER}` }}>{px.checked || ""}</td>
+                                    <td style={{ padding: "5px 6px", fontSize: 9, border: `1px solid ${BORDER}` }}>{px.eTicket || ""}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -129,49 +117,42 @@ function ETicketPreview({ data: p }) {
                 </div>
 
                 {/* ════ ITINERARY INFORMATION ════ */}
-                <div style={{ marginTop: 16 }}>
-                    <div style={{ fontWeight: 800, fontSize: 13, color: "#222", marginBottom: 8 }}>Itinerary Information</div>
-
+                <div>
+                    <div style={{ fontWeight: 800, fontSize: 11, color: "#222", marginBottom: 4 }}>Itinerary Information</div>
                     {(p.segments || [{ ...emptySegment }]).map((seg, i) => (
-                        <div key={i} style={{ marginBottom: 6 }}>
+                        <div key={i} style={{ marginBottom: 4 }}>
                             <table style={{ width: "100%", borderCollapse: "collapse", border: `1px solid ${BORDER}` }}>
                                 <thead>
                                     <tr style={{ background: HEADER_BG }}>
                                         {["Airline", "From", "To", "Depart", "Arrive", "Info"].map(h => (
-                                            <th key={h} style={{ padding: "6px 8px", fontSize: 9, fontWeight: 700, textAlign: "left", border: `1px solid ${BORDER}`, color: "#333" }}>{h}</th>
+                                            <th key={h} style={{ padding: "5px 6px", fontSize: 8, fontWeight: 700, textAlign: "left", border: `1px solid ${BORDER}`, color: "#333" }}>{h}</th>
                                         ))}
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        {/* Airline */}
-                                        <td style={{ padding: "8px", border: `1px solid ${BORDER}`, verticalAlign: "top", width: 85 }}>
-                                            <div style={{ width: 40, height: 24, background: "#f1f5f9", borderRadius: 4, marginBottom: 4, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, color: "#94a3b8" }}>✈</div>
-                                            <div style={{ fontSize: 10, color: "#555" }}>{seg.airline || ""}</div>
-                                            <div style={{ fontSize: 11, fontWeight: 800, color: "#111" }}>{seg.flightNo || ""}</div>
+                                        <td style={{ padding: "6px", border: `1px solid ${BORDER}`, verticalAlign: "top", width: 75 }}>
+                                            <div style={{ width: 32, height: 20, background: "#f1f5f9", borderRadius: 3, marginBottom: 3, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, color: "#94a3b8" }}>✈</div>
+                                            <div style={{ fontSize: 9, color: "#555" }}>{seg.airline || ""}</div>
+                                            <div style={{ fontSize: 10, fontWeight: 800, color: "#111" }}>{seg.flightNo || ""}</div>
                                         </td>
-                                        {/* From */}
-                                        <td style={{ padding: "8px", border: `1px solid ${BORDER}`, verticalAlign: "top" }}>
-                                            <div style={{ fontWeight: 900, fontSize: 22, color: "#111", lineHeight: 1 }}>{seg.fromCode || ""}</div>
-                                            <div style={{ fontSize: 8, color: "#666", marginTop: 2, lineHeight: 1.3 }}>{seg.fromAirport || ""}</div>
+                                        <td style={{ padding: "6px", border: `1px solid ${BORDER}`, verticalAlign: "top" }}>
+                                            <div style={{ fontWeight: 900, fontSize: 18, color: "#111", lineHeight: 1 }}>{seg.fromCode || ""}</div>
+                                            <div style={{ fontSize: 7, color: "#666", marginTop: 2, lineHeight: 1.3 }}>{seg.fromAirport || ""}</div>
                                         </td>
-                                        {/* To */}
-                                        <td style={{ padding: "8px", border: `1px solid ${BORDER}`, verticalAlign: "top" }}>
-                                            <div style={{ fontWeight: 900, fontSize: 22, color: "#111", lineHeight: 1 }}>{seg.toCode || ""}</div>
-                                            <div style={{ fontSize: 8, color: "#666", marginTop: 2, lineHeight: 1.3 }}>{seg.toAirport || ""}</div>
+                                        <td style={{ padding: "6px", border: `1px solid ${BORDER}`, verticalAlign: "top" }}>
+                                            <div style={{ fontWeight: 900, fontSize: 18, color: "#111", lineHeight: 1 }}>{seg.toCode || ""}</div>
+                                            <div style={{ fontSize: 7, color: "#666", marginTop: 2, lineHeight: 1.3 }}>{seg.toAirport || ""}</div>
                                         </td>
-                                        {/* Depart */}
-                                        <td style={{ padding: "8px", border: `1px solid ${BORDER}`, verticalAlign: "top", textAlign: "center" }}>
-                                            <div style={{ fontSize: 9, color: "#666", fontWeight: 600 }}>{seg.departDate || ""}</div>
-                                            <div style={{ fontWeight: 900, fontSize: 22, color: "#111", lineHeight: 1.2 }}>{seg.departTime || ""}</div>
+                                        <td style={{ padding: "6px", border: `1px solid ${BORDER}`, verticalAlign: "top", textAlign: "center" }}>
+                                            <div style={{ fontSize: 8, color: "#666", fontWeight: 600 }}>{seg.departDate || ""}</div>
+                                            <div style={{ fontWeight: 900, fontSize: 18, color: "#111", lineHeight: 1.2 }}>{seg.departTime || ""}</div>
                                         </td>
-                                        {/* Arrive */}
-                                        <td style={{ padding: "8px", border: `1px solid ${BORDER}`, verticalAlign: "top", textAlign: "center" }}>
-                                            <div style={{ fontSize: 9, color: "#666", fontWeight: 600 }}>{seg.arriveDate || ""}</div>
-                                            <div style={{ fontWeight: 900, fontSize: 22, color: "#111", lineHeight: 1.2 }}>{seg.arriveTime || ""}</div>
+                                        <td style={{ padding: "6px", border: `1px solid ${BORDER}`, verticalAlign: "top", textAlign: "center" }}>
+                                            <div style={{ fontSize: 8, color: "#666", fontWeight: 600 }}>{seg.arriveDate || ""}</div>
+                                            <div style={{ fontWeight: 900, fontSize: 18, color: "#111", lineHeight: 1.2 }}>{seg.arriveTime || ""}</div>
                                         </td>
-                                        {/* Info */}
-                                        <td style={{ padding: "8px", border: `1px solid ${BORDER}`, verticalAlign: "top", fontSize: 9, color: "#444", lineHeight: 1.6 }}>
+                                        <td style={{ padding: "6px", border: `1px solid ${BORDER}`, verticalAlign: "top", fontSize: 8, color: "#444", lineHeight: 1.5 }}>
                                             {seg.classInfo && <div>Class: <b>{seg.classInfo}</b></div>}
                                             {seg.refund && <div>Refund: <b>{seg.refund}</b></div>}
                                             {seg.route && <div>Route: <b>{seg.route}</b></div>}
@@ -190,72 +171,43 @@ function ETicketPreview({ data: p }) {
 
                     {/* Transit Bar */}
                     {p.transitInfo && (
-                        <div style={{ background: "#cce5ff", border: `1px solid #99caff`, borderRadius: 4, padding: "5px 0", textAlign: "center", fontSize: 11, fontWeight: 700, color: "#004085", marginBottom: 8 }}>
+                        <div style={{ background: "#cce5ff", border: `1px solid #99caff`, borderRadius: 4, padding: "4px 0", textAlign: "center", fontSize: 10, fontWeight: 700, color: "#004085", marginBottom: 4 }}>
                             Transit in {p.transitInfo}
                         </div>
                     )}
                 </div>
 
                 {/* ════ FARE DETAILS ════ */}
-                <div style={{ marginTop: 14 }}>
-                    <div style={{ fontWeight: 800, fontSize: 13, color: "#222", marginBottom: 8 }}>Fare Details</div>
+                <div>
+                    <div style={{ fontWeight: 800, fontSize: 11, color: "#222", marginBottom: 4 }}>Fare Details</div>
                     <table style={{ width: "100%", borderCollapse: "collapse", border: `1px solid ${BORDER}` }}>
                         <thead>
-                            <tr style={{ background: TEAL }}>
+                            <tr style={{ background: BLUE }}>
                                 {["Type", "Base Fare", "Tax", "AIT", "Gross Fare", "No of PAX", "Total (BDT)"].map(h => (
-                                    <th key={h} style={{ padding: "6px 8px", color: "#fff", fontSize: 10, fontWeight: 700, textAlign: h === "Type" ? "left" : "right", border: `1px solid ${TEAL}` }}>{h}</th>
+                                    <th key={h} style={{ padding: "5px 6px", color: "#fff", fontSize: 8, fontWeight: 700, textAlign: h === "Type" ? "left" : "right", border: `1px solid ${BLUE}` }}>{h}</th>
                                 ))}
                             </tr>
                         </thead>
                         <tbody>
                             {(p.fares || [{ ...emptyFare }]).map((fr, i) => (
                                 <tr key={i}>
-                                    <td style={{ padding: "6px 8px", fontSize: 10, fontWeight: 600, border: `1px solid ${BORDER}` }}>{fr.type || ""}</td>
-                                    <td style={{ padding: "6px 8px", fontSize: 10, textAlign: "right", border: `1px solid ${BORDER}` }}>{fr.baseFare || ""}</td>
-                                    <td style={{ padding: "6px 8px", fontSize: 10, textAlign: "right", border: `1px solid ${BORDER}` }}>{fr.tax || ""}</td>
-                                    <td style={{ padding: "6px 8px", fontSize: 10, textAlign: "right", border: `1px solid ${BORDER}` }}>{fr.ait || ""}</td>
-                                    <td style={{ padding: "6px 8px", fontSize: 10, textAlign: "right", border: `1px solid ${BORDER}` }}>{fr.grossFare || ""}</td>
-                                    <td style={{ padding: "6px 8px", fontSize: 10, textAlign: "center", border: `1px solid ${BORDER}` }}>{fr.pax || ""}</td>
-                                    <td style={{ padding: "6px 8px", fontSize: 11, textAlign: "right", fontWeight: 700, border: `1px solid ${BORDER}` }}>{fr.total || ""}</td>
+                                    <td style={{ padding: "5px 6px", fontSize: 9, fontWeight: 600, border: `1px solid ${BORDER}` }}>{fr.type || ""}</td>
+                                    <td style={{ padding: "5px 6px", fontSize: 9, textAlign: "right", border: `1px solid ${BORDER}` }}>{fr.baseFare || ""}</td>
+                                    <td style={{ padding: "5px 6px", fontSize: 9, textAlign: "right", border: `1px solid ${BORDER}` }}>{fr.tax || ""}</td>
+                                    <td style={{ padding: "5px 6px", fontSize: 9, textAlign: "right", border: `1px solid ${BORDER}` }}>{fr.ait || ""}</td>
+                                    <td style={{ padding: "5px 6px", fontSize: 9, textAlign: "right", border: `1px solid ${BORDER}` }}>{fr.grossFare || ""}</td>
+                                    <td style={{ padding: "5px 6px", fontSize: 9, textAlign: "center", border: `1px solid ${BORDER}` }}>{fr.pax || ""}</td>
+                                    <td style={{ padding: "5px 6px", fontSize: 10, textAlign: "right", fontWeight: 700, border: `1px solid ${BORDER}` }}>{fr.total || ""}</td>
                                 </tr>
                             ))}
                             {/* Grand Total Row */}
-                            <tr style={{ background: TEAL_LIGHT }}>
-                                <td colSpan={6} style={{ padding: "7px 8px", textAlign: "right", fontWeight: 800, fontSize: 11, border: `1px solid ${BORDER}`, color: "#065f46" }}>Grand Total</td>
-                                <td style={{ padding: "7px 8px", textAlign: "right", fontWeight: 900, fontSize: 13, border: `1px solid ${BORDER}`, color: "#065f46" }}>{p.grandTotal || ""}</td>
+                            <tr style={{ background: BLUE_LIGHT }}>
+                                <td colSpan={6} style={{ padding: "6px", textAlign: "right", fontWeight: 800, fontSize: 10, border: `1px solid ${BORDER}`, color: "#1a5276" }}>Grand Total (BDT)</td>
+                                <td style={{ padding: "6px", textAlign: "right", fontWeight: 900, fontSize: 12, border: `1px solid ${BORDER}`, color: "#1a5276" }}>{p.grandTotal || ""}</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-
-                {/* ════ TRAVEL NOTES ════ */}
-                <div style={{ marginTop: 16, marginBottom: 16, border: "2px solid #e6a817", borderRadius: 6, padding: "10px 14px" }}>
-                    <div style={{ fontWeight: 800, fontSize: 14, color: "#7c4a03", marginBottom: 6 }}>TRAVEL NOTES</div>
-                    <ul style={{ margin: 0, paddingLeft: 20, fontSize: 10, color: "#5a3600", lineHeight: 1.8 }}>
-                        {(p.travelNotes || "").split("\n").filter(Boolean).map((n, i) => <li key={i}>{n}</li>)}
-                    </ul>
-                </div>
-            </div>
-
-            {/* ════ FOOTER (Green bar with 3 columns) ════ */}
-            <div style={{ background: TEAL, padding: "10px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ fontSize: 16 }}>✈</span>
-                    <span style={{ color: "#fff", fontWeight: 800, fontSize: 11, letterSpacing: 0.5 }}>{p.agencyWebsite?.toUpperCase() || ""}</span>
-                </div>
-                <div style={{ textAlign: "center" }}>
-                    <div style={{ color: "#fbbf24", fontSize: 10, fontWeight: 700 }}>CUSTOMER SERVICE</div>
-                    <div style={{ color: "#fff", fontSize: 9 }}>{p.agencyEmail || ""}</div>
-                </div>
-                <div style={{ textAlign: "right" }}>
-                    <div style={{ color: "#fbbf24", fontSize: 10, fontWeight: 700 }}>HELPLINE</div>
-                    <div style={{ color: "#fff", fontSize: 9 }}>☎ {p.agencyPhone || ""}</div>
-                    {p.agencyPhone2 && <div style={{ color: "#fff", fontSize: 9 }}>☎ {p.agencyPhone2}</div>}
-                </div>
-            </div>
-            {/* Dark footer bottom */}
-            <div style={{ background: DARK_TEAL, padding: "6px 20px", textAlign: "center", color: "#d1fae5", fontSize: 9, fontWeight: 600 }}>
-                Office: {p.agencyOffice || ""}
             </div>
         </div>
     );
@@ -447,7 +399,7 @@ export default function VisaDocumentCreatePage() {
                     <div><h1 className="text-[13px] font-black text-slate-800">E-Ticket Scanner</h1><p className="text-[9px] text-slate-400">Upload → Scan → Auto-fill → Download</p></div>
                 </div>
                 <div className="flex items-center gap-1.5">
-                    {scanDone && <button onClick={() => setView("preview")} className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-[10px] font-bold hover:bg-blue-700"><FiEye size={10} /> Preview</button>}
+                    <button onClick={() => setView("preview")} className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-[10px] font-bold hover:bg-blue-700"><FiEye size={10} /> Preview</button>
                     <button onClick={save} disabled={saving} className="flex items-center gap-1 px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-[10px] font-bold disabled:opacity-50">
                         {saving ? <FiLoader size={10} className="animate-spin" /> : <FiSave size={10} />} {editId ? "Update" : "Save"}
                     </button>

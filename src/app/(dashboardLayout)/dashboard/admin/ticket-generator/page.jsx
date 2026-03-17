@@ -13,12 +13,14 @@ const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 /* Templates */
 const mkP = () => ({ name: "", type: "ADT", gender: "MALE", passportNo: "", cabin: "7 KG", checked: "1PC (23KG)", eTicket: "" });
-const mkF = () => ({ airline: "", flightNo: "", from: "", fromAirport: "", to: "", toAirport: "", departDay: "", departDate: "", departTime: "", arriveDay: "", arriveDate: "", arriveTime: "", classInfo: "Economy (T)", refund: "Non-Refundable", route: "One-way", duration: "", personalItem: "Laptop Bag", selfTransfer: "No", terminalChange: "No", codeshare: "No", ssrRemarks: "No", transitInfo: "" });
+const mkF = () => ({ airline: "", flightNo: "", from: "", fromAirport: "", to: "", toAirport: "", departDay: "", departDate: "", departTime: "", arriveDay: "", arriveDate: "", arriveTime: "", transitInfo: "" });
 const mkFare = () => ({ type: "ADT", baseFare: "", tax: "", ait: "", grossFare: "", pax: "1", total: "" });
 
 const INIT = {
     bookingRef: "", airlinePnr: "", dateOfIssue: "", status: "Confirmed",
     passengers: [mkP()], flights: [mkF()], fares: [mkFare()], grandTotal: "",
+    classInfo: "Economy (T)", refund: "Non-Refundable", route: "One-way", duration: "",
+    personalItem: "Laptop Bag", selfTransfer: "No", terminalChange: "No", codeshare: "No", ssrRemarks: "No",
     agencyWebsite: "www.visaprocm.com", agencyPhone: "+880 1712-114770",
     agencyEmail: "info@visaprocm.com", agencyOffice: "Dhaka, Bangladesh",
 };
@@ -65,67 +67,47 @@ function Barcode({ value }) {
     );
 }
 
-/* Ticket Preview */
 function TicketPreview({ form }) {
+    const TEAL = "#3a9bba";
+    const TEAL_DARK = "#2d7d96";
+    const BORDER = "#b8d4dc";
     const S = {
-        thBlue: { background: "#1a4a8a", color: "#fff", fontSize: 9, fontWeight: 700, padding: "6px 8px", textAlign: "left", borderRight: "1px solid #2563eb", whiteSpace: "nowrap" },
-        td: { fontSize: 10, padding: "5px 8px", borderBottom: "1px solid #e5e7eb", borderRight: "1px solid #f3f4f6", verticalAlign: "middle" },
-        tdAlt: { fontSize: 10, padding: "5px 8px", borderBottom: "1px solid #e5e7eb", borderRight: "1px solid #f3f4f6", background: "#f8fafc", verticalAlign: "middle" },
+        thTeal: { background: TEAL, color: "#fff", fontSize: 11, fontWeight: 700, padding: "6px 8px", textAlign: "left", border: `1px solid ${TEAL_DARK}`, whiteSpace: "nowrap" },
+        thGray: { background: "#e8ecef", color: "#333", fontSize: 11, fontWeight: 700, padding: "6px 8px", textAlign: "left", border: `1px solid ${BORDER}` },
+        td: { fontSize: 12, padding: "5px 8px", border: `1px solid ${BORDER}`, verticalAlign: "middle" },
     };
     return (
-        <div id="ticket-print" style={{ fontFamily: "Arial, sans-serif", background: "#fff", width: "100%", fontSize: 11, color: "#1f2937" }}>
-            {/* HEADER */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 20px 10px", borderBottom: "1px solid #e5e7eb", background: "#fff" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <div style={{ width: 52, height: 52, borderRadius: "50%", background: "linear-gradient(135deg,#1e40af,#3b82f6)", display: "flex", alignItems: "center", justifyContent: "center", border: "3px solid #dbeafe" }}>
-                        <span style={{ fontSize: 24, color: "#fff" }}>&#9992;</span>
-                    </div>
-                    <div>
-                        <div style={{ display: "flex", gap: 0, alignItems: "baseline" }}>
-                            <span style={{ fontSize: 22, fontWeight: 900, color: "#1e40af", letterSpacing: -0.5 }}>VISA</span>
-                            <span style={{ fontSize: 22, fontWeight: 900, color: "#f97316", letterSpacing: -0.5 }}>PRO</span>
-                        </div>
-                        <div style={{ fontSize: 8, color: "#6b7280", fontWeight: 600 }}>Consultancy &amp; Migration</div>
-                        <div style={{ fontSize: 8, color: "#3b82f6" }}>{form.agencyWebsite}</div>
-                    </div>
-                </div>
-                <div style={{ textAlign: "right", fontSize: 9, color: "#6b7280", lineHeight: 1.9 }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: "#1e40af" }}>Flight Booking Made Smart and Reliable</div>
-                    <div>{form.agencyEmail}</div>
-                    <div>{form.agencyPhone}</div>
-                </div>
-            </div>
-            <div style={{ height: 3, background: "linear-gradient(90deg,#f97316 50%,#1e40af 50%)" }} />
-            {/* TITLE + BARCODE */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 20px", background: "#fff" }}>
-                <div style={{ fontSize: 14, fontWeight: 700, color: "#374151", border: "1px solid #d1d5db", borderRadius: 999, padding: "4px 24px", display: "flex", alignItems: "center", gap: 6 }}>
-                    &#9992; &nbsp;e-Ticket Itinerary
-                </div>
+        <div id="ticket-print" style={{ fontFamily: "Arial, sans-serif", position: "relative", width: "100%", fontSize: 11, color: "#1f2937" }}>
+            {/* BACKGROUND TEMPLATE */}
+            <img src="/documents/eticket.gif" alt="e-Ticket Template" style={{ width: "100%", display: "block" }} crossOrigin="anonymous" />
+            {/* BARCODE — positioned next to "e-Ticket Itinerary" title */}
+            <div style={{ position: "absolute", top: "10%", right: "5%", zIndex: 2 }}>
                 <Barcode value={form.bookingRef} />
             </div>
-            <div style={{ padding: "0 20px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
+            {/* DATA OVERLAY — starts below the title area */}
+            <div style={{ position: "absolute", top: "17%", left: "4%", right: "4%", bottom: "27%", display: "flex", flexDirection: "column", gap: 10 }}>
                 {/* BOOKING BAR */}
                 <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #d1d5db" }}>
                     <thead><tr>
-                        <th style={S.thBlue}>Booking Reference</th><th style={S.thBlue}>Airline PNR</th>
-                        <th style={S.thBlue}>Date of Issue</th><th style={{ ...S.thBlue, borderRight: "none" }}>Status</th>
+                        <th style={S.thTeal}>Booking Reference</th><th style={S.thTeal}>Airline PNR</th>
+                        <th style={S.thTeal}>Date of Issue</th><th style={{ ...S.thTeal, borderRight: "none" }}>Status</th>
                     </tr></thead>
                     <tbody><tr>
-                        <td style={{ ...S.td, fontWeight: 700, fontSize: 11 }}>{form.bookingRef || "\u2014"}</td>
-                        <td style={{ ...S.td, fontWeight: 700, fontSize: 11 }}>{form.airlinePnr || "\u2014"}</td>
+                        <td style={{ ...S.td, fontWeight: 700, fontSize: 13 }}>{form.bookingRef || "\u2014"}</td>
+                        <td style={{ ...S.td, fontWeight: 700, fontSize: 13 }}>{form.airlinePnr || "\u2014"}</td>
                         <td style={S.td}>{form.dateOfIssue || "\u2014"}</td>
                         <td style={{ ...S.td, borderRight: "none" }}>
-                            <span style={{ background: "#1a4a8a", color: "#fff", padding: "2px 10px", borderRadius: 3, fontSize: 9, fontWeight: 700 }}>{form.status || "Confirmed"}</span>
+                            <span style={{ background: TEAL, color: "#fff", padding: "2px 10px", borderRadius: 3, fontSize: 11, fontWeight: 700 }}>{form.status || "Confirmed"}</span>
                         </td>
                     </tr></tbody>
                 </table>
                 {/* PASSENGER INFO */}
                 <div>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: "#1f2937", marginBottom: 4 }}>Passenger Information</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: "#1f2937", marginBottom: 4 }}>Passenger Information</div>
                     <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #d1d5db" }}>
                         <thead><tr>
                             {["Passenger Name", "Type", "Gender", "Passport Number", "Cabin", "Checked", "E-Ticket"].map((h, i, a) => (
-                                <th key={h} style={{ ...S.thBlue, borderRight: i < a.length - 1 ? "1px solid #2563eb" : "none" }}>{h}</th>
+                                <th key={h} style={{ ...S.thTeal, borderRight: i < a.length - 1 ? `1px solid ${TEAL_DARK}` : "none" }}>{h}</th>
                             ))}
                         </tr></thead>
                         <tbody>
@@ -137,7 +119,7 @@ function TicketPreview({ form }) {
                                     <td style={{ ...S.td, fontFamily: "monospace" }}>{p.passportNo || "\u2014"}</td>
                                     <td style={{ ...S.td, textAlign: "center" }}>{p.cabin}</td>
                                     <td style={{ ...S.td, textAlign: "center" }}>{p.checked}</td>
-                                    <td style={{ ...S.td, fontFamily: "monospace", fontSize: 9, borderRight: "none" }}>{p.eTicket || "\u2014"}</td>
+                                    <td style={{ ...S.td, fontFamily: "monospace", fontSize: 11, borderRight: "none" }}>{p.eTicket || "\u2014"}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -145,11 +127,11 @@ function TicketPreview({ form }) {
                 </div>
                 {/* ITINERARY INFO */}
                 <div>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: "#1f2937", marginBottom: 4 }}>Itinerary Information</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: "#1f2937", marginBottom: 4 }}>Itinerary Information</div>
                     <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #d1d5db" }}>
                         <thead><tr>
                             {["Airline", "From", "To", "Depart", "Arrive", "Info"].map((h, i, a) => (
-                                <th key={h} style={{ ...S.thBlue, borderRight: i < a.length - 1 ? "1px solid #2563eb" : "none", width: h === "Info" ? "22%" : h === "Airline" ? "10%" : h === "Depart" || h === "Arrive" ? "13%" : "auto" }}>{h}</th>
+                                <th key={h} style={{ ...S.thTeal, borderRight: i < a.length - 1 ? `1px solid ${TEAL_DARK}` : "none", width: h === "Info" ? "22%" : h === "Airline" ? "10%" : h === "Depart" || h === "Arrive" ? "13%" : "auto" }}>{h}</th>
                             ))}
                         </tr></thead>
                         <tbody>
@@ -160,42 +142,44 @@ function TicketPreview({ form }) {
                                             <div style={{ width: 26, height: 26, borderRadius: "50%", background: "#dbeafe", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 3 }}>
                                                 <span style={{ fontSize: 14 }}>&#9992;</span>
                                             </div>
-                                            <div style={{ fontWeight: 700, color: "#1e40af", fontSize: 10 }}>{f.airline || "\u2014"}</div>
-                                            <div style={{ fontSize: 9, color: "#6b7280", fontWeight: 600 }}>{f.flightNo}</div>
+                                            <div style={{ fontWeight: 700, color: TEAL_DARK, fontSize: 12 }}>{f.airline || "\u2014"}</div>
+                                            <div style={{ fontSize: 11, color: "#6b7280", fontWeight: 600 }}>{f.flightNo}</div>
                                         </td>
                                         <td style={{ ...S.td, padding: "8px" }}>
                                             <div style={{ fontSize: 22, fontWeight: 900, color: "#1f2937", lineHeight: 1 }}>{f.from || "\u2014"}</div>
-                                            <div style={{ fontSize: 9, color: "#6b7280", marginTop: 2, lineHeight: 1.3 }}>{f.fromAirport}</div>
+                                            <div style={{ fontSize: 11, color: "#6b7280", marginTop: 2, lineHeight: 1.3 }}>{f.fromAirport}</div>
                                         </td>
                                         <td style={{ ...S.td, padding: "8px" }}>
                                             <div style={{ fontSize: 22, fontWeight: 900, color: "#1f2937", lineHeight: 1 }}>{f.to || "\u2014"}</div>
-                                            <div style={{ fontSize: 9, color: "#6b7280", marginTop: 2, lineHeight: 1.3 }}>{f.toAirport}</div>
+                                            <div style={{ fontSize: 11, color: "#6b7280", marginTop: 2, lineHeight: 1.3 }}>{f.toAirport}</div>
                                         </td>
                                         <td style={{ ...S.td, padding: "8px" }}>
-                                            <div style={{ fontSize: 9, color: "#6b7280" }}>{f.departDay}</div>
-                                            <div style={{ fontSize: 11, fontWeight: 700, color: "#1f2937" }}>{f.departDate}</div>
-                                            <div style={{ fontSize: 14, fontWeight: 900, color: "#1e40af", marginTop: 2 }}>{f.departTime}</div>
+                                            <div style={{ fontSize: 11, color: "#6b7280" }}>{f.departDay}</div>
+                                            <div style={{ fontSize: 13, fontWeight: 700, color: "#1f2937" }}>{f.departDate}</div>
+                                            <div style={{ fontSize: 16, fontWeight: 900, color: TEAL_DARK, marginTop: 2 }}>{f.departTime}</div>
                                         </td>
                                         <td style={{ ...S.td, padding: "8px" }}>
-                                            <div style={{ fontSize: 9, color: "#6b7280" }}>{f.arriveDay}</div>
-                                            <div style={{ fontSize: 11, fontWeight: 700, color: "#1f2937" }}>{f.arriveDate}</div>
-                                            <div style={{ fontSize: 14, fontWeight: 900, color: "#16a34a", marginTop: 2 }}>{f.arriveTime}</div>
+                                            <div style={{ fontSize: 11, color: "#6b7280" }}>{f.arriveDay}</div>
+                                            <div style={{ fontSize: 13, fontWeight: 700, color: "#1f2937" }}>{f.arriveDate}</div>
+                                            <div style={{ fontSize: 16, fontWeight: 900, color: TEAL_DARK, marginTop: 2 }}>{f.arriveTime}</div>
                                         </td>
-                                        <td style={{ ...S.td, padding: "8px", fontSize: 9, color: "#4b5563", lineHeight: 1.7, borderRight: "none" }}>
-                                            {f.classInfo && <div><b>Class:</b> {f.classInfo}</div>}
-                                            {f.refund && <div><b>Refund:</b> {f.refund}</div>}
-                                            {f.route && <div><b>Route:</b> {f.route}</div>}
-                                            {f.duration && <div><b>Duration:</b> {f.duration}</div>}
-                                            {f.personalItem && <div><b>Personal Item:</b> {f.personalItem}</div>}
-                                            {f.selfTransfer && <div><b>Self-Transfer:</b> {f.selfTransfer}</div>}
-                                            {f.terminalChange && <div><b>Terminal Change:</b> {f.terminalChange}</div>}
-                                            {f.codeshare && <div><b>Codeshare:</b> {f.codeshare}</div>}
-                                            {f.ssrRemarks && <div><b>SSR Remarks:</b> {f.ssrRemarks}</div>}
+                                        <td style={{ ...S.td, padding: "8px", fontSize: 11, color: "#4b5563", lineHeight: 1.7, borderRight: "none" }}>
+                                            {i === 0 && <>
+                                                {form.classInfo && <div><b>Class:</b> {form.classInfo}</div>}
+                                                {form.refund && <div><b>Refund:</b> {form.refund}</div>}
+                                                {form.route && <div><b>Route:</b> {form.route}</div>}
+                                                {form.duration && <div><b>Duration:</b> {form.duration}</div>}
+                                                {form.personalItem && <div><b>Personal Item:</b> {form.personalItem}</div>}
+                                                {form.selfTransfer && <div><b>Self-Transfer:</b> {form.selfTransfer}</div>}
+                                                {form.terminalChange && <div><b>Terminal Change:</b> {form.terminalChange}</div>}
+                                                {form.codeshare && <div><b>Codeshare:</b> {form.codeshare}</div>}
+                                                {form.ssrRemarks && <div><b>SSR Remarks:</b> {form.ssrRemarks}</div>}
+                                            </>}
                                         </td>
                                     </tr>
                                     {f.transitInfo && (
                                         <tr key={`t${i}`}>
-                                            <td colSpan={6} style={{ background: "#eff6ff", padding: "5px 12px", textAlign: "center", fontSize: 10, fontWeight: 600, color: "#1e40af", fontStyle: "italic", borderTop: "1px dashed #bfdbfe", borderBottom: "1px dashed #bfdbfe" }}>
+                                            <td colSpan={6} style={{ background: "#e6f5f8", padding: "5px 12px", textAlign: "center", fontSize: 12, fontWeight: 600, color: TEAL_DARK, fontStyle: "italic", borderTop: `1px dashed ${BORDER}`, borderBottom: `1px dashed ${BORDER}` }}>
                                                 {f.transitInfo}
                                             </td>
                                         </tr>
@@ -207,11 +191,11 @@ function TicketPreview({ form }) {
                 </div>
                 {/* FARE DETAILS */}
                 <div>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: "#1f2937", marginBottom: 4 }}>Fare Details</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: "#1f2937", marginBottom: 4 }}>Fare Details</div>
                     <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #d1d5db" }}>
                         <thead><tr>
                             {["Type", "Base Fare", "Tax", "AIT", "Gross Fare", "No of PAX", "Total (BDT)"].map((h, i, a) => (
-                                <th key={h} style={{ ...S.thBlue, borderRight: i < a.length - 1 ? "1px solid #2563eb" : "none", textAlign: "right" }}>{h}</th>
+                                <th key={h} style={{ ...S.thTeal, borderRight: i < a.length - 1 ? `1px solid ${TEAL_DARK}` : "none", textAlign: "right" }}>{h}</th>
                             ))}
                         </tr></thead>
                         <tbody>
@@ -227,28 +211,11 @@ function TicketPreview({ form }) {
                                 </tr>
                             ))}
                             <tr style={{ background: "#fef3c7" }}>
-                                <td colSpan={6} style={{ ...S.td, fontWeight: 900, fontSize: 11, textAlign: "right", paddingRight: 12 }}>Grand Total (BDT)</td>
-                                <td style={{ ...S.td, fontWeight: 900, fontSize: 13, textAlign: "right", color: "#b45309", borderRight: "none" }}>{form.grandTotal}</td>
+                                <td colSpan={6} style={{ ...S.td, fontWeight: 900, fontSize: 13, textAlign: "right", paddingRight: 12 }}>Grand Total (BDT)</td>
+                                <td style={{ ...S.td, fontWeight: 900, fontSize: 15, textAlign: "right", color: "#b45309", borderRight: "none" }}>{form.grandTotal}</td>
                             </tr>
                         </tbody>
                     </table>
-                </div>
-            </div>
-            {/* FOOTER */}
-            <div style={{ background: "#1e293b", padding: "12px 20px", color: "#e2e8f0" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <div><span style={{ fontWeight: 900, color: "#f97316", fontSize: 12, letterSpacing: 0.5 }}>{form.agencyWebsite?.toUpperCase()}</span></div>
-                    <div style={{ textAlign: "center" }}>
-                        <div style={{ color: "#94a3b8", fontSize: 8, fontWeight: 600, textTransform: "uppercase", letterSpacing: 1, marginBottom: 2 }}>CUSTOMER SERVICE</div>
-                        <div style={{ color: "#fff", fontSize: 9 }}>{form.agencyEmail}</div>
-                    </div>
-                    <div style={{ textAlign: "right" }}>
-                        <div style={{ color: "#94a3b8", fontSize: 8, fontWeight: 600, textTransform: "uppercase", letterSpacing: 1, marginBottom: 2 }}>HELPLINE</div>
-                        <div style={{ color: "#fff", fontSize: 9 }}>{form.agencyPhone}</div>
-                    </div>
-                </div>
-                <div style={{ borderTop: "1px solid #334155", marginTop: 8, paddingTop: 5, textAlign: "center", fontSize: 8, color: "#64748b" }}>
-                    Office: {form.agencyOffice}
                 </div>
             </div>
         </div>
@@ -312,7 +279,27 @@ export default function TicketGeneratorPage() {
             const json = await res.json();
             if (!json.success) throw new Error(json.message || "Failed");
             const d = json.data; setProgress(100); clearInterval(scanInterval); setScanLine(100);
-            setForm(prev => ({ ...prev, bookingRef: d.bookingRef || prev.bookingRef, airlinePnr: d.airlinePnr || prev.airlinePnr, dateOfIssue: d.dateOfIssue || prev.dateOfIssue, status: d.status || prev.status, grandTotal: d.grandTotal || prev.grandTotal, passengers: d.passengers?.length ? d.passengers : [mkP()], flights: d.flights?.length ? d.flights : [mkF()], fares: d.fares?.length ? d.fares : [mkFare()] }));
+            const firstFlight = d.flights?.[0] || {};
+            setForm(prev => ({
+                ...prev,
+                bookingRef: d.bookingRef || prev.bookingRef,
+                airlinePnr: d.airlinePnr || prev.airlinePnr,
+                dateOfIssue: d.dateOfIssue || prev.dateOfIssue,
+                status: d.status || prev.status,
+                grandTotal: d.grandTotal || prev.grandTotal,
+                classInfo: firstFlight.classInfo || d.classInfo || prev.classInfo,
+                refund: firstFlight.refund || d.refund || prev.refund,
+                route: firstFlight.route || d.route || prev.route,
+                duration: firstFlight.duration || d.duration || prev.duration,
+                personalItem: firstFlight.personalItem || d.personalItem || prev.personalItem,
+                selfTransfer: firstFlight.selfTransfer || d.selfTransfer || prev.selfTransfer,
+                terminalChange: firstFlight.terminalChange || d.terminalChange || prev.terminalChange,
+                codeshare: firstFlight.codeshare || d.codeshare || prev.codeshare,
+                ssrRemarks: firstFlight.ssrRemarks || d.ssrRemarks || prev.ssrRemarks,
+                passengers: d.passengers?.length ? d.passengers : [mkP()],
+                flights: d.flights?.length ? d.flights.map(f => ({ airline: f.airline || "", flightNo: f.flightNo || "", from: f.from || "", fromAirport: f.fromAirport || "", to: f.to || "", toAirport: f.toAirport || "", departDay: f.departDay || "", departDate: f.departDate || "", departTime: f.departTime || "", arriveDay: f.arriveDay || "", arriveDate: f.arriveDate || "", arriveTime: f.arriveTime || "", transitInfo: f.transitInfo || "" })) : [mkF()],
+                fares: d.fares?.length ? d.fares : [mkFare()],
+            }));
             toast.success(json.aiParsed ? "AI extracted all data!" : "Text extracted, please check");
         } catch (e) { clearInterval(scanInterval); console.error("Extract error:", e); toast.error(e.message === "Failed to fetch" ? "Backend server not running! Start backend first." : `Extract failed: ${e.message}`); }
         finally { setExtracting(false); setScanning(false); setProgress(0); setScanLine(0); }
@@ -372,9 +359,9 @@ export default function TicketGeneratorPage() {
         let filled = 0, total = 0;
         ['bookingRef', 'airlinePnr', 'dateOfIssue', 'status'].forEach(k => { total++; if (form[k]) filled++; });
         form.passengers.forEach(p => { ['name', 'type', 'gender', 'passportNo', 'cabin', 'checked', 'eTicket'].forEach(k => { total++; if (p[k]) filled++; }); });
-        form.flights.forEach(f => { ['airline', 'flightNo', 'from', 'fromAirport', 'to', 'toAirport', 'departDay', 'departDate', 'departTime', 'arriveDay', 'arriveDate', 'arriveTime', 'classInfo', 'refund', 'route', 'duration', 'personalItem', 'selfTransfer', 'terminalChange', 'codeshare', 'ssrRemarks', 'transitInfo'].forEach(k => { total++; if (f[k]) filled++; }); });
+        form.flights.forEach(f => { ['airline', 'flightNo', 'from', 'fromAirport', 'to', 'toAirport', 'departDay', 'departDate', 'departTime', 'arriveDay', 'arriveDate', 'arriveTime', 'transitInfo'].forEach(k => { total++; if (f[k]) filled++; }); });
         form.fares.forEach(f => { ['type', 'baseFare', 'tax', 'ait', 'grossFare', 'pax', 'total'].forEach(k => { total++; if (f[k]) filled++; }); });
-        ['grandTotal', 'agencyWebsite', 'agencyPhone', 'agencyEmail', 'agencyOffice'].forEach(k => { total++; if (form[k]) filled++; });
+        ['grandTotal', 'classInfo', 'refund', 'route', 'duration', 'personalItem', 'agencyWebsite', 'agencyPhone', 'agencyEmail', 'agencyOffice'].forEach(k => { total++; if (form[k]) filled++; });
         return { filled, total };
     };
     const { filled: filledCount, total: totalFields } = countFilled();
@@ -490,21 +477,27 @@ export default function TicketGeneratorPage() {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                                                    <F label="Class" value={f.classInfo} onChange={e => upd("flights", i, "classInfo", e.target.value)} placeholder="Economy (T)" />
-                                                    <F label="Duration" value={f.duration} onChange={e => upd("flights", i, "duration", e.target.value)} placeholder="4h 50m" />
-                                                    <F label="Refund" value={f.refund} onChange={e => upd("flights", i, "refund", e.target.value)} placeholder="Non-Refundable" />
-                                                    <F label="Route" value={f.route} onChange={e => upd("flights", i, "route", e.target.value)} placeholder="One-way" />
-                                                    <F label="Personal Item" value={f.personalItem} onChange={e => upd("flights", i, "personalItem", e.target.value)} placeholder="Laptop Bag" />
-                                                    <F label="Self-Transfer" value={f.selfTransfer} onChange={e => upd("flights", i, "selfTransfer", e.target.value)} select options={["No", "Yes"]} />
-                                                    <F label="Terminal Change" value={f.terminalChange} onChange={e => upd("flights", i, "terminalChange", e.target.value)} select options={["No", "Yes"]} />
-                                                    <F label="Codeshare" value={f.codeshare} onChange={e => upd("flights", i, "codeshare", e.target.value)} select options={["No", "Yes"]} />
-                                                    <F label="SSR Remarks" value={f.ssrRemarks} onChange={e => upd("flights", i, "ssrRemarks", e.target.value)} placeholder="No" />
-                                                </div>
                                                 <F label="Transit Info" value={f.transitInfo} onChange={e => upd("flights", i, "transitInfo", e.target.value)} placeholder="Transit in Dubai (DXB) 4h 15m" className="w-full" />
                                             </div>
                                         </div>
                                     ))}
+                                </div>
+                            </div>
+                            {/* Flight Info (Common) */}
+                            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                                <div className="px-4 py-2.5 bg-teal-50 border-b border-teal-100">
+                                    <div className="flex items-center gap-2"><LuFileText size={12} className="text-teal-500" /><span className="text-[11px] font-bold text-teal-700 uppercase tracking-wider">Flight Info (Common for all segments)</span></div>
+                                </div>
+                                <div className="p-4 grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                    <F label="Class" value={form.classInfo} onChange={e => setForm(p => ({ ...p, classInfo: e.target.value }))} placeholder="Economy (T)" />
+                                    <F label="Duration" value={form.duration} onChange={e => setForm(p => ({ ...p, duration: e.target.value }))} placeholder="4h 50m" />
+                                    <F label="Refund" value={form.refund} onChange={e => setForm(p => ({ ...p, refund: e.target.value }))} placeholder="Non-Refundable" />
+                                    <F label="Route" value={form.route} onChange={e => setForm(p => ({ ...p, route: e.target.value }))} placeholder="One-way" />
+                                    <F label="Personal Item" value={form.personalItem} onChange={e => setForm(p => ({ ...p, personalItem: e.target.value }))} placeholder="Laptop Bag" />
+                                    <F label="Self-Transfer" value={form.selfTransfer} onChange={e => setForm(p => ({ ...p, selfTransfer: e.target.value }))} select options={["No", "Yes"]} />
+                                    <F label="Terminal Change" value={form.terminalChange} onChange={e => setForm(p => ({ ...p, terminalChange: e.target.value }))} select options={["No", "Yes"]} />
+                                    <F label="Codeshare" value={form.codeshare} onChange={e => setForm(p => ({ ...p, codeshare: e.target.value }))} select options={["No", "Yes"]} />
+                                    <F label="SSR Remarks" value={form.ssrRemarks} onChange={e => setForm(p => ({ ...p, ssrRemarks: e.target.value }))} placeholder="No" />
                                 </div>
                             </div>
                             {/* Fares */}
