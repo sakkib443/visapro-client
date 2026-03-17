@@ -73,6 +73,7 @@ const menuItems = [
     {
         name: "Visa Documents",
         icon: FiFileText,
+        hidden: true,
         children: [
             { name: "All Documents", href: "/dashboard/admin/visa-documents", icon: FiFileText },
             { name: "Create Document", href: "/dashboard/admin/visa-documents/create", icon: FiPlus },
@@ -148,6 +149,7 @@ const menuItems = [
         name: "Payments",
         href: "/dashboard/admin/payments",
         icon: FiDollarSign,
+        hidden: true,
     },
     {
         section: "CONTENT",
@@ -172,29 +174,35 @@ const menuItems = [
     },
     {
         section: "COMMUNICATION",
+        hidden: true,
     },
     {
         name: "Messages",
         href: "/dashboard/admin/messages",
         icon: FiMessageSquare,
+        hidden: true,
     },
     {
         name: "Notifications",
         href: "/dashboard/admin/notifications",
         icon: FiBell,
+        hidden: true,
     },
     {
         section: "SETTINGS",
+        hidden: true,
     },
     {
         name: "Reports",
         href: "/dashboard/admin/reports",
         icon: FiBarChart2,
+        hidden: true,
     },
     {
         name: "Settings",
         href: "/dashboard/admin/settings",
         icon: FiSettings,
+        hidden: true,
     },
     {
         name: "Profile",
@@ -320,7 +328,7 @@ export default function DashboardLayout({ children }) {
 
     const renderSidebarContent = (isCollapsedMode = false) => (
         <>
-            {menuItems.filter(item => !item.roles || item.roles.includes(user?.role)).map((item, index) => {
+            {menuItems.filter(item => !item.hidden && (!item.roles || item.roles.includes(user?.role))).map((item, index) => {
                 if (item.section) {
                     if (isCollapsedMode) return <div key={index} className="my-3 border-t border-gray-100 dark:border-gray-700/50" />;
                     return (
