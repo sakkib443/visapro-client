@@ -1,11 +1,11 @@
 "use client";
 import { useState, useRef, useCallback, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import {
     FiUpload, FiLoader, FiX, FiDownload, FiRefreshCw, FiSave,
-    FiCheck, FiEdit3, FiEye, FiPlus, FiPrinter, FiList, FiMaximize2, FiMinimize2,
+    FiCheck, FiEdit3, FiEye, FiEyeOff, FiPlus, FiPrinter, FiList, FiMaximize2, FiMinimize2,
 } from "react-icons/fi";
 import { LuPlane, LuUser, LuScanLine, LuFileText, LuBanknote } from "react-icons/lu";
 
@@ -25,27 +25,80 @@ const INIT = {
     agencyEmail: "info@visaprocm.com", agencyOffice: "Dhaka, Bangladesh",
 };
 
-/* Input Field - empty fields get yellow highlight */
-const F = ({ label, value, onChange, placeholder, className = "", select, options = [] }) => {
+/* Visibility initial state — controls what shows in PDF */
+const INIT_VIS = {
+    // Section master toggles
+    bookingSection: true, passengerSection: true, flightSection: true, infoSection: true, fareSection: true,
+    // Booking fields
+    bookingRef: true, airlinePnr: true, dateOfIssue: true, status: true,
+    // Passenger columns (applies to all passengers)
+    pax_name: true, pax_type: true, pax_gender: true, pax_passportNo: true,
+    pax_cabin: true, pax_checked: true, pax_eTicket: true,
+    // Flight columns
+    flt_airline: true, flt_from: true, flt_to: true, flt_depart: true, flt_arrive: true, flt_transitInfo: true,
+    // Info/Meta fields (field-level — also hidden if value is empty)
+    classInfo: true, refund: true, route: true, duration: true,
+    personalItem: true, selfTransfer: true, terminalChange: true, codeshare: true, ssrRemarks: true,
+    // Fare columns
+    fare_type: true, fare_baseFare: true, fare_tax: true, fare_ait: true,
+    fare_grossFare: true, fare_pax: true, fare_total: true, grandTotal: true,
+};
+
+/* -- Eye Toggle Button -- */
+const EyeBtn = ({ visKey, vis, onToggleVis, size = 11 }) => (
+    <button
+        type="button"
+        onClick={() => onToggleVis(visKey)}
+        title={vis[visKey] ? "Hide from PDF" : "Show in PDF"}
+        className={`flex-shrink-0 transition-all hover:scale-110 rounded p-0.5 ${vis[visKey] ? "text-blue-400 hover:text-blue-600" : "text-gray-300 hover:text-gray-500"}`}
+    >
+        {vis[visKey] ? <FiEye size={size} /> : <FiEyeOff size={size} />}
+    </button>
+);
+
+/* -- Column Tag Toggle (for array section headers) -- */
+const ColTag = ({ label, visKey, vis, onToggleVis }) => (
+    <button
+        type="button"
+        onClick={() => onToggleVis(visKey)}
+        className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9px] font-bold border transition-all ${vis[visKey]
+            ? "border-blue-200 text-blue-600 bg-blue-50 hover:bg-blue-100"
+            : "border-gray-200 text-gray-400 bg-gray-50 hover:bg-gray-100 line-through"
+            }`}
+    >
+        {vis[visKey] ? <FiEye size={8} /> : <FiEyeOff size={8} />}
+        <span className="ml-0.5">{label}</span>
+    </button>
+);
+
+/* -- Input Field with Eye Toggle -- */
+const F = ({ label, value, onChange, placeholder, className = "", select, options = [], visKey, vis, onToggleVis }) => {
     const isEmpty = !value || value.toString().trim() === "";
+    const isHidden = visKey && vis && !vis[visKey];
     return (
         <div className={`flex flex-col gap-1 ${className}`}>
-            <label className={`text-[10px] font-bold uppercase tracking-wider ${isEmpty ? "text-amber-500" : "text-gray-400"}`}>{label} {isEmpty && <span className="text-red-400">*</span>}</label>
-            {select ? (
-                <select value={value} onChange={onChange}
-                    className={`px-2.5 py-1.5 border rounded-lg text-[12px] outline-none bg-white text-gray-700 ${isEmpty ? "border-amber-300 bg-amber-50/50" : "border-gray-200 focus:border-blue-400"}`}>
-                    {options.map(o => <option key={o}>{o}</option>)}
-                </select>
-            ) : (
-                <input type="text" value={value} onChange={onChange} placeholder={placeholder}
-                    className={`px-2.5 py-1.5 border rounded-lg text-[12px] outline-none transition-all ${isEmpty ? "border-amber-300 bg-amber-50/50 placeholder:text-amber-300" : "border-gray-200 focus:border-blue-400 bg-white"}`} />
-            )}
+            <div className="flex items-center justify-between gap-1">
+                <label className={`text-[10px] font-bold uppercase tracking-wider leading-none ${isHidden ? "text-gray-300" : isEmpty ? "text-amber-500" : "text-gray-400"}`}>
+                    {label}{isEmpty && <span className="text-red-400 ml-0.5">*</span>}
+                </label>
+                {visKey && vis && onToggleVis && <EyeBtn visKey={visKey} vis={vis} onToggleVis={onToggleVis} size={10} />}
+            </div>
+            <div className={`transition-opacity ${isHidden ? "opacity-25" : "opacity-100"}`}>
+                {select ? (
+                    <select value={value} onChange={onChange}
+                        className={`w-full px-2.5 py-1.5 border rounded-lg text-[12px] outline-none bg-white text-gray-700 ${isEmpty ? "border-amber-300 bg-amber-50/50" : "border-gray-200 focus:border-blue-400"}`}>
+                        {options.map(o => <option key={o}>{o}</option>)}
+                    </select>
+                ) : (
+                    <input type="text" value={value} onChange={onChange} placeholder={placeholder}
+                        className={`w-full px-2.5 py-1.5 border rounded-lg text-[12px] outline-none transition-all ${isEmpty ? "border-amber-300 bg-amber-50/50 placeholder:text-amber-300" : "border-gray-200 focus:border-blue-400 bg-white"}`} />
+                )}
+            </div>
         </div>
     );
 };
 
-
-/* Barcode */
+/* -- Barcode -- */
 function Barcode({ value }) {
     const chars = (value || "AMB0000000").split("");
     const bars = [];
@@ -67,162 +120,166 @@ function Barcode({ value }) {
     );
 }
 
-function TicketPreview({ form }) {
-    const TEAL = "#3a9bba";
-    const TEAL_DARK = "#2d7d96";
-    const BORDER = "#b8d4dc";
+/* -- Ticket Preview (PDF render target) -- */
+function TicketPreview({ form, vis }) {
+    const TEAL = "#3a9bba"; const TEAL_DARK = "#2d7d96"; const BORDER = "#b8d4dc";
     const S = {
-        thTeal: { background: TEAL, color: "#fff", fontSize: 11, fontWeight: 700, padding: "6px 8px", textAlign: "left", border: `1px solid ${TEAL_DARK}`, whiteSpace: "nowrap" },
-        thGray: { background: "#e8ecef", color: "#333", fontSize: 11, fontWeight: 700, padding: "6px 8px", textAlign: "left", border: `1px solid ${BORDER}` },
-        td: { fontSize: 12, padding: "5px 8px", border: `1px solid ${BORDER}`, verticalAlign: "middle" },
+        thTeal: { background: TEAL, color: "#fff", fontSize: 11, fontWeight: 700, padding: "6px 8px", textAlign: "left", border: "1px solid " + TEAL_DARK, whiteSpace: "nowrap" },
+        td: { fontSize: 12, padding: "5px 8px", border: "1px solid " + BORDER, verticalAlign: "middle" },
     };
-    return (
-        <div id="ticket-print" style={{ fontFamily: "Arial, sans-serif", position: "relative", width: "100%", fontSize: 11, color: "#1f2937" }}>
-            {/* BACKGROUND TEMPLATE */}
-            <img src="/documents/eticket.gif" alt="e-Ticket Template" style={{ width: "100%", display: "block" }} crossOrigin="anonymous" />
-            {/* BARCODE â€” positioned next to "e-Ticket Itinerary" title */}
-            <div style={{ position: "absolute", top: "10%", right: "5%", zIndex: 2 }}>
-                <Barcode value={form.bookingRef} />
+    const passCols = [
+        { key: "name", label: "Passenger Name", visKey: "pax_name", style: { fontWeight: 600 } },
+        { key: "type", label: "Type", visKey: "pax_type", style: { textAlign: "center" } },
+        { key: "gender", label: "Gender", visKey: "pax_gender", style: { textAlign: "center" } },
+        { key: "passportNo", label: "Passport Number", visKey: "pax_passportNo", style: { fontFamily: "monospace" } },
+        { key: "cabin", label: "Cabin", visKey: "pax_cabin", style: { textAlign: "center" } },
+        { key: "checked", label: "Checked", visKey: "pax_checked", style: { textAlign: "center" } },
+        { key: "eTicket", label: "E-Ticket", visKey: "pax_eTicket", style: { fontFamily: "monospace", fontSize: 11 } },
+    ].filter(c => vis[c.visKey]);
+    const infoFields = [
+        { key: "classInfo", label: "Class" }, { key: "refund", label: "Refund" }, { key: "route", label: "Route" },
+        { key: "duration", label: "Duration" }, { key: "personalItem", label: "Personal Item" },
+        { key: "selfTransfer", label: "Self-Transfer" }, { key: "terminalChange", label: "Terminal Change" },
+        { key: "codeshare", label: "Codeshare" }, { key: "ssrRemarks", label: "SSR Remarks" },
+    ].filter(f => vis[f.key] && form[f.key]);
+    const showInfoCol = vis.infoSection && infoFields.length > 0;
+    const fltVisCount = [vis.flt_airline, vis.flt_from, vis.flt_to, vis.flt_depart, vis.flt_arrive, showInfoCol].filter(Boolean).length;
+    const fareCols = [
+        { key: "type", label: "Type", visKey: "fare_type", style: { fontWeight: 600, textAlign: "left" } },
+        { key: "baseFare", label: "Base Fare", visKey: "fare_baseFare", style: { textAlign: "right" } },
+        { key: "tax", label: "Tax", visKey: "fare_tax", style: { textAlign: "right" } },
+        { key: "ait", label: "AIT", visKey: "fare_ait", style: { textAlign: "right" } },
+        { key: "grossFare", label: "Gross Fare", visKey: "fare_grossFare", style: { textAlign: "right", fontWeight: 600 } },
+        { key: "pax", label: "No of PAX", visKey: "fare_pax", style: { textAlign: "center" } },
+        { key: "total", label: "Total (BDT)", visKey: "fare_total", style: { textAlign: "right", fontWeight: 700 } },
+    ].filter(c => vis[c.visKey]);
+
+    const [gifH, setGifH] = useState(0);
+    const [pgAssign, setPgAssign] = useState(null);
+    const measGifRef = useRef(null);
+    const secRefs = useRef({});
+
+    const visIds = [
+        vis.bookingSection ? "booking" : null,
+        (vis.passengerSection && passCols.length > 0) ? "passenger" : null,
+        vis.flightSection ? "flight" : null,
+        (vis.fareSection && fareCols.length > 0) ? "fare" : null,
+    ].filter(Boolean);
+
+    useEffect(() => {
+        const calc = () => {
+            const h = measGifRef.current ? measGifRef.current.offsetHeight : 0;
+            if (!h) return;
+            const slot = h * 0.68;
+            const pgs = [[]]; let used = 0;
+            visIds.forEach(id => {
+                const elH = (secRefs.current[id] ? secRefs.current[id].offsetHeight : 0) + 8;
+                if (used + elH > slot && pgs[pgs.length - 1].length > 0) { pgs.push([]); used = 0; }
+                pgs[pgs.length - 1].push(id); used += elH;
+            });
+            if (JSON.stringify(pgs) !== JSON.stringify(pgAssign) || h !== gifH) { setGifH(h); setPgAssign(pgs); }
+        };
+        calc(); const t = setTimeout(calc, 150); return () => clearTimeout(t);
+    });
+
+    const RS = (id) => {
+        if (id === "booking") return (
+            <table key="bk" style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #d1d5db" }}>
+                <thead><tr>
+                    {vis.bookingRef && <th style={S.thTeal}>Booking Reference</th>}
+                    {vis.airlinePnr && <th style={S.thTeal}>Airline PNR</th>}
+                    {vis.dateOfIssue && <th style={S.thTeal}>Date of Issue</th>}
+                    {vis.status && <th style={{ ...S.thTeal, borderRight: "none" }}>Status</th>}
+                </tr></thead>
+                <tbody><tr>
+                    {vis.bookingRef && <td style={{ ...S.td, fontWeight: 700, fontSize: 13 }}>{form.bookingRef || "---"}</td>}
+                    {vis.airlinePnr && <td style={{ ...S.td, fontWeight: 700, fontSize: 13 }}>{form.airlinePnr || "---"}</td>}
+                    {vis.dateOfIssue && <td style={S.td}>{form.dateOfIssue || "---"}</td>}
+                    {vis.status && <td style={{ ...S.td, borderRight: "none" }}><span style={{ background: TEAL, color: "#fff", padding: "2px 10px", borderRadius: 3, fontSize: 11, fontWeight: 700 }}>{form.status || "Confirmed"}</span></td>}
+                </tr></tbody>
+            </table>
+        );
+        if (id === "passenger") return (
+            <div key="px">
+                <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 3 }}>Passenger Information</div>
+                <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #d1d5db" }}>
+                    <thead><tr>{passCols.map((c, i) => <th key={c.key} style={{ ...S.thTeal, borderRight: i < passCols.length - 1 ? "1px solid " + TEAL_DARK : "none" }}>{c.label}</th>)}</tr></thead>
+                    <tbody>{form.passengers.map((p, i) => (<tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#f8fafc" }}>{passCols.map((c, j) => <td key={c.key} style={{ ...S.td, ...c.style, borderRight: j < passCols.length - 1 ? "1px solid " + BORDER : "none" }}>{p[c.key] || "---"}</td>)}</tr>))}</tbody>
+                </table>
             </div>
-            {/* DATA OVERLAY â€” starts below the title area */}
-            <div style={{ position: "absolute", top: "17%", left: "4%", right: "4%", bottom: "27%", display: "flex", flexDirection: "column", gap: 10 }}>
-                {/* BOOKING BAR */}
+        );
+        if (id === "flight") return (
+            <div key="fl">
+                <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 3 }}>Itinerary Information</div>
                 <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #d1d5db" }}>
                     <thead><tr>
-                        <th style={S.thTeal}>Booking Reference</th><th style={S.thTeal}>Airline PNR</th>
-                        <th style={S.thTeal}>Date of Issue</th><th style={{ ...S.thTeal, borderRight: "none" }}>Status</th>
+                        {vis.flt_airline && <th style={{ ...S.thTeal, width: "10%" }}>Airline</th>}
+                        {vis.flt_from && <th style={S.thTeal}>From</th>}
+                        {vis.flt_to && <th style={S.thTeal}>To</th>}
+                        {vis.flt_depart && <th style={{ ...S.thTeal, width: "13%" }}>Depart</th>}
+                        {vis.flt_arrive && <th style={{ ...S.thTeal, width: "13%" }}>Arrive</th>}
+                        {showInfoCol && <th style={{ ...S.thTeal, width: "22%", borderRight: "none" }}>Info</th>}
                     </tr></thead>
-                    <tbody><tr>
-                        <td style={{ ...S.td, fontWeight: 700, fontSize: 13 }}>{form.bookingRef || "\u2014"}</td>
-                        <td style={{ ...S.td, fontWeight: 700, fontSize: 13 }}>{form.airlinePnr || "\u2014"}</td>
-                        <td style={S.td}>{form.dateOfIssue || "\u2014"}</td>
-                        <td style={{ ...S.td, borderRight: "none" }}>
-                            <span style={{ background: TEAL, color: "#fff", padding: "2px 10px", borderRadius: 3, fontSize: 11, fontWeight: 700 }}>{form.status || "Confirmed"}</span>
-                        </td>
-                    </tr></tbody>
+                    <tbody>{form.flights.map((f, i) => (<>
+                        <tr key={"f"+i} style={{ background: i % 2 === 0 ? "#fff" : "#f8fafc", verticalAlign: "top" }}>
+                            {vis.flt_airline && <td style={{ ...S.td, padding: "6px 8px" }}><div style={{ width: 22, height: 22, borderRadius: "50%", background: "#dbeafe", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 2 }}><span style={{ fontSize: 12 }}>&#9992;</span></div><div style={{ fontWeight: 700, color: TEAL_DARK, fontSize: 11 }}>{f.airline || "---"}</div><div style={{ fontSize: 10, color: "#6b7280" }}>{f.flightNo}</div></td>}
+                            {vis.flt_from && <td style={{ ...S.td, padding: "6px 8px" }}><div style={{ fontSize: 20, fontWeight: 900, lineHeight: 1 }}>{f.from || "---"}</div><div style={{ fontSize: 10, color: "#6b7280", marginTop: 2 }}>{f.fromAirport}</div></td>}
+                            {vis.flt_to && <td style={{ ...S.td, padding: "6px 8px" }}><div style={{ fontSize: 20, fontWeight: 900, lineHeight: 1 }}>{f.to || "---"}</div><div style={{ fontSize: 10, color: "#6b7280", marginTop: 2 }}>{f.toAirport}</div></td>}
+                            {vis.flt_depart && <td style={{ ...S.td, padding: "6px 8px" }}><div style={{ fontSize: 10, color: "#6b7280" }}>{f.departDay}</div><div style={{ fontSize: 12, fontWeight: 700 }}>{f.departDate}</div><div style={{ fontSize: 15, fontWeight: 900, color: TEAL_DARK }}>{f.departTime}</div></td>}
+                            {vis.flt_arrive && <td style={{ ...S.td, padding: "6px 8px" }}><div style={{ fontSize: 10, color: "#6b7280" }}>{f.arriveDay}</div><div style={{ fontSize: 12, fontWeight: 700 }}>{f.arriveDate}</div><div style={{ fontSize: 15, fontWeight: 900, color: TEAL_DARK }}>{f.arriveTime}</div></td>}
+                            {showInfoCol && <td style={{ ...S.td, padding: "6px 8px", fontSize: 10, color: "#4b5563", lineHeight: 1.6, borderRight: "none" }}>{i === 0 && infoFields.map(fld => <div key={fld.key}><b>{fld.label}:</b> {form[fld.key]}</div>)}</td>}
+                        </tr>
+                        {vis.flt_transitInfo && f.transitInfo && <tr key={"t"+i}><td colSpan={fltVisCount} style={{ background: "#e6f5f8", padding: "4px 12px", textAlign: "center", fontSize: 11, fontWeight: 600, color: TEAL_DARK, fontStyle: "italic", borderTop: "1px dashed " + BORDER, borderBottom: "1px dashed " + BORDER }}>{f.transitInfo}</td></tr>}
+                    </>))}</tbody>
                 </table>
-                {/* PASSENGER INFO */}
-                <div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: "#1f2937", marginBottom: 4 }}>Passenger Information</div>
-                    <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #d1d5db" }}>
-                        <thead><tr>
-                            {["Passenger Name", "Type", "Gender", "Passport Number", "Cabin", "Checked", "E-Ticket"].map((h, i, a) => (
-                                <th key={h} style={{ ...S.thTeal, borderRight: i < a.length - 1 ? `1px solid ${TEAL_DARK}` : "none" }}>{h}</th>
-                            ))}
-                        </tr></thead>
-                        <tbody>
-                            {form.passengers.map((p, i) => (
-                                <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#f8fafc" }}>
-                                    <td style={{ ...S.td, fontWeight: 600 }}>{p.name || "\u2014"}</td>
-                                    <td style={{ ...S.td, textAlign: "center" }}>{p.type}</td>
-                                    <td style={{ ...S.td, textAlign: "center" }}>{p.gender}</td>
-                                    <td style={{ ...S.td, fontFamily: "monospace" }}>{p.passportNo || "\u2014"}</td>
-                                    <td style={{ ...S.td, textAlign: "center" }}>{p.cabin}</td>
-                                    <td style={{ ...S.td, textAlign: "center" }}>{p.checked}</td>
-                                    <td style={{ ...S.td, fontFamily: "monospace", fontSize: 11, borderRight: "none" }}>{p.eTicket || "\u2014"}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-                {/* ITINERARY INFO */}
-                <div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: "#1f2937", marginBottom: 4 }}>Itinerary Information</div>
-                    <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #d1d5db" }}>
-                        <thead><tr>
-                            {["Airline", "From", "To", "Depart", "Arrive", "Info"].map((h, i, a) => (
-                                <th key={h} style={{ ...S.thTeal, borderRight: i < a.length - 1 ? `1px solid ${TEAL_DARK}` : "none", width: h === "Info" ? "22%" : h === "Airline" ? "10%" : h === "Depart" || h === "Arrive" ? "13%" : "auto" }}>{h}</th>
-                            ))}
-                        </tr></thead>
-                        <tbody>
-                            {form.flights.map((f, i) => (
-                                <>
-                                    <tr key={`f${i}`} style={{ background: i % 2 === 0 ? "#fff" : "#f8fafc", verticalAlign: "top" }}>
-                                        <td style={{ ...S.td, padding: "8px" }}>
-                                            <div style={{ width: 26, height: 26, borderRadius: "50%", background: "#dbeafe", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 3 }}>
-                                                <span style={{ fontSize: 14 }}>&#9992;</span>
-                                            </div>
-                                            <div style={{ fontWeight: 700, color: TEAL_DARK, fontSize: 12 }}>{f.airline || "\u2014"}</div>
-                                            <div style={{ fontSize: 11, color: "#6b7280", fontWeight: 600 }}>{f.flightNo}</div>
-                                        </td>
-                                        <td style={{ ...S.td, padding: "8px" }}>
-                                            <div style={{ fontSize: 22, fontWeight: 900, color: "#1f2937", lineHeight: 1 }}>{f.from || "\u2014"}</div>
-                                            <div style={{ fontSize: 11, color: "#6b7280", marginTop: 2, lineHeight: 1.3 }}>{f.fromAirport}</div>
-                                        </td>
-                                        <td style={{ ...S.td, padding: "8px" }}>
-                                            <div style={{ fontSize: 22, fontWeight: 900, color: "#1f2937", lineHeight: 1 }}>{f.to || "\u2014"}</div>
-                                            <div style={{ fontSize: 11, color: "#6b7280", marginTop: 2, lineHeight: 1.3 }}>{f.toAirport}</div>
-                                        </td>
-                                        <td style={{ ...S.td, padding: "8px" }}>
-                                            <div style={{ fontSize: 11, color: "#6b7280" }}>{f.departDay}</div>
-                                            <div style={{ fontSize: 13, fontWeight: 700, color: "#1f2937" }}>{f.departDate}</div>
-                                            <div style={{ fontSize: 16, fontWeight: 900, color: TEAL_DARK, marginTop: 2 }}>{f.departTime}</div>
-                                        </td>
-                                        <td style={{ ...S.td, padding: "8px" }}>
-                                            <div style={{ fontSize: 11, color: "#6b7280" }}>{f.arriveDay}</div>
-                                            <div style={{ fontSize: 13, fontWeight: 700, color: "#1f2937" }}>{f.arriveDate}</div>
-                                            <div style={{ fontSize: 16, fontWeight: 900, color: TEAL_DARK, marginTop: 2 }}>{f.arriveTime}</div>
-                                        </td>
-                                        <td style={{ ...S.td, padding: "8px", fontSize: 11, color: "#4b5563", lineHeight: 1.7, borderRight: "none" }}>
-                                            {i === 0 && <>
-                                                {form.classInfo && <div><b>Class:</b> {form.classInfo}</div>}
-                                                {form.refund && <div><b>Refund:</b> {form.refund}</div>}
-                                                {form.route && <div><b>Route:</b> {form.route}</div>}
-                                                {form.duration && <div><b>Duration:</b> {form.duration}</div>}
-                                                {form.personalItem && <div><b>Personal Item:</b> {form.personalItem}</div>}
-                                                {form.selfTransfer && <div><b>Self-Transfer:</b> {form.selfTransfer}</div>}
-                                                {form.terminalChange && <div><b>Terminal Change:</b> {form.terminalChange}</div>}
-                                                {form.codeshare && <div><b>Codeshare:</b> {form.codeshare}</div>}
-                                                {form.ssrRemarks && <div><b>SSR Remarks:</b> {form.ssrRemarks}</div>}
-                                            </>}
-                                        </td>
-                                    </tr>
-                                    {f.transitInfo && (
-                                        <tr key={`t${i}`}>
-                                            <td colSpan={6} style={{ background: "#e6f5f8", padding: "5px 12px", textAlign: "center", fontSize: 12, fontWeight: 600, color: TEAL_DARK, fontStyle: "italic", borderTop: `1px dashed ${BORDER}`, borderBottom: `1px dashed ${BORDER}` }}>
-                                                {f.transitInfo}
-                                            </td>
-                                        </tr>
-                                    )}
-                                </>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-                {/* FARE DETAILS */}
-                <div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: "#1f2937", marginBottom: 4 }}>Fare Details</div>
-                    <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #d1d5db" }}>
-                        <thead><tr>
-                            {["Type", "Base Fare", "Tax", "AIT", "Gross Fare", "No of PAX", "Total (BDT)"].map((h, i, a) => (
-                                <th key={h} style={{ ...S.thTeal, borderRight: i < a.length - 1 ? `1px solid ${TEAL_DARK}` : "none", textAlign: "right" }}>{h}</th>
-                            ))}
-                        </tr></thead>
-                        <tbody>
-                            {form.fares.map((f, i) => (
-                                <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#f8fafc" }}>
-                                    <td style={{ ...S.td, fontWeight: 600 }}>{f.type}</td>
-                                    <td style={{ ...S.td, textAlign: "right" }}>{f.baseFare}</td>
-                                    <td style={{ ...S.td, textAlign: "right" }}>{f.tax}</td>
-                                    <td style={{ ...S.td, textAlign: "right" }}>{f.ait}</td>
-                                    <td style={{ ...S.td, textAlign: "right", fontWeight: 600 }}>{f.grossFare}</td>
-                                    <td style={{ ...S.td, textAlign: "center" }}>{f.pax}</td>
-                                    <td style={{ ...S.td, textAlign: "right", fontWeight: 700, borderRight: "none" }}>{f.total}</td>
-                                </tr>
-                            ))}
-                            <tr style={{ background: "#fef3c7" }}>
-                                <td colSpan={6} style={{ ...S.td, fontWeight: 900, fontSize: 13, textAlign: "right", paddingRight: 12 }}>Grand Total (BDT)</td>
-                                <td style={{ ...S.td, fontWeight: 900, fontSize: 15, textAlign: "right", color: "#b45309", borderRight: "none" }}>{form.grandTotal}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
             </div>
+        );
+        if (id === "fare") return (
+            <div key="fr">
+                <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 3 }}>Fare Details</div>
+                <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #d1d5db" }}>
+                    <thead><tr>{fareCols.map((c, i) => <th key={c.key} style={{ ...S.thTeal, borderRight: i < fareCols.length - 1 ? "1px solid " + TEAL_DARK : "none", textAlign: "right" }}>{c.label}</th>)}</tr></thead>
+                    <tbody>
+                        {form.fares.map((fare, i) => <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#f8fafc" }}>{fareCols.map((c, j) => <td key={c.key} style={{ ...S.td, ...c.style, borderRight: j < fareCols.length - 1 ? "1px solid " + BORDER : "none" }}>{fare[c.key]}</td>)}</tr>)}
+                        {vis.grandTotal && <tr style={{ background: "#fef3c7" }}><td colSpan={fareCols.length - 1} style={{ ...S.td, fontWeight: 900, fontSize: 12, textAlign: "right", paddingRight: 12 }}>Grand Total (BDT)</td><td style={{ ...S.td, fontWeight: 900, fontSize: 14, textAlign: "right", color: "#b45309", borderRight: "none" }}>{form.grandTotal}</td></tr>}
+                    </tbody>
+                </table>
+            </div>
+        );
+        return null;
+    };
+
+    const finalPgs = pgAssign || [visIds];
+    return (
+        <div id="ticket-print" style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: "#1f2937" }}>
+            {/* Measure template height at real container width */}
+            <img ref={measGifRef} src="/tickettemplate.png" alt="" crossOrigin="anonymous"
+                style={{ position: "absolute", top: 0, left: 0, width: "100%", visibility: "hidden", pointerEvents: "none", zIndex: -1 }} />
+            {/* Measure sections at real content width */}
+            <div style={{ position: "absolute", top: 0, left: "4%", right: "4%", visibility: "hidden", pointerEvents: "none", zIndex: -1, display: "flex", flexDirection: "column", gap: 8 }}>
+                {visIds.map(id => <div key={id} ref={el => { secRefs.current[id] = el; }}>{RS(id)}</div>)}
+            </div>
+            {/* Pages */}
+            {finalPgs.map((pSecs, pi) => (
+                <div key={pi} style={{ position: "relative" }}>
+                    <img src="/tickettemplate.png" alt="e-Ticket" style={{ width: "100%", display: "block" }} crossOrigin="anonymous" />
+                    {pi === 0 && vis.bookingRef && form.bookingRef && (
+                        <div style={{ position: "absolute", top: gifH ? gifH * 0.10 : "10%", right: "5%", zIndex: 2 }}>
+                            <Barcode value={form.bookingRef} />
+                        </div>
+                    )}
+                    <div style={{ position: "absolute", top: gifH ? gifH * 0.17 : "17%", left: "4%", right: "4%", bottom: "15%", overflow: "hidden", display: "flex", flexDirection: "column", gap: 8 }}>
+                        {pSecs.map(id => RS(id))}
+                    </div>
+                </div>
+            ))}
         </div>
     );
 }
 
-/* Main Page */
+/* ------------------------------------------------------
+   Main Page
+------------------------------------------------------ */
 export default function TicketGeneratorPage() {
     const [step, setStep] = useState(1);
     const [file, setFile] = useState(null);
@@ -231,6 +288,7 @@ export default function TicketGeneratorPage() {
     const [extracting, setExtracting] = useState(false);
     const [progress, setProgress] = useState(0);
     const [form, setForm] = useState({ ...INIT, passengers: [mkP()], flights: [mkF()], fares: [mkFare()] });
+    const [vis, setVis] = useState({ ...INIT_VIS });
     const [generating, setGenerating] = useState(false);
     const [saving, setSaving] = useState(false);
     const [editId, setEditId] = useState(null);
@@ -239,6 +297,10 @@ export default function TicketGeneratorPage() {
     const [pdfUrl, setPdfUrl] = useState(null);
     const [showFullscreen, setShowFullscreen] = useState(false);
     const fileRef = useRef(null);
+
+    const toggleVis = useCallback((key) => {
+        setVis(prev => ({ ...prev, [key]: !prev[key] }));
+    }, []);
 
     /* Load existing ticket if ?id= */
     useEffect(() => {
@@ -266,7 +328,7 @@ export default function TicketGeneratorPage() {
         else { setImgPrev(null); setPdfUrl(URL.createObjectURL(f)); }
     }, []);
 
-    /* AI extract with scanning animation */
+    /* AI Scan & Extract */
     const handleScanExtract = async () => {
         if (!file) { toast.error("Upload a file first"); return; }
         setScanning(true); setExtracting(true); setProgress(0); setScanLine(0);
@@ -297,11 +359,19 @@ export default function TicketGeneratorPage() {
                 codeshare: firstFlight.codeshare || d.codeshare || prev.codeshare,
                 ssrRemarks: firstFlight.ssrRemarks || d.ssrRemarks || prev.ssrRemarks,
                 passengers: d.passengers?.length ? d.passengers : [mkP()],
-                flights: d.flights?.length ? d.flights.map(f => ({ airline: f.airline || "", flightNo: f.flightNo || "", from: f.from || "", fromAirport: f.fromAirport || "", to: f.to || "", toAirport: f.toAirport || "", departDay: f.departDay || "", departDate: f.departDate || "", departTime: f.departTime || "", arriveDay: f.arriveDay || "", arriveDate: f.arriveDate || "", arriveTime: f.arriveTime || "", transitInfo: f.transitInfo || "" })) : [mkF()],
+                flights: d.flights?.length ? d.flights.map(f => ({
+                    airline: f.airline || "", flightNo: f.flightNo || "", from: f.from || "", fromAirport: f.fromAirport || "",
+                    to: f.to || "", toAirport: f.toAirport || "", departDay: f.departDay || "", departDate: f.departDate || "",
+                    departTime: f.departTime || "", arriveDay: f.arriveDay || "", arriveDate: f.arriveDate || "",
+                    arriveTime: f.arriveTime || "", transitInfo: f.transitInfo || ""
+                })) : [mkF()],
                 fares: d.fares?.length ? d.fares : [mkFare()],
             }));
             toast.success(json.aiParsed ? "AI extracted all data!" : "Text extracted, please check");
-        } catch (e) { clearInterval(scanInterval); console.error("Extract error:", e); toast.error(e.message === "Failed to fetch" ? "Backend server not running! Start backend first." : `Extract failed: ${e.message}`); }
+        } catch (e) {
+            clearInterval(scanInterval);
+            toast.error(e.message === "Failed to fetch" ? "Backend not running!" : `Extract failed: ${e.message}`);
+        }
         finally { setExtracting(false); setScanning(false); setProgress(0); setScanLine(0); }
     };
 
@@ -319,7 +389,7 @@ export default function TicketGeneratorPage() {
             if (!json.success) throw new Error(json.message || "Save failed");
             if (!editId && json.data?._id) setEditId(json.data._id);
             toast.success(editId ? "Updated!" : "Saved!");
-        } catch (e) { toast.error("Save failed"); }
+        } catch { toast.error("Save failed"); }
         finally { setSaving(false); }
     };
 
@@ -329,11 +399,26 @@ export default function TicketGeneratorPage() {
             const [{ default: html2canvas }, { jsPDF }] = await Promise.all([import("html2canvas"), import("jspdf")]);
             const el = document.getElementById("ticket-print");
             const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
-            const pdf = new jsPDF("p", "px", [canvas.width / 2, canvas.height / 2]);
-            pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, canvas.width / 2, canvas.height / 2);
+
+            const totalW = canvas.width / 2;
+            const totalH = canvas.height / 2;
+
+            /* Calculate page count from stacked GIF images */
+            const gifImgs = el.querySelectorAll('img.gif-bg');
+            const pageCount = gifImgs.length || 1;
+            const pageH = totalH / pageCount;
+
+            const pdf = new jsPDF("p", "px", [totalW, pageH]);
+
+            for (let p = 0; p < pageCount; p++) {
+                if (p > 0) pdf.addPage([totalW, pageH]);
+                /* Shift canvas image up by p pages so each PDF page shows the right slice */
+                pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, -(p * pageH), totalW, totalH);
+            }
+
             pdf.save(`eTicket_${form.bookingRef || "VisaPro"}.pdf`);
-            toast.success("PDF downloaded!");
-        } catch { toast.error("PDF generation failed"); }
+            toast.success(`PDF downloaded! (${pageCount} page${pageCount > 1 ? "s" : ""})`);
+        } catch (e) { console.error(e); toast.error("PDF generation failed"); }
         finally { setGenerating(false); }
     };
 
@@ -351,45 +436,82 @@ export default function TicketGeneratorPage() {
         finally { setGenerating(false); }
     };
 
-    const reset = () => { setStep(1); setFile(null); setFileType(null); setImgPrev(null); setEditId(null); setForm({ ...INIT, passengers: [mkP()], flights: [mkF()], fares: [mkFare()] }); window.history.replaceState({}, '', window.location.pathname); };
+    const reset = () => {
+        setStep(1); setFile(null); setFileType(null); setImgPrev(null); setEditId(null);
+        setForm({ ...INIT, passengers: [mkP()], flights: [mkF()], fares: [mkFare()] });
+        setVis({ ...INIT_VIS });
+        window.history.replaceState({}, '', window.location.pathname);
+    };
+
     useEffect(() => { import("html2canvas").catch(() => { }); import("jspdf").catch(() => { }); }, []);
 
-    /* Count filled fields */
+    /* Fill progress */
     const countFilled = () => {
         let filled = 0, total = 0;
         ['bookingRef', 'airlinePnr', 'dateOfIssue', 'status'].forEach(k => { total++; if (form[k]) filled++; });
-        form.passengers.forEach(p => { ['name', 'type', 'gender', 'passportNo', 'cabin', 'checked', 'eTicket'].forEach(k => { total++; if (p[k]) filled++; }); });
-        form.flights.forEach(f => { ['airline', 'flightNo', 'from', 'fromAirport', 'to', 'toAirport', 'departDay', 'departDate', 'departTime', 'arriveDay', 'arriveDate', 'arriveTime', 'transitInfo'].forEach(k => { total++; if (f[k]) filled++; }); });
-        form.fares.forEach(f => { ['type', 'baseFare', 'tax', 'ait', 'grossFare', 'pax', 'total'].forEach(k => { total++; if (f[k]) filled++; }); });
-        ['grandTotal', 'classInfo', 'refund', 'route', 'duration', 'personalItem', 'agencyWebsite', 'agencyPhone', 'agencyEmail', 'agencyOffice'].forEach(k => { total++; if (form[k]) filled++; });
+        form.passengers.forEach(p => { ['name', 'passportNo', 'eTicket'].forEach(k => { total++; if (p[k]) filled++; }); });
+        form.flights.forEach(f => { ['airline', 'flightNo', 'from', 'to', 'departDate', 'departTime', 'arriveDate', 'arriveTime'].forEach(k => { total++; if (f[k]) filled++; }); });
+        form.fares.forEach(f => { ['baseFare', 'tax', 'grossFare', 'total'].forEach(k => { total++; if (f[k]) filled++; }); });
+        ['grandTotal', 'classInfo'].forEach(k => { total++; if (form[k]) filled++; });
         return { filled, total };
     };
     const { filled: filledCount, total: totalFields } = countFilled();
     const fillPercent = totalFields > 0 ? Math.round((filledCount / totalFields) * 100) : 0;
+    const hiddenCount = Object.values(vis).filter(v => !v).length;
+
+    /* Passenger column defs for ColTag */
+    const PAX_COLS = [
+        { label: "Name", key: "pax_name" }, { label: "Type", key: "pax_type" },
+        { label: "Gender", key: "pax_gender" }, { label: "Passport", key: "pax_passportNo" },
+        { label: "Cabin", key: "pax_cabin" }, { label: "Checked", key: "pax_checked" },
+        { label: "E-Ticket", key: "pax_eTicket" },
+    ];
+    const FLT_COLS = [
+        { label: "Airline", key: "flt_airline" }, { label: "From", key: "flt_from" },
+        { label: "To", key: "flt_to" }, { label: "Depart", key: "flt_depart" },
+        { label: "Arrive", key: "flt_arrive" }, { label: "Transit", key: "flt_transitInfo" },
+    ];
+    const FARE_COLS = [
+        { label: "Type", key: "fare_type" }, { label: "Base", key: "fare_baseFare" },
+        { label: "Tax", key: "fare_tax" }, { label: "AIT", key: "fare_ait" },
+        { label: "Gross", key: "fare_grossFare" }, { label: "PAX", key: "fare_pax" },
+        { label: "Total", key: "fare_total" }, { label: "Grand Total", key: "grandTotal" },
+    ];
 
     return (
         <div className="min-h-screen bg-gray-50">
             <div className="p-4 lg:p-6 max-w-[1400px] mx-auto space-y-4">
+
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-2xl font-black text-gray-800 flex items-center gap-2"><LuPlane className="text-blue-600" /> Ticket Generator</h1>
-                        <p className="text-xs text-gray-500 mt-0.5">Upload &rarr; Scan &rarr; Edit &rarr; Preview &amp; Download</p>
+                        <p className="text-xs text-gray-500 mt-0.5">Upload ? Scan ? Edit ? Preview & Download</p>
                     </div>
                     <div className="flex gap-2">
                         <Link href="/dashboard/admin/all-tickets" className="flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-100"><FiList size={13} /> All Tickets</Link>
                         <button onClick={reset} className="flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-100"><FiRefreshCw size={13} /> Reset</button>
                     </div>
                 </div>
-                {/* Progress bar */}
+
+                {/* Status bar */}
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3 flex items-center gap-4">
                     <div className="flex-1">
                         <div className="flex items-center justify-between mb-1">
                             <span className="text-[10px] font-bold text-gray-500 uppercase">Fields Filled</span>
-                            <span className="text-[11px] font-black text-blue-600">{filledCount}/{totalFields} ({fillPercent}%)</span>
+                            <div className="flex items-center gap-3">
+                                {hiddenCount > 0 && (
+                                    <span className="text-[10px] font-bold text-amber-500 flex items-center gap-1">
+                                        <FiEyeOff size={10} /> {hiddenCount} hidden from PDF
+                                    </span>
+                                )}
+                                <span className="text-[11px] font-black text-blue-600">{filledCount}/{totalFields} ({fillPercent}%)</span>
+                            </div>
                         </div>
                         <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                            <motion.div className="h-full rounded-full" animate={{ width: `${fillPercent}%` }} style={{ background: fillPercent === 100 ? '#22c55e' : fillPercent > 50 ? '#3b82f6' : '#f59e0b' }} transition={{ duration: 0.5 }} />
+                            <motion.div className="h-full rounded-full" animate={{ width: `${fillPercent}%` }}
+                                style={{ background: fillPercent === 100 ? '#22c55e' : fillPercent > 50 ? '#3b82f6' : '#f59e0b' }}
+                                transition={{ duration: 0.5 }} />
                         </div>
                     </div>
                     {fillPercent === 100 && <span className="text-green-500 text-xs font-bold flex items-center gap-1"><FiCheck size={14} /> Complete!</span>}
@@ -397,23 +519,36 @@ export default function TicketGeneratorPage() {
 
                 {step !== 3 ? (
                     <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-                        {/* LEFT: Form Fields */}
+                        {/* --- LEFT: Form Fields --- */}
                         <div className="lg:col-span-3 space-y-4 max-h-[calc(100vh-200px)] overflow-y-auto pr-2">
-                            {/* Booking */}
+
+                            {/* ? Booking */}
                             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                                <div className="flex items-center gap-2 px-4 py-2.5 bg-blue-50 border-b border-blue-100"><FiEdit3 size={12} className="text-blue-500" /><span className="text-[11px] font-bold text-blue-700 uppercase tracking-wider">Booking Information</span></div>
-                                <div className="p-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
-                                    <F label="Booking Reference" value={form.bookingRef} onChange={e => setForm(p => ({ ...p, bookingRef: e.target.value }))} placeholder="AMB2509107220" />
-                                    <F label="Airline PNR" value={form.airlinePnr} onChange={e => setForm(p => ({ ...p, airlinePnr: e.target.value }))} placeholder="RCU7HW" />
-                                    <F label="Date of Issue" value={form.dateOfIssue} onChange={e => setForm(p => ({ ...p, dateOfIssue: e.target.value }))} placeholder="19-Sep-2025" />
-                                    <F label="Status" value={form.status} onChange={e => setForm(p => ({ ...p, status: e.target.value }))} select options={["Confirmed", "Pending", "Cancelled"]} />
+                                <div className="flex items-center justify-between px-4 py-2.5 bg-blue-50 border-b border-blue-100">
+                                    <div className="flex items-center gap-2"><FiEdit3 size={12} className="text-blue-500" /><span className="text-[11px] font-bold text-blue-700 uppercase tracking-wider">Booking Information</span></div>
+                                    <EyeBtn visKey="bookingSection" vis={vis} onToggleVis={toggleVis} size={13} />
+                                </div>
+                                <div className={`p-4 grid grid-cols-2 sm:grid-cols-4 gap-3 transition-opacity ${!vis.bookingSection ? "opacity-40" : ""}`}>
+                                    <F label="Booking Reference" value={form.bookingRef} onChange={e => setForm(p => ({ ...p, bookingRef: e.target.value }))} placeholder="AMB2509107220" visKey="bookingRef" vis={vis} onToggleVis={toggleVis} />
+                                    <F label="Airline PNR" value={form.airlinePnr} onChange={e => setForm(p => ({ ...p, airlinePnr: e.target.value }))} placeholder="RCU7HW" visKey="airlinePnr" vis={vis} onToggleVis={toggleVis} />
+                                    <F label="Date of Issue" value={form.dateOfIssue} onChange={e => setForm(p => ({ ...p, dateOfIssue: e.target.value }))} placeholder="19-Sep-2025" visKey="dateOfIssue" vis={vis} onToggleVis={toggleVis} />
+                                    <F label="Status" value={form.status} onChange={e => setForm(p => ({ ...p, status: e.target.value }))} select options={["Confirmed", "Pending", "Cancelled"]} visKey="status" vis={vis} onToggleVis={toggleVis} />
                                 </div>
                             </div>
-                            {/* Passengers */}
+
+                            {/* ? Passengers */}
                             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                                 <div className="flex items-center justify-between px-4 py-2.5 bg-purple-50 border-b border-purple-100">
                                     <div className="flex items-center gap-2"><LuUser size={12} className="text-purple-500" /><span className="text-[11px] font-bold text-purple-700 uppercase tracking-wider">Passengers ({form.passengers.length})</span></div>
-                                    <button onClick={() => add("passengers", mkP)} className="flex items-center gap-1 text-[10px] font-bold text-purple-600 hover:underline"><FiPlus size={11} /> Add</button>
+                                    <div className="flex items-center gap-2">
+                                        <button onClick={() => add("passengers", mkP)} className="flex items-center gap-1 text-[10px] font-bold text-purple-600 hover:underline"><FiPlus size={11} /> Add</button>
+                                        <EyeBtn visKey="passengerSection" vis={vis} onToggleVis={toggleVis} size={13} />
+                                    </div>
+                                </div>
+                                {/* Column toggles */}
+                                <div className="px-4 pt-2.5 pb-1 flex flex-wrap gap-1.5 border-b border-gray-50">
+                                    <span className="text-[9px] font-bold text-gray-400 uppercase self-center mr-1">PDF Columns:</span>
+                                    {PAX_COLS.map(c => <ColTag key={c.key} label={c.label} visKey={c.key} vis={vis} onToggleVis={toggleVis} />)}
                                 </div>
                                 <div className="p-4 space-y-3">
                                     {form.passengers.map((p, i) => (
@@ -435,11 +570,20 @@ export default function TicketGeneratorPage() {
                                     ))}
                                 </div>
                             </div>
-                            {/* Flights */}
+
+                            {/* ? Flights */}
                             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                                 <div className="flex items-center justify-between px-4 py-2.5 bg-orange-50 border-b border-orange-100">
                                     <div className="flex items-center gap-2"><LuPlane size={12} className="text-orange-500" /><span className="text-[11px] font-bold text-orange-700 uppercase tracking-wider">Flights ({form.flights.length})</span></div>
-                                    <button onClick={() => add("flights", mkF)} className="flex items-center gap-1 text-[10px] font-bold text-orange-600 hover:underline"><FiPlus size={11} /> Add</button>
+                                    <div className="flex items-center gap-2">
+                                        <button onClick={() => add("flights", mkF)} className="flex items-center gap-1 text-[10px] font-bold text-orange-600 hover:underline"><FiPlus size={11} /> Add</button>
+                                        <EyeBtn visKey="flightSection" vis={vis} onToggleVis={toggleVis} size={13} />
+                                    </div>
+                                </div>
+                                {/* Column toggles */}
+                                <div className="px-4 pt-2.5 pb-1 flex flex-wrap gap-1.5 border-b border-gray-50">
+                                    <span className="text-[9px] font-bold text-gray-400 uppercase self-center mr-1">PDF Columns:</span>
+                                    {FLT_COLS.map(c => <ColTag key={c.key} label={c.label} visKey={c.key} vis={vis} onToggleVis={toggleVis} />)}
                                 </div>
                                 <div className="p-4 space-y-4">
                                     {form.flights.map((f, i) => (
@@ -483,28 +627,39 @@ export default function TicketGeneratorPage() {
                                     ))}
                                 </div>
                             </div>
-                            {/* Flight Info (Common) */}
+
+                            {/* ? Flight Info/Meta */}
                             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                                <div className="px-4 py-2.5 bg-teal-50 border-b border-teal-100">
+                                <div className="flex items-center justify-between px-4 py-2.5 bg-teal-50 border-b border-teal-100">
                                     <div className="flex items-center gap-2"><LuFileText size={12} className="text-teal-500" /><span className="text-[11px] font-bold text-teal-700 uppercase tracking-wider">Flight Info (Common for all segments)</span></div>
+                                    <EyeBtn visKey="infoSection" vis={vis} onToggleVis={toggleVis} size={13} />
                                 </div>
-                                <div className="p-4 grid grid-cols-2 sm:grid-cols-4 gap-2">
-                                    <F label="Class" value={form.classInfo} onChange={e => setForm(p => ({ ...p, classInfo: e.target.value }))} placeholder="Economy (T)" />
-                                    <F label="Duration" value={form.duration} onChange={e => setForm(p => ({ ...p, duration: e.target.value }))} placeholder="4h 50m" />
-                                    <F label="Refund" value={form.refund} onChange={e => setForm(p => ({ ...p, refund: e.target.value }))} placeholder="Non-Refundable" />
-                                    <F label="Route" value={form.route} onChange={e => setForm(p => ({ ...p, route: e.target.value }))} placeholder="One-way" />
-                                    <F label="Personal Item" value={form.personalItem} onChange={e => setForm(p => ({ ...p, personalItem: e.target.value }))} placeholder="Laptop Bag" />
-                                    <F label="Self-Transfer" value={form.selfTransfer} onChange={e => setForm(p => ({ ...p, selfTransfer: e.target.value }))} select options={["No", "Yes"]} />
-                                    <F label="Terminal Change" value={form.terminalChange} onChange={e => setForm(p => ({ ...p, terminalChange: e.target.value }))} select options={["No", "Yes"]} />
-                                    <F label="Codeshare" value={form.codeshare} onChange={e => setForm(p => ({ ...p, codeshare: e.target.value }))} select options={["No", "Yes"]} />
-                                    <F label="SSR Remarks" value={form.ssrRemarks} onChange={e => setForm(p => ({ ...p, ssrRemarks: e.target.value }))} placeholder="No" />
+                                <div className={`p-4 grid grid-cols-2 sm:grid-cols-4 gap-2 transition-opacity ${!vis.infoSection ? "opacity-40" : ""}`}>
+                                    <F label="Class" value={form.classInfo} onChange={e => setForm(p => ({ ...p, classInfo: e.target.value }))} placeholder="Economy (T)" visKey="classInfo" vis={vis} onToggleVis={toggleVis} />
+                                    <F label="Duration" value={form.duration} onChange={e => setForm(p => ({ ...p, duration: e.target.value }))} placeholder="4h 50m" visKey="duration" vis={vis} onToggleVis={toggleVis} />
+                                    <F label="Refund" value={form.refund} onChange={e => setForm(p => ({ ...p, refund: e.target.value }))} placeholder="Non-Refundable" visKey="refund" vis={vis} onToggleVis={toggleVis} />
+                                    <F label="Route" value={form.route} onChange={e => setForm(p => ({ ...p, route: e.target.value }))} placeholder="One-way" visKey="route" vis={vis} onToggleVis={toggleVis} />
+                                    <F label="Personal Item" value={form.personalItem} onChange={e => setForm(p => ({ ...p, personalItem: e.target.value }))} placeholder="Laptop Bag" visKey="personalItem" vis={vis} onToggleVis={toggleVis} />
+                                    <F label="Self-Transfer" value={form.selfTransfer} onChange={e => setForm(p => ({ ...p, selfTransfer: e.target.value }))} select options={["No", "Yes"]} visKey="selfTransfer" vis={vis} onToggleVis={toggleVis} />
+                                    <F label="Terminal Change" value={form.terminalChange} onChange={e => setForm(p => ({ ...p, terminalChange: e.target.value }))} select options={["No", "Yes"]} visKey="terminalChange" vis={vis} onToggleVis={toggleVis} />
+                                    <F label="Codeshare" value={form.codeshare} onChange={e => setForm(p => ({ ...p, codeshare: e.target.value }))} select options={["No", "Yes"]} visKey="codeshare" vis={vis} onToggleVis={toggleVis} />
+                                    <F label="SSR Remarks" value={form.ssrRemarks} onChange={e => setForm(p => ({ ...p, ssrRemarks: e.target.value }))} placeholder="No" visKey="ssrRemarks" vis={vis} onToggleVis={toggleVis} />
                                 </div>
                             </div>
-                            {/* Fares */}
+
+                            {/* ? Fares */}
                             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                                 <div className="flex items-center justify-between px-4 py-2.5 bg-green-50 border-b border-green-100">
                                     <div className="flex items-center gap-2"><LuBanknote size={12} className="text-green-500" /><span className="text-[11px] font-bold text-green-700 uppercase tracking-wider">Fare Details</span></div>
-                                    <button onClick={() => add("fares", mkFare)} className="flex items-center gap-1 text-[10px] font-bold text-green-600 hover:underline"><FiPlus size={11} /> Add</button>
+                                    <div className="flex items-center gap-2">
+                                        <button onClick={() => add("fares", mkFare)} className="flex items-center gap-1 text-[10px] font-bold text-green-600 hover:underline"><FiPlus size={11} /> Add</button>
+                                        <EyeBtn visKey="fareSection" vis={vis} onToggleVis={toggleVis} size={13} />
+                                    </div>
+                                </div>
+                                {/* Column toggles */}
+                                <div className="px-4 pt-2.5 pb-1 flex flex-wrap gap-1.5 border-b border-gray-50">
+                                    <span className="text-[9px] font-bold text-gray-400 uppercase self-center mr-1">PDF Columns:</span>
+                                    {FARE_COLS.map(c => <ColTag key={c.key} label={c.label} visKey={c.key} vis={vis} onToggleVis={toggleVis} />)}
                                 </div>
                                 <div className="p-4 space-y-2">
                                     {form.fares.map((f, i) => (
@@ -519,15 +674,23 @@ export default function TicketGeneratorPage() {
                                             <F label="Total (BDT)" value={f.total} onChange={e => upd("fares", i, "total", e.target.value)} placeholder="2,98,444" />
                                         </div>
                                     ))}
-                                    <div className="flex items-center justify-end gap-3 pt-2 border-t border-gray-100">
-                                        <span className="text-xs font-bold text-gray-600">Grand Total (BDT)</span>
-                                        <input value={form.grandTotal} onChange={e => setForm(p => ({ ...p, grandTotal: e.target.value }))} placeholder="4,10,367" className="w-40 px-3 py-1.5 border-2 border-orange-300 rounded-xl text-sm font-bold text-orange-600 outline-none focus:border-orange-500 text-right" />
+                                    <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                                        <div className="flex items-center gap-1.5">
+                                            <EyeBtn visKey="grandTotal" vis={vis} onToggleVis={toggleVis} />
+                                            <span className={`text-xs font-bold transition-colors ${!vis.grandTotal ? "text-gray-300" : "text-gray-600"}`}>Grand Total (BDT)</span>
+                                        </div>
+                                        <input value={form.grandTotal} onChange={e => setForm(p => ({ ...p, grandTotal: e.target.value }))} placeholder="4,10,367"
+                                            className={`w-40 px-3 py-1.5 border-2 border-orange-300 rounded-xl text-sm font-bold text-orange-600 outline-none focus:border-orange-500 text-right transition-opacity ${!vis.grandTotal ? "opacity-30" : ""}`} />
                                     </div>
                                 </div>
                             </div>
+
                             {/* Agency */}
                             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                                <div className="px-4 py-2.5 bg-gray-50 border-b border-gray-100"><span className="text-[11px] font-bold text-gray-600 uppercase tracking-wider">Agency Info</span></div>
+                                <div className="px-4 py-2.5 bg-gray-50 border-b border-gray-100 flex items-center gap-2">
+                                    <span className="text-[11px] font-bold text-gray-600 uppercase tracking-wider">Agency Info</span>
+                                    <span className="text-[9px] text-gray-400">(DB only — baked into GIF template)</span>
+                                </div>
                                 <div className="p-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
                                     <F label="Website" value={form.agencyWebsite} onChange={e => setForm(p => ({ ...p, agencyWebsite: e.target.value }))} placeholder="www.visaprocm.com" />
                                     <F label="Phone" value={form.agencyPhone} onChange={e => setForm(p => ({ ...p, agencyPhone: e.target.value }))} placeholder="+880 1712-114770" />
@@ -535,32 +698,33 @@ export default function TicketGeneratorPage() {
                                     <F label="Office" value={form.agencyOffice} onChange={e => setForm(p => ({ ...p, agencyOffice: e.target.value }))} placeholder="Dhaka, Bangladesh" />
                                 </div>
                             </div>
-                            <button onClick={() => setStep(3)} className="flex items-center gap-2 px-8 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 shadow-lg shadow-blue-200 mb-4"><FiEye size={14} /> Preview &amp; Download</button>
+
+                            <button onClick={() => setStep(3)} className="flex items-center gap-2 px-8 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 shadow-lg shadow-blue-200 mb-4">
+                                <FiEye size={14} /> Preview & Download
+                            </button>
                         </div>
 
-                        {/* RIGHT: Upload & Scan */}
+                        {/* --- RIGHT: Upload & Scan --- */}
                         <div className="lg:col-span-2">
                             <div className="lg:sticky lg:top-4 space-y-4">
                                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                                    <div className="flex items-center gap-2 px-4 py-2.5 bg-indigo-50 border-b border-indigo-100"><LuScanLine size={13} className="text-indigo-500" /><span className="text-[11px] font-bold text-indigo-700 uppercase tracking-wider">Document Scanner</span></div>
+                                    <div className="flex items-center gap-2 px-4 py-2.5 bg-indigo-50 border-b border-indigo-100">
+                                        <LuScanLine size={13} className="text-indigo-500" />
+                                        <span className="text-[11px] font-bold text-indigo-700 uppercase tracking-wider">Document Scanner</span>
+                                    </div>
                                     <div className="p-4 space-y-4">
-                                        {/* Upload / Preview Area */}
                                         <div onDrop={e => { e.preventDefault(); handleFile(e.dataTransfer.files?.[0]); }} onDragOver={e => e.preventDefault()}
                                             className={`relative border-2 border-dashed rounded-2xl overflow-hidden transition-all ${file ? "border-green-400 bg-green-50/30" : "border-gray-200 hover:border-blue-400 hover:bg-blue-50/20 cursor-pointer"}`}
                                             onClick={() => !file && !scanning && fileRef.current?.click()}
                                             style={{ minHeight: file ? "auto" : 200 }}>
-                                            {/* Scanning line */}
                                             {scanning && <motion.div className="absolute left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-blue-500 to-transparent z-20" animate={{ top: `${scanLine}%` }} transition={{ duration: 0.05 }} style={{ boxShadow: "0 0 15px 3px rgba(59,130,246,0.5)" }} />}
                                             {scanning && <div className="absolute inset-0 bg-blue-500/5 z-10 flex items-center justify-center"><div className="text-center"><motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }}><LuScanLine size={40} className="text-blue-500 mx-auto" /></motion.div><p className="text-xs font-bold text-blue-600 mt-2">AI Scanning... {progress}%</p></div></div>}
-
                                             {file ? (
                                                 <div className="relative">
-                                                    {/* Fullscreen button */}
                                                     <button onClick={(e) => { e.stopPropagation(); setShowFullscreen(true); }}
-                                                        className="absolute top-2 right-2 z-30 bg-white/90 hover:bg-white border border-gray-200 rounded-lg p-1.5 shadow-sm transition-all hover:scale-110" title="Full Screen">
+                                                        className="absolute top-2 right-2 z-30 bg-white/90 hover:bg-white border border-gray-200 rounded-lg p-1.5 shadow-sm transition-all hover:scale-110">
                                                         <FiMaximize2 size={14} className="text-gray-600" />
                                                     </button>
-                                                    {/* Preview */}
                                                     {fileType === "pdf" && pdfUrl ? (
                                                         <iframe src={pdfUrl} className="w-full rounded-xl" style={{ height: 280 }} title="PDF Preview" />
                                                     ) : imgPrev ? (
@@ -576,23 +740,23 @@ export default function TicketGeneratorPage() {
                                             ) : (
                                                 <div className="p-6 text-center cursor-pointer">
                                                     <FiUpload size={36} className="mx-auto text-gray-300 mb-3" />
-                                                    <p className="font-bold text-gray-600 text-sm">Click or Drag &amp; Drop</p>
+                                                    <p className="font-bold text-gray-600 text-sm">Click or Drag & Drop</p>
                                                     <p className="text-xs text-gray-400 mt-1">PDF, JPG, PNG, WEBP</p>
                                                 </div>
                                             )}
                                             <input ref={fileRef} type="file" accept="image/*,.pdf" onChange={e => handleFile(e.target.files?.[0])} className="hidden" />
                                         </div>
-
                                         {extracting && <div className="space-y-1"><div className="h-2 bg-gray-100 rounded-full overflow-hidden"><motion.div className="h-full bg-gradient-to-r from-blue-500 to-blue-700 rounded-full" style={{ width: `${progress}%` }} /></div><p className="text-xs text-center text-gray-400">Extracting... {progress}%</p></div>}
                                         <div className="grid grid-cols-2 gap-2">
                                             <button onClick={handleScanExtract} disabled={!file || extracting} className="col-span-2 flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-bold text-sm disabled:opacity-40 hover:from-blue-700 hover:to-indigo-700 shadow-lg shadow-blue-200">
-                                                {extracting ? <><FiLoader size={14} className="animate-spin" /> Scanning...</> : <><LuScanLine size={14} /> AI Scan &amp; Extract</>}
+                                                {extracting ? <><FiLoader size={14} className="animate-spin" /> Scanning...</> : <><LuScanLine size={14} /> AI Scan & Extract</>}
                                             </button>
                                             <button onClick={() => fileRef.current?.click()} disabled={extracting} className="flex items-center justify-center gap-2 py-2 border border-gray-200 text-gray-600 rounded-xl font-semibold text-xs disabled:opacity-30 hover:bg-gray-50"><FiUpload size={12} /> Change File</button>
                                             <button onClick={() => { setFile(null); setImgPrev(null); setFileType(null); setPdfUrl(null); }} disabled={!file || extracting} className="flex items-center justify-center gap-2 py-2 border border-gray-200 text-gray-600 rounded-xl font-semibold text-xs disabled:opacity-30 hover:bg-gray-50"><FiX size={12} /> Clear</button>
                                         </div>
                                     </div>
                                 </div>
+
                                 {/* Quick Stats */}
                                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
                                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-3">Quick Summary</p>
@@ -600,8 +764,15 @@ export default function TicketGeneratorPage() {
                                         <div className="bg-purple-50 rounded-xl p-3 text-center"><p className="text-xl font-black text-purple-600">{form.passengers.length}</p><p className="text-[10px] text-purple-400 font-bold">Passengers</p></div>
                                         <div className="bg-orange-50 rounded-xl p-3 text-center"><p className="text-xl font-black text-orange-600">{form.flights.length}</p><p className="text-[10px] text-orange-400 font-bold">Flights</p></div>
                                         <div className="bg-green-50 rounded-xl p-3 text-center"><p className="text-xl font-black text-green-600">{form.fares.length}</p><p className="text-[10px] text-green-400 font-bold">Fare Types</p></div>
-                                        <div className="bg-blue-50 rounded-xl p-3 text-center"><p className="text-lg font-black text-blue-600 truncate">{form.grandTotal || "\u2014"}</p><p className="text-[10px] text-blue-400 font-bold">Total (BDT)</p></div>
+                                        <div className="bg-blue-50 rounded-xl p-3 text-center"><p className="text-lg font-black text-blue-600 truncate">{form.grandTotal || "—"}</p><p className="text-[10px] text-blue-400 font-bold">Total (BDT)</p></div>
                                     </div>
+                                    {hiddenCount > 0 && (
+                                        <div className="mt-3 p-2.5 bg-amber-50 rounded-xl border border-amber-100">
+                                            <p className="text-[10px] font-bold text-amber-600 flex items-center gap-1.5">
+                                                <FiEyeOff size={11} /> {hiddenCount} field{hiddenCount > 1 ? "s" : ""} hidden from PDF
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -610,14 +781,22 @@ export default function TicketGeneratorPage() {
                     /* Preview & Download */
                     <div className="space-y-4">
                         <div className="flex flex-wrap gap-3">
-                            <button onClick={() => setStep(1)} className="px-5 py-2.5 border border-gray-200 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50">&larr; Edit</button>
-                            <button onClick={handleSave} disabled={saving} className="flex items-center gap-2 px-6 py-2.5 bg-green-600 text-white rounded-xl text-sm font-bold hover:bg-green-700 disabled:opacity-60 shadow-lg shadow-green-200">{saving ? <FiLoader size={14} className="animate-spin" /> : <FiSave size={14} />} {editId ? "Update" : "Save"}</button>
-                            <button onClick={downloadPDF} disabled={generating} className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 disabled:opacity-60 shadow-lg shadow-blue-200">{generating ? <FiLoader size={14} className="animate-spin" /> : <FiDownload size={14} />} PDF</button>
-                            <button onClick={downloadImg} disabled={generating} className="flex items-center gap-2 px-6 py-2.5 bg-orange-500 text-white rounded-xl text-sm font-bold hover:bg-orange-600 disabled:opacity-60">{generating ? <FiLoader size={14} className="animate-spin" /> : <FiDownload size={14} />} Image</button>
+                            <button onClick={() => setStep(1)} className="px-5 py-2.5 border border-gray-200 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50">? Edit</button>
+                            <button onClick={handleSave} disabled={saving} className="flex items-center gap-2 px-6 py-2.5 bg-green-600 text-white rounded-xl text-sm font-bold hover:bg-green-700 disabled:opacity-60 shadow-lg shadow-green-200">
+                                {saving ? <FiLoader size={14} className="animate-spin" /> : <FiSave size={14} />} {editId ? "Update" : "Save"}
+                            </button>
+                            <button onClick={downloadPDF} disabled={generating} className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 disabled:opacity-60 shadow-lg shadow-blue-200">
+                                {generating ? <FiLoader size={14} className="animate-spin" /> : <FiDownload size={14} />} PDF
+                            </button>
+                            <button onClick={downloadImg} disabled={generating} className="flex items-center gap-2 px-6 py-2.5 bg-orange-500 text-white rounded-xl text-sm font-bold hover:bg-orange-600 disabled:opacity-60">
+                                {generating ? <FiLoader size={14} className="animate-spin" /> : <FiDownload size={14} />} Image
+                            </button>
                             <button onClick={() => window.print()} className="flex items-center gap-2 px-6 py-2.5 border border-gray-300 text-gray-700 rounded-xl text-sm font-bold hover:bg-gray-50"><FiPrinter size={14} /> Print</button>
                         </div>
                         <div className="bg-gray-200 rounded-2xl p-6 overflow-x-auto">
-                            <div className="mx-auto shadow-2xl rounded-xl overflow-hidden" style={{ maxWidth: 900 }}><TicketPreview form={form} /></div>
+                            <div className="mx-auto shadow-2xl rounded-xl overflow-hidden" style={{ maxWidth: 900 }}>
+                                <TicketPreview form={form} vis={vis} />
+                            </div>
                         </div>
                     </div>
                 )}
@@ -646,4 +825,3 @@ export default function TicketGeneratorPage() {
         </div>
     );
 }
-
