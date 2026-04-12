@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import BookingModal from "@/components/shared/BookingModal";
 import {
     LuHotel,
     LuUsers,
@@ -38,6 +39,7 @@ export default function HajjUmrahPage() {
     const [hajjPackages, setHajjPackages] = useState([]);
     const [umrahPackages, setUmrahPackages] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [bookingModal, setBookingModal] = useState({ open: false, pkg: null });
 
     useEffect(() => {
         const fetchPackages = async () => {
@@ -179,7 +181,8 @@ export default function HajjUmrahPage() {
                                             ))}
                                         </div>
 
-                                        <button className={`w-full py-3 rounded-lg text-[11px] font-bold uppercase tracking-widest transition-all ${pkg.isPopular ? "text-white hover:opacity-90" : "border hover:bg-gray-50"}`}
+                                        <button onClick={() => setBookingModal({ open: true, pkg })}
+                                            className={`w-full py-3 rounded-lg text-[11px] font-bold uppercase tracking-widest transition-all ${pkg.isPopular ? "text-white hover:opacity-90" : "border hover:bg-gray-50"}`}
                                             style={pkg.isPopular ? { backgroundColor: '#EF8C2C' } : { borderColor: '#021E14', color: '#021E14' }}>
                                             {isBn ? 'বুক করুন' : 'Book Now'}
                                         </button>
@@ -212,10 +215,11 @@ export default function HajjUmrahPage() {
                                         ))}
                                     </div>
 
-                                    <button className="w-full py-2.5 rounded-lg border text-[10px] font-bold uppercase tracking-widest transition-all hover:text-white"
+                                    <button onClick={() => setBookingModal({ open: true, pkg })}
+                                        className="w-full py-2.5 rounded-lg border text-[10px] font-bold uppercase tracking-widest transition-all hover:text-white"
                                         style={{ borderColor: '#e5e7eb', color: '#021E14' }}
-                                        onMouseEnter={(e) => { e.target.style.backgroundColor = '#021E14'; e.target.style.color = '#fff'; }}
-                                        onMouseLeave={(e) => { e.target.style.backgroundColor = 'transparent'; e.target.style.color = '#021E14'; }}>
+                                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#021E14'; e.currentTarget.style.color = '#fff'; }}
+                                        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = '#021E14'; }}>
                                         {isBn ? 'বুক করুন' : 'Book Now'}
                                     </button>
                                 </div>
@@ -225,5 +229,17 @@ export default function HajjUmrahPage() {
                 </AnimatePresence>
             </section>
         </div>
+
+        <BookingModal
+            isOpen={bookingModal.open}
+            onClose={() => setBookingModal({ open: false, pkg: null })}
+            type="hajj"
+            serviceName={bookingModal.pkg ? `${bookingModal.pkg.name} (${bookingModal.pkg.type === 'umrah' ? 'Umrah' : 'Hajj'})` : ""}
+            serviceId={bookingModal.pkg?._id || ""}
+            extraFields={[
+                { key: "travelDate", label: "Preferred Travel Date", type: "date", required: true },
+                { key: "persons", label: "Number of Persons", type: "number", placeholder: "1", required: true },
+            ]}
+        />
     );
 }

@@ -19,6 +19,7 @@ import {
 } from "react-icons/lu";
 import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
+import BookingModal from "@/components/shared/BookingModal";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -57,6 +58,7 @@ function HotelContent() {
     const [viewMode, setViewMode] = useState("grid");
     const [sortBy, setSortBy] = useState("Featured");
     const [showFilters, setShowFilters] = useState(false);
+    const [bookingModal, setBookingModal] = useState({ open: false, hotel: null });
 
     useEffect(() => {
         const fetchHotels = async () => {
@@ -505,7 +507,6 @@ function HotelContent() {
                                                             )}
                                                         </div>
 
-                                                        {/* Footer: Price + CTA */}
                                                         <div className="flex items-center justify-between pt-3 border-t border-gray-50">
                                                             <div>
                                                                 <span className="text-[10px] text-gray-300 font-medium" style={{ fontFamily }}>{isBn ? 'প্রতি রাত' : 'per night'}</span>
@@ -518,13 +519,22 @@ function HotelContent() {
                                                                     )}
                                                                 </div>
                                                             </div>
-                                                            <Link
-                                                                href={`/hotel/${hotel.slug || hotel._id}`}
-                                                                className="px-5 py-2.5 bg-[#EF8C2C] hover:bg-[#d97b1f] text-white rounded-md text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5"
-                                                                style={{ fontFamily }}
-                                                            >
-                                                                {isBn ? 'বিস্তারিত' : 'View Details'} <LuArrowRight size={12} />
-                                                            </Link>
+                                                            <div className="flex gap-2">
+                                                                <button
+                                                                    onClick={() => setBookingModal({ open: true, hotel })}
+                                                                    className="px-4 py-2.5 border border-[#EF8C2C] text-[#EF8C2C] hover:bg-[#EF8C2C] hover:text-white rounded-md text-[10px] font-bold uppercase tracking-wider transition-all"
+                                                                    style={{ fontFamily }}
+                                                                >
+                                                                    {isBn ? 'বুক করুন' : 'Book'}
+                                                                </button>
+                                                                <Link
+                                                                    href={`/hotel/${hotel.slug || hotel._id}`}
+                                                                    className="px-5 py-2.5 bg-[#EF8C2C] hover:bg-[#d97b1f] text-white rounded-md text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5"
+                                                                    style={{ fontFamily }}
+                                                                >
+                                                                    {isBn ? 'বিস্তারিত' : 'Details'} <LuArrowRight size={12} />
+                                                                </Link>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </motion.div>
@@ -583,6 +593,19 @@ function HotelContent() {
                 </div>
             </section>
         </div>
+
+        <BookingModal
+            isOpen={bookingModal.open}
+            onClose={() => setBookingModal({ open: false, hotel: null })}
+            type="hotel"
+            serviceName={bookingModal.hotel?.name || ""}
+            serviceId={bookingModal.hotel?._id || ""}
+            extraFields={[
+                { key: "checkIn", label: "Check-in Date", type: "date", required: true },
+                { key: "checkOut", label: "Check-out Date", type: "date", required: true },
+                { key: "rooms", label: "Number of Rooms", type: "number", placeholder: "1", required: true },
+            ]}
+        />
     );
 }
 

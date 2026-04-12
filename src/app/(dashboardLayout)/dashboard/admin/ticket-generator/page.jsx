@@ -25,7 +25,7 @@ const INIT = {
     agencyEmail: "info@visaprocm.com", agencyOffice: "Dhaka, Bangladesh",
 };
 
-/* Visibility initial state — controls what shows in PDF */
+/* Visibility initial state â€” controls what shows in PDF */
 const INIT_VIS = {
     // Section master toggles
     bookingSection: true, passengerSection: true, flightSection: true, infoSection: true, fareSection: true,
@@ -36,7 +36,7 @@ const INIT_VIS = {
     pax_cabin: true, pax_checked: true, pax_eTicket: true,
     // Flight columns
     flt_airline: true, flt_from: true, flt_to: true, flt_depart: true, flt_arrive: true, flt_transitInfo: true,
-    // Info/Meta fields (field-level — also hidden if value is empty)
+    // Info/Meta fields (field-level â€” also hidden if value is empty)
     classInfo: true, refund: true, route: true, duration: true,
     personalItem: true, selfTransfer: true, terminalChange: true, codeshare: true, ssrRemarks: true,
     // Fare columns
@@ -86,12 +86,12 @@ const F = ({ label, value, onChange, placeholder, className = "", select, option
             <div className={`transition-opacity ${isHidden ? "opacity-25" : "opacity-100"}`}>
                 {select ? (
                     <select value={value} onChange={onChange}
-                        className={`w-full px-2.5 py-1.5 border rounded-lg text-[12px] outline-none bg-white text-gray-700 ${isEmpty ? "border-amber-300 bg-amber-50/50" : "border-gray-200 focus:border-blue-400"}`}>
+                        className="w-full px-2.5 py-2 border border-gray-200 rounded-md text-sm font-normal outline-none focus:border-blue-400 bg-white transition-all">
                         {options.map(o => <option key={o}>{o}</option>)}
                     </select>
                 ) : (
                     <input type="text" value={value} onChange={onChange} placeholder={placeholder}
-                        className={`w-full px-2.5 py-1.5 border rounded-lg text-[12px] outline-none transition-all ${isEmpty ? "border-amber-300 bg-amber-50/50 placeholder:text-amber-300" : "border-gray-200 focus:border-blue-400 bg-white"}`} />
+                        className="w-full px-2.5 py-2 border border-gray-200 rounded-md text-sm font-normal outline-none focus:border-blue-400 bg-white transition-all" />
                 )}
             </div>
         </div>
@@ -229,7 +229,7 @@ function TicketPreview({ form, vis }) {
                             {vis.flt_arrive && <td style={{ ...S.td, padding: "6px 8px" }}><div style={{ fontSize: 10, color: "#6b7280" }}>{f.arriveDay}</div><div style={{ fontSize: 12, fontWeight: 700 }}>{f.arriveDate}</div><div style={{ fontSize: 15, fontWeight: 900, color: TEAL_DARK }}>{f.arriveTime}</div></td>}
                             {showInfoCol && <td style={{ ...S.td, padding: "6px 8px", fontSize: 10, color: "#4b5563", lineHeight: 1.6, borderRight: "none" }}>{i === 0 && infoFields.map(fld => <div key={fld.key}><b>{fld.label}:</b> {form[fld.key]}</div>)}</td>}
                         </tr>
-                        {vis.flt_transitInfo && f.transitInfo && <tr key={"t"+i}><td colSpan={fltVisCount} style={{ background: "#e6f5f8", padding: "4px 12px", textAlign: "center", fontSize: 11, fontWeight: 600, color: TEAL_DARK, fontStyle: "italic", borderTop: "1px dashed " + BORDER, borderBottom: "1px dashed " + BORDER }}>{f.transitInfo}</td></tr>}
+                        {vis.flt_transitInfo && f.transitInfo && <tr key={"t"+i}><td colSpan={fltVisCount} style={{ background: "#f9f9f9", padding: "4px 12px", textAlign: "center", fontSize: 11, fontWeight: 600, color: "#1f2937", borderTop: "1px dashed " + BORDER, borderBottom: "1px dashed " + BORDER }}>{f.transitInfo}</td></tr>}
                     </>))}</tbody>
                 </table>
             </div>
@@ -264,11 +264,11 @@ function TicketPreview({ form, vis }) {
                 <div key={pi} style={{ position: "relative" }}>
                     <img src="/tickettemplate.png" alt="e-Ticket" style={{ width: "100%", display: "block" }} crossOrigin="anonymous" />
                     {pi === 0 && vis.bookingRef && form.bookingRef && (
-                        <div style={{ position: "absolute", top: gifH ? gifH * 0.10 : "10%", right: "5%", zIndex: 2 }}>
+                        <div style={{ position: "absolute", top: "12%", right: "5%", zIndex: 2 }}>
                             <Barcode value={form.bookingRef} />
                         </div>
                     )}
-                    <div style={{ position: "absolute", top: gifH ? gifH * 0.17 : "17%", left: "4%", right: "4%", bottom: "15%", overflow: "hidden", display: "flex", flexDirection: "column", gap: 8 }}>
+                    <div style={{ position: "absolute", top: "16%", left: "4%", right: "4%", bottom: "15%", overflow: "hidden", display: "flex", flexDirection: "column", gap: 8 }}>
                         {pSecs.map(id => RS(id))}
                     </div>
                 </div>
@@ -398,26 +398,32 @@ export default function TicketGeneratorPage() {
         try {
             const [{ default: html2canvas }, { jsPDF }] = await Promise.all([import("html2canvas"), import("jspdf")]);
             const el = document.getElementById("ticket-print");
-            const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
 
-            const totalW = canvas.width / 2;
-            const totalH = canvas.height / 2;
+            // Capture at scale 1 to avoid dimension confusion
+            const canvas = await html2canvas(el, {
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: "#ffffff",
+                logging: false,
+            });
 
-            /* Calculate page count from stacked GIF images */
-            const gifImgs = el.querySelectorAll('img.gif-bg');
-            const pageCount = gifImgs.length || 1;
-            const pageH = totalH / pageCount;
+            const imgW = canvas.width;
+            const imgH = canvas.height;
 
-            const pdf = new jsPDF("p", "px", [totalW, pageH]);
+            // PDF page width = canvas width, height = canvas height (portrait, px units)
+            const pdf = new jsPDF({
+                orientation: "portrait",
+                unit: "px",
+                format: [imgW, imgH],
+                hotfixes: ["px_scaling"],
+            });
 
-            for (let p = 0; p < pageCount; p++) {
-                if (p > 0) pdf.addPage([totalW, pageH]);
-                /* Shift canvas image up by p pages so each PDF page shows the right slice */
-                pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, -(p * pageH), totalW, totalH);
-            }
+            // Add image covering the full page exactly â€” no offset, no shift
+            pdf.addImage(canvas.toDataURL("image/jpeg", 0.95), "JPEG", 0, 0, imgW, imgH);
 
             pdf.save(`eTicket_${form.bookingRef || "VisaPro"}.pdf`);
-            toast.success(`PDF downloaded! (${pageCount} page${pageCount > 1 ? "s" : ""})`);
+            toast.success("PDF downloaded!");
         } catch (e) { console.error(e); toast.error("PDF generation failed"); }
         finally { setGenerating(false); }
     };
@@ -480,7 +486,7 @@ export default function TicketGeneratorPage() {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <div className="p-4 lg:p-6 max-w-[1400px] mx-auto space-y-4">
+            <div className="p-4 lg:p-6 space-y-4">
 
                 {/* Header */}
                 <div className="flex items-center justify-between">
@@ -518,9 +524,9 @@ export default function TicketGeneratorPage() {
                 </div>
 
                 {step !== 3 ? (
-                    <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 items-start">
                         {/* --- LEFT: Form Fields --- */}
-                        <div className="lg:col-span-3 space-y-4 max-h-[calc(100vh-200px)] overflow-y-auto pr-2">
+                        <div className="space-y-4 max-h-[calc(100vh-200px)] overflow-y-auto pr-2">
 
                             {/* ? Booking */}
                             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
@@ -689,7 +695,7 @@ export default function TicketGeneratorPage() {
                             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                                 <div className="px-4 py-2.5 bg-gray-50 border-b border-gray-100 flex items-center gap-2">
                                     <span className="text-[11px] font-bold text-gray-600 uppercase tracking-wider">Agency Info</span>
-                                    <span className="text-[9px] text-gray-400">(DB only — baked into GIF template)</span>
+                                    <span className="text-[9px] text-gray-400">(DB only â€” baked into GIF template)</span>
                                 </div>
                                 <div className="p-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
                                     <F label="Website" value={form.agencyWebsite} onChange={e => setForm(p => ({ ...p, agencyWebsite: e.target.value }))} placeholder="www.visaprocm.com" />
@@ -705,8 +711,7 @@ export default function TicketGeneratorPage() {
                         </div>
 
                         {/* --- RIGHT: Upload & Scan --- */}
-                        <div className="lg:col-span-2">
-                            <div className="lg:sticky lg:top-4 space-y-4">
+                        <div className="space-y-4 sticky top-4 self-start">
                                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                                     <div className="flex items-center gap-2 px-4 py-2.5 bg-indigo-50 border-b border-indigo-100">
                                         <LuScanLine size={13} className="text-indigo-500" />
@@ -764,7 +769,7 @@ export default function TicketGeneratorPage() {
                                         <div className="bg-purple-50 rounded-xl p-3 text-center"><p className="text-xl font-black text-purple-600">{form.passengers.length}</p><p className="text-[10px] text-purple-400 font-bold">Passengers</p></div>
                                         <div className="bg-orange-50 rounded-xl p-3 text-center"><p className="text-xl font-black text-orange-600">{form.flights.length}</p><p className="text-[10px] text-orange-400 font-bold">Flights</p></div>
                                         <div className="bg-green-50 rounded-xl p-3 text-center"><p className="text-xl font-black text-green-600">{form.fares.length}</p><p className="text-[10px] text-green-400 font-bold">Fare Types</p></div>
-                                        <div className="bg-blue-50 rounded-xl p-3 text-center"><p className="text-lg font-black text-blue-600 truncate">{form.grandTotal || "—"}</p><p className="text-[10px] text-blue-400 font-bold">Total (BDT)</p></div>
+                                        <div className="bg-blue-50 rounded-xl p-3 text-center"><p className="text-lg font-black text-blue-600 truncate">{form.grandTotal || "â€”"}</p><p className="text-[10px] text-blue-400 font-bold">Total (BDT)</p></div>
                                     </div>
                                     {hiddenCount > 0 && (
                                         <div className="mt-3 p-2.5 bg-amber-50 rounded-xl border border-amber-100">
@@ -776,7 +781,6 @@ export default function TicketGeneratorPage() {
                                 </div>
                             </div>
                         </div>
-                    </div>
                 ) : (
                     /* Preview & Download */
                     <div className="space-y-4">
