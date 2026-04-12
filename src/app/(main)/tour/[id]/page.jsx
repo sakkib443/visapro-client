@@ -28,6 +28,7 @@ import {
 } from "react-icons/lu";
 import { useLanguage } from "@/context/LanguageContext";
 import Link from "next/link";
+import BookingModal from "@/components/shared/BookingModal";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -43,6 +44,7 @@ export default function TourDetailsPage() {
     const [relatedTours, setRelatedTours] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
+    const [bookingModalOpen, setBookingModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchTour = async () => {
@@ -393,10 +395,10 @@ export default function TourDetailsPage() {
                                     ))}
                                 </div>
 
-                                <button className="w-full py-3.5 rounded-md text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:shadow-lg hover:shadow-[#EF8C2C]/20" style={{ backgroundColor: '#EF8C2C', fontFamily }}>
+                                <button onClick={() => setBookingModalOpen(true)} className="w-full py-3.5 rounded-md text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:shadow-lg hover:shadow-[#EF8C2C]/20" style={{ backgroundColor: '#EF8C2C', fontFamily }}>
                                     {isBn ? 'এখনই বুক করুন' : 'Book Now'}
                                 </button>
-                                <button className="w-full mt-3 py-3.5 rounded-md text-[11px] font-bold uppercase tracking-widest border-2 transition-all hover:bg-gray-50" style={{ borderColor: '#3590CF', color: '#3590CF', fontFamily }}>
+                                <button onClick={() => setBookingModalOpen(true)} className="w-full mt-3 py-3.5 rounded-md text-[11px] font-bold uppercase tracking-widest border-2 transition-all hover:bg-gray-50" style={{ borderColor: '#3590CF', color: '#3590CF', fontFamily }}>
                                     {isBn ? 'কাস্টম প্ল্যান' : 'Custom Plan'}
                                 </button>
                             </motion.div>
@@ -526,7 +528,7 @@ export default function TourDetailsPage() {
                         {isBn ? 'আজই আপনার স্বপ্নের ট্যুর বুক করুন। আমাদের বিশেষজ্ঞ দল সবকিছু সাজিয়ে দেবে।' : 'Book your dream tour today. Our expert team will arrange everything for you.'}
                     </p>
                     <div className="flex flex-wrap justify-center gap-4">
-                        <button className="px-10 py-4 rounded-md text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:shadow-lg hover:shadow-[#EF8C2C]/20 hover:-translate-y-0.5" style={{ backgroundColor: '#EF8C2C', fontFamily }}>
+                        <button onClick={() => setBookingModalOpen(true)} className="px-10 py-4 rounded-md text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:shadow-lg hover:shadow-[#EF8C2C]/20 hover:-translate-y-0.5" style={{ backgroundColor: '#EF8C2C', fontFamily }}>
                             {isBn ? 'এখনই বুক করুন' : 'Book Now'}
                         </button>
                         <button className="px-10 py-4 rounded-md text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:shadow-lg hover:-translate-y-0.5" style={{ backgroundColor: '#021E14', fontFamily }}>
@@ -535,6 +537,18 @@ export default function TourDetailsPage() {
                     </div>
                 </div>
             </section>
+
+            <BookingModal
+                isOpen={bookingModalOpen}
+                onClose={() => setBookingModalOpen(false)}
+                type="tour"
+                serviceName={tour.title || ''}
+                serviceId={tour._id || ''}
+                extraFields={[
+                    { key: 'travelDate', label: isBn ? 'ভ্রমণের তারিখ' : 'Travel Date', type: 'date', required: true },
+                    { key: 'persons', label: isBn ? 'যাত্রী সংখ্যা' : 'Number of Travelers', type: 'number', required: true, placeholder: '1' },
+                ]}
+            />
         </div>
     );
 }

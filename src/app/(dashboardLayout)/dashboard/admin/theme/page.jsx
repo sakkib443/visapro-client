@@ -13,9 +13,12 @@ import {
     FiImage,
 } from "react-icons/fi";
 import { useTheme, colorPresets, fontOptions } from "@/context/ThemeContext";
+import { useSelector } from "react-redux";
+import { selectToken } from "@/redux/features/authSlice";
 
 export default function ThemeSettingsPage() {
     const { theme, setTheme, resetTheme } = useTheme();
+    const token = useSelector(selectToken);
 
     const [primaryColor, setPrimaryColor] = useState(theme.primaryColor);
     const [secondaryColor, setSecondaryColor] = useState(theme.secondaryColor);
@@ -102,24 +105,13 @@ export default function ThemeSettingsPage() {
             });
 
             // Save to backend API
-            // Get token from creativehub-auth localStorage
-            let authToken = "";
-            try {
-                const auth = localStorage.getItem("creativehub-auth");
-                if (auth) {
-                    authToken = JSON.parse(auth).token;
-                }
-            } catch (e) {
-                console.error("Failed to get auth token");
-            }
-
             const response = await fetch(
                 `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/design/theme`,
                 {
                     method: "PATCH",
                     headers: {
                         "Content-Type": "application/json",
-                        Authorization: `Bearer ${authToken}`,
+                        Authorization: `Bearer ${token}`,
                     },
                     body: JSON.stringify({
                         section: "theme",

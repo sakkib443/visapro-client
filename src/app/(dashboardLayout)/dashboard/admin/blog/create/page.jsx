@@ -5,11 +5,14 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { FiFileText, FiArrowLeft, FiSave, FiLoader, FiImage } from "react-icons/fi";
+import { useSelector } from "react-redux";
+import { selectToken } from "@/redux/features/authSlice";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 export default function CreateBlogPage() {
     const router = useRouter();
+    const token = useSelector(selectToken);
     const [loading, setLoading] = useState(false);
 
     const [formData, setFormData] = useState({
@@ -33,16 +36,13 @@ export default function CreateBlogPage() {
 
         setLoading(true);
         try {
-            const token = localStorage.getItem("creativehub-auth");
-            const authToken = token ? JSON.parse(token).token : null;
-
             const res = await fetch(`${API_BASE}/api/blogs`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json", ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}) },
+                headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
                 body: JSON.stringify({ ...formData, tags: formData.tags.split(",").map(t => t.trim()).filter(Boolean) }),
             });
 
-            if (res.ok) { toast.success("Blog post created!"); router.push("/admin/blog"); }
+            if (res.ok) { toast.success("Blog post created!"); router.push("/dashboard/admin/blog"); }
             else { const err = await res.json(); toast.error(err.message || "Failed"); }
         } catch { toast.error("Error creating post"); }
         finally { setLoading(false); }
@@ -51,7 +51,7 @@ export default function CreateBlogPage() {
     return (
         <div className="p-6 lg:p-8">
             <div className="flex items-center gap-4 mb-8">
-                <Link href="/admin/blog" className="btn btn-ghost p-3"><FiArrowLeft size={20} /></Link>
+                <Link href="/dashboard/admin/blog" className="btn btn-ghost p-3"><FiArrowLeft size={20} /></Link>
                 <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">
                         <FiFileText className="text-white text-xl" />
@@ -110,7 +110,7 @@ export default function CreateBlogPage() {
                 </div>
 
                 <div className="flex gap-4 mt-6">
-                    <Link href="/admin/blog" className="btn btn-ghost flex-1">Cancel</Link>
+                    <Link href="/dashboard/admin/blog" className="btn btn-ghost flex-1">Cancel</Link>
                     <button type="submit" disabled={loading} className="btn btn-primary flex-1">
                         {loading ? <FiLoader className="animate-spin" /> : <FiSave />} Create Post
                     </button>

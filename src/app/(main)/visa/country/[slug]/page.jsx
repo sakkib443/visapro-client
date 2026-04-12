@@ -30,6 +30,7 @@ import {
 import { useLanguage } from "@/context/LanguageContext";
 import Link from "next/link";
 import CountryFlag from "@/components/shared/CountryFlag";
+import BookingModal from "@/components/shared/BookingModal";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -48,6 +49,7 @@ export default function CountryDetailPage() {
     const [expandAll, setExpandAll] = useState(false);
     const [selectedVisaType, setSelectedVisaType] = useState(null);
     const [travelDate, setTravelDate] = useState('');
+    const [bookingModalOpen, setBookingModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchCountry = async () => {
@@ -725,6 +727,7 @@ export default function CountryDetailPage() {
 
                                     {/* CTA Button */}
                                     <button
+                                        onClick={() => setBookingModalOpen(true)}
                                         className="w-full py-3.5 rounded-lg text-[13px] font-bold text-white transition-all duration-200 hover:shadow-lg hover:shadow-[#1a2e5a]/20 active:scale-[0.98] mt-1"
                                         style={{ background: 'linear-gradient(135deg, #1a2e5a 0%, #0c1a3a 100%)', fontFamily }}
                                     >
@@ -796,6 +799,19 @@ export default function CountryDetailPage() {
                     </div>
                 </div>
             </div>
+            <BookingModal
+                isOpen={bookingModalOpen}
+                onClose={() => setBookingModalOpen(false)}
+                type="visa"
+                serviceName={`${country.name} - ${visaTypeName || 'Visa'}`}
+                serviceId={country._id || ''}
+                extraFields={[
+                    { key: 'visaType', label: isBn ? 'ভিসার ধরন' : 'Visa Type', type: 'text', required: true, placeholder: visaTypeName || 'e.g. Tourist Visa' },
+                    { key: 'travelDate', label: isBn ? 'ভ্রমণের তারিখ' : 'Travel Date', type: 'date', required: true },
+                    { key: 'passportNumber', label: isBn ? 'পাসপোর্ট নম্বর' : 'Passport Number', type: 'text', required: true, placeholder: 'e.g. AB1234567' },
+                    { key: 'numberOfTravelers', label: isBn ? 'যাত্রী সংখ্যা' : 'Number of Travelers', type: 'number', required: true, placeholder: '1' },
+                ]}
+            />
         </div>
     );
 }

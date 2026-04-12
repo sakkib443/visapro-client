@@ -102,6 +102,13 @@ function CreateForm() {
             excludesBn: excludesBn.filter(f => f.trim()),
             tags: tags.split(",").map(t => t.trim()).filter(Boolean),
         };
+        // Remove empty optional fields to prevent validation errors
+        ['nameBn', 'subtitle', 'subtitleBn', 'image', 'durationBn', 'departureDate',
+         'hotel', 'hotelBn', 'distance', 'distanceBn', 'meals', 'mealsBn',
+         'description', 'descriptionBn', 'longDescription', 'longDescriptionBn',
+         'metaTitle', 'metaDescription'
+        ].forEach(key => { if (!body[key]) delete body[key]; });
+        if (body.oldPrice === undefined) delete body.oldPrice;
         try {
             const url = editId ? `${API_BASE}/api/hajj-umrah/${editId}` : `${API_BASE}/api/hajj-umrah`;
             const method = editId ? "PATCH" : "POST";

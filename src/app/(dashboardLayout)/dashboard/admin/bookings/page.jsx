@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { LuSearch, LuFilter, LuLoader, LuTrash2, LuCheckCircle, LuXCircle, LuClock, LuRefreshCw } from "react-icons/lu";
+import { useSelector } from "react-redux";
+import { selectToken } from "@/redux/features/authSlice";
 
 const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
 
@@ -27,8 +29,7 @@ export default function AdminBookingsPage() {
     const [updating, setUpdating] = useState(null);
     const [noteModal, setNoteModal] = useState(null); // { id, status }
     const [note, setNote] = useState("");
-
-    const token = typeof window !== "undefined" ? (localStorage.getItem("token") || sessionStorage.getItem("token")) : "";
+    const token = useSelector(selectToken);
 
     const fetchBookings = async () => {
         setLoading(true);

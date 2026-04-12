@@ -8,12 +8,13 @@ import {
     FiShield, FiCheck
 } from "react-icons/fi";
 import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/redux/features/authSlice";
+import { selectCurrentUser, selectToken } from "@/redux/features/authSlice";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 export default function ProfilePage() {
     const currentUser = useSelector(selectCurrentUser);
+    const token = useSelector(selectToken);
     const [loading, setLoading] = useState(false);
     const [activeTab, setActiveTab] = useState("profile");
 
@@ -49,12 +50,9 @@ export default function ProfilePage() {
         e.preventDefault();
         setLoading(true);
         try {
-            const token = localStorage.getItem("creativehub-auth");
-            const authToken = token ? JSON.parse(token).token : null;
-
             const res = await fetch(`${API_BASE}/api/users/profile`, {
                 method: "PATCH",
-                headers: { "Content-Type": "application/json", ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}) },
+                headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
                 body: JSON.stringify(formData),
             });
 
@@ -72,12 +70,9 @@ export default function ProfilePage() {
         }
         setLoading(true);
         try {
-            const token = localStorage.getItem("creativehub-auth");
-            const authToken = token ? JSON.parse(token).token : null;
-
             const res = await fetch(`${API_BASE}/api/auth/change-password`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json", ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}) },
+                headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
                 body: JSON.stringify({ currentPassword: passwordData.currentPassword, newPassword: passwordData.newPassword }),
             });
 

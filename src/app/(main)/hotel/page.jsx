@@ -119,6 +119,7 @@ function HotelContent() {
 
 
     return (
+        <>
         <div className="bg-[#F8FAFC] min-h-screen text-[#021E14]" style={{ fontFamily }}>
             {/* 1. Hero Section */}
             <section className="relative py-14 md:py-20 flex items-center justify-center overflow-hidden">
@@ -606,6 +607,7 @@ function HotelContent() {
                 { key: "rooms", label: "Number of Rooms", type: "number", placeholder: "1", required: true },
             ]}
         />
+        </>
     );
 }
 

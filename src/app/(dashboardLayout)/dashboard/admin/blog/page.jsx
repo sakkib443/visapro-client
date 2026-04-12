@@ -38,7 +38,7 @@ export default function BlogPage() {
     const handleDelete = async (id) => {
         if (!confirm("Delete this post?")) return;
         try {
-            const token = localStorage.getItem("creativehub-auth");
+            const token = localStorage.getItem("visapro-auth");
             const authToken = token ? JSON.parse(token).token : null;
             await fetch(`${API_BASE}/api/blogs/${id}`, {
                 method: "DELETE",
@@ -74,7 +74,7 @@ export default function BlogPage() {
                 </div>
                 <div className="flex gap-3">
                     <button onClick={fetchData} className="btn btn-ghost p-3"><FiRefreshCw className={loading ? "animate-spin" : ""} /></button>
-                    <Link href="/admin/blog/create" className="btn btn-primary"><FiPlus /> New Post</Link>
+                    <Link href="/dashboard/admin/blog/create" className="btn btn-primary"><FiPlus /> New Post</Link>
                 </div>
             </div>
 
@@ -101,10 +101,9 @@ export default function BlogPage() {
                                 <div className="absolute top-3 right-3">
                                     <span className={`px-2 py-1 rounded-lg text-xs font-bold capitalize ${getStatusBadge(post.status)}`}>{post.status}</span>
                                 </div>
-                                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                                    <Link href={`/admin/blog/${post._id}`} className="w-10 h-10 rounded-full bg-white flex items-center justify-center hover:bg-primary hover:text-white"><FiEye /></Link>
-                                    <Link href={`/admin/blog/${post._id}/edit`} className="w-10 h-10 rounded-full bg-white flex items-center justify-center hover:bg-primary hover:text-white"><FiEdit /></Link>
-                                    <button onClick={() => handleDelete(post._id)} className="w-10 h-10 rounded-full bg-white flex items-center justify-center hover:bg-red-500 hover:text-white"><FiTrash2 /></button>
+                                <div className="absolute top-3 left-3 flex gap-1.5">
+                                    <Link href={`/dashboard/admin/blog/create?id=${post._id}`} className="w-8 h-8 rounded-lg bg-white/90 backdrop-blur flex items-center justify-center text-gray-600 hover:bg-white shadow-sm"><FiEdit size={14} /></Link>
+                                    <button onClick={(e) => { e.stopPropagation(); handleDelete(post._id); }} className="w-8 h-8 rounded-lg bg-red-50 backdrop-blur flex items-center justify-center text-red-500 hover:bg-red-100 shadow-sm"><FiTrash2 size={14} /></button>
                                 </div>
                             </div>
                             <div className="p-5">

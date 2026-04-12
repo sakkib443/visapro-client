@@ -14,10 +14,10 @@ export default function SettingsPage() {
 
     const [settings, setSettings] = useState({
         // General
-        siteName: "CreativeHub",
-        siteDescription: "The Ultimate Digital Marketplace & eLearning Platform",
-        siteUrl: "https://creativehub.com",
-        contactEmail: "support@creativehub.com",
+        siteName: "VisaPro",
+        siteDescription: "Your Complete Visa, Travel & Immigration Solution",
+        siteUrl: "https://visapro.com",
+        contactEmail: "support@visapro.com",
         contactPhone: "+880 1700 000000",
 
         // Notifications

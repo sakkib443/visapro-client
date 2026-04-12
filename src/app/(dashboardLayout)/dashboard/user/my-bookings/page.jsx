@@ -1,16 +1,18 @@
 "use client";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { LuCalendar, LuPackage, LuClock, LuCheckCircle, LuXCircle, LuLoader } from "react-icons/lu";
+import { LuCalendar, LuPackage, LuClock, LuCircleCheck, LuCircleX, LuLoader } from "react-icons/lu";
+import { useSelector } from "react-redux";
+import { selectToken } from "@/redux/features/authSlice";
 
 const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
 
 const STATUS_STYLE = {
     pending:    { bg: "bg-yellow-50", text: "text-yellow-700", border: "border-yellow-200", icon: <LuClock size={14}/> },
     processing: { bg: "bg-blue-50",   text: "text-blue-700",   border: "border-blue-200",   icon: <LuLoader size={14} className="animate-spin"/> },
-    confirmed:  { bg: "bg-green-50",  text: "text-green-700",  border: "border-green-200",  icon: <LuCheckCircle size={14}/> },
-    cancelled:  { bg: "bg-gray-50",   text: "text-gray-500",   border: "border-gray-200",   icon: <LuXCircle size={14}/> },
-    rejected:   { bg: "bg-red-50",    text: "text-red-700",    border: "border-red-200",    icon: <LuXCircle size={14}/> },
+    confirmed:  { bg: "bg-green-50",  text: "text-green-700",  border: "border-green-200",  icon: <LuCircleCheck size={14}/> },
+    cancelled:  { bg: "bg-gray-50",   text: "text-gray-500",   border: "border-gray-200",   icon: <LuCircleX size={14}/> },
+    rejected:   { bg: "bg-red-50",    text: "text-red-700",    border: "border-red-200",    icon: <LuCircleX size={14}/> },
 };
 
 const TYPE_COLOR = { visa: "#3b82f6", hotel: "#f59e0b", tour: "#10b981", hajj: "#8b5cf6", study: "#ef4444" };
@@ -20,9 +22,9 @@ export default function MyBookingsPage() {
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState("all");
+    const token = useSelector(selectToken);
 
     useEffect(() => {
-        const token = localStorage.getItem("token") || sessionStorage.getItem("token");
         if (!token) { setLoading(false); return; }
 
         fetch(`${BACKEND}/api/bookings/my`, {
@@ -31,7 +33,7 @@ export default function MyBookingsPage() {
             .then(r => r.json())
             .then(d => { setBookings(d.data || []); setLoading(false); })
             .catch(() => setLoading(false));
-    }, []);
+    }, [token]);
 
     const filtered = filter === "all" ? bookings : bookings.filter(b => b.type === filter);
 

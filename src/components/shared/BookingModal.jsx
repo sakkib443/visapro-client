@@ -3,11 +3,14 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { LuX, LuSend, LuLoader } from "react-icons/lu";
 import { useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
+import { selectToken } from "@/redux/features/authSlice";
 
 const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
 
 export default function BookingModal({ isOpen, onClose, type, serviceName, serviceId = "", extraFields = [] }) {
     const router = useRouter();
+    const token = useSelector(selectToken);
     const [form, setForm] = useState({ name: "", email: "", phone: "", message: "", ...Object.fromEntries(extraFields.map(f => [f.key, ""])) });
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
@@ -22,8 +25,7 @@ export default function BookingModal({ isOpen, onClose, type, serviceName, servi
         setError("");
         setLoading(true);
 
-        // Check auth token
-        const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+        // Check auth token from Redux store
         if (!token) {
             setLoading(false);
             onClose();

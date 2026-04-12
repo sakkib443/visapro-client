@@ -24,6 +24,7 @@ import {
 } from "react-icons/lu";
 import { useLanguage } from "@/context/LanguageContext";
 import CountryFlag from "@/components/shared/CountryFlag";
+import BookingModal from "@/components/shared/BookingModal";
 
 const destinations = [
     {
@@ -145,6 +146,7 @@ export default function StudyAbroadPage() {
     const headingFont = isBn ? 'Hind Siliguri, sans-serif' : 'Teko, sans-serif';
 
     const activeDestination = destinations[selectedCountry];
+    const [bookingModalOpen, setBookingModalOpen] = useState(false);
 
     return (
         <div className="bg-[#F8FAFC] min-h-screen" style={{ fontFamily }}>
@@ -284,7 +286,7 @@ export default function StudyAbroadPage() {
                                     </div>
                                 </div>
 
-                                <button className="px-8 py-3 rounded-lg text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:opacity-90 flex items-center gap-2" style={{ backgroundColor: '#EF8C2C', fontFamily }}>
+                                <button onClick={() => setBookingModalOpen(true)} className="px-8 py-3 rounded-lg text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:opacity-90 flex items-center gap-2" style={{ backgroundColor: '#EF8C2C', fontFamily }}>
                                     {isBn ? 'আবেদন করুন' : 'Apply Now'} <LuArrowRight size={14} />
                                 </button>
                             </div>
@@ -369,7 +371,7 @@ export default function StudyAbroadPage() {
                             : 'Talk to our experts today and start your journey to studying abroad at a top university.'}
                     </p>
                     <div className="flex flex-wrap justify-center gap-4">
-                        <button className="px-10 py-4 rounded-lg text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:opacity-90 shadow-lg" style={{ backgroundColor: '#EF8C2C', fontFamily }}>
+                        <button onClick={() => setBookingModalOpen(true)} className="px-10 py-4 rounded-lg text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:opacity-90 shadow-lg" style={{ backgroundColor: '#EF8C2C', fontFamily }}>
                             {isBn ? 'বিনামূল্যে পরামর্শ' : 'Free Consultation'}
                         </button>
                         <button className="px-10 py-4 rounded-lg border text-[11px] font-bold uppercase tracking-widest transition-all hover:bg-gray-50" style={{ borderColor: '#021E14', color: '#021E14', fontFamily }}>
@@ -378,6 +380,20 @@ export default function StudyAbroadPage() {
                     </div>
                 </div>
             </section>
+
+            <BookingModal
+                isOpen={bookingModalOpen}
+                onClose={() => setBookingModalOpen(false)}
+                type="study"
+                serviceName={`Study Abroad - ${activeDestination.country}`}
+                serviceId={`study-${activeDestination.id}`}
+                extraFields={[
+                    { key: 'destination', label: isBn ? 'গন্তব্য দেশ' : 'Destination Country', type: 'text', required: true, placeholder: activeDestination.country },
+                    { key: 'program', label: isBn ? 'প্রোগ্রাম' : 'Desired Program', type: 'text', required: true, placeholder: 'e.g. Computer Science' },
+                    { key: 'intake', label: isBn ? 'ইনটেক' : 'Preferred Intake', type: 'text', required: false, placeholder: 'e.g. Fall 2026' },
+                    { key: 'education', label: isBn ? 'বর্তমান শিক্ষা' : 'Current Education Level', type: 'text', required: true, placeholder: 'e.g. BSc in CSE' },
+                ]}
+            />
         </div>
     );
 }

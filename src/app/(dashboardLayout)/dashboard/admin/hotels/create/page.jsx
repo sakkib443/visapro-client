@@ -187,6 +187,13 @@ function HotelForm() {
                 faqs: faqs.filter(f => f.question && f.answer),
             };
 
+            // Remove empty optional fields to prevent validation errors
+            ['roomType', 'roomTypeBn', 'country', 'countryBn', 'image',
+             'metaTitle', 'metaDescription', 'description', 'descriptionBn',
+             'longDescription', 'longDescriptionBn', 'nameBn', 'locationBn', 'cityBn'
+            ].forEach(key => { if (!payload[key]) delete payload[key]; });
+            if (payload.oldPrice === undefined) delete payload.oldPrice;
+
             const url = isEdit ? `${API_BASE}/api/hotels/${editId}` : `${API_BASE}/api/hotels`;
             const method = isEdit ? "PATCH" : "POST";
 

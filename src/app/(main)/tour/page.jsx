@@ -23,6 +23,7 @@ import {
 } from "react-icons/lu";
 import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
+import BookingModal from "@/components/shared/BookingModal";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -63,6 +64,7 @@ function TourContent() {
     const [viewMode, setViewMode] = useState("grid");
     const [sortBy, setSortBy] = useState("Featured");
     const [showFilters, setShowFilters] = useState(false);
+    const [bookingModal, setBookingModal] = useState({ open: false, tour: null });
 
     // Fetch tours from API
     useEffect(() => {
@@ -113,6 +115,7 @@ function TourContent() {
 
 
     return (
+        <>
         <div className="bg-[#F8FAFC] min-h-screen text-[#021E14]" style={{ fontFamily }}>
             {/* 1. Hero Section */}
             <section className="relative py-14 md:py-20 flex items-center justify-center overflow-hidden">
@@ -486,13 +489,22 @@ function TourContent() {
                                                                     )}
                                                                 </div>
                                                             </div>
-                                                            <Link
-                                                                href={`/tour/${tour.slug || tour._id}`}
-                                                                className="px-5 py-2.5 bg-[#EF8C2C] hover:bg-[#d97b1f] text-white rounded-md text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5"
-                                                                style={{ fontFamily }}
-                                                            >
-                                                                {isBn ? 'বিস্তারিত' : 'View Details'} <LuArrowRight size={12} />
-                                                            </Link>
+                                                            <div className="flex items-center gap-2">
+                                                                <button
+                                                                    onClick={() => setBookingModal({ open: true, tour })}
+                                                                    className="px-4 py-2.5 bg-[#021E14] hover:bg-[#0a3525] text-white rounded-md text-[10px] font-bold uppercase tracking-wider transition-all"
+                                                                    style={{ fontFamily }}
+                                                                >
+                                                                    {isBn ? 'বুক করুন' : 'Book Now'}
+                                                                </button>
+                                                                <Link
+                                                                    href={`/tour/${tour.slug || tour._id}`}
+                                                                    className="px-4 py-2.5 bg-[#EF8C2C] hover:bg-[#d97b1f] text-white rounded-md text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5"
+                                                                    style={{ fontFamily }}
+                                                                >
+                                                                    {isBn ? 'বিস্তারিত' : 'Details'} <LuArrowRight size={12} />
+                                                                </Link>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </motion.div>
@@ -552,6 +564,19 @@ function TourContent() {
             </section>
 
         </div >
+
+            <BookingModal
+                isOpen={bookingModal.open}
+                onClose={() => setBookingModal({ open: false, tour: null })}
+                type="tour"
+                serviceName={bookingModal.tour?.title || ''}
+                serviceId={bookingModal.tour?._id || ''}
+                extraFields={[
+                    { key: 'travelDate', label: isBn ? 'ভ্রমণের তারিখ' : 'Travel Date', type: 'date', required: true },
+                    { key: 'persons', label: isBn ? 'যাত্রী সংখ্যা' : 'Number of Travelers', type: 'number', required: true, placeholder: '1' },
+                ]}
+            />
+        </>
     );
 }
 

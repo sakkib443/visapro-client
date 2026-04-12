@@ -299,14 +299,14 @@ export default function HotelBookings() {
                                         </span>
                                     </div>
                                 </div>
-                                <div className="absolute top-3 right-3 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button onClick={() => setViewingHotel(hotel)} className="w-8 h-8 rounded-lg bg-white/90 backdrop-blur flex items-center justify-center text-gray-600 hover:bg-white">
+                                <div className="absolute top-3 right-3 flex gap-1.5 transition-opacity">
+                                    <button onClick={() => setViewingHotel(hotel)} className="w-8 h-8 rounded-lg bg-white/90 backdrop-blur flex items-center justify-center text-gray-600 hover:bg-white shadow-sm">
                                         <FiEye size={14} />
                                     </button>
                                     <button
-                                        onClick={() => handleDelete(hotel._id)}
+                                        onClick={(e) => { e.stopPropagation(); handleDelete(hotel._id); }}
                                         disabled={deleting === hotel._id}
-                                        className="w-8 h-8 rounded-lg bg-white/90 backdrop-blur flex items-center justify-center text-red-500 hover:bg-white disabled:opacity-50"
+                                        className="w-8 h-8 rounded-lg bg-red-50 backdrop-blur flex items-center justify-center text-red-500 hover:bg-red-100 disabled:opacity-50 shadow-sm"
                                     >
                                         {deleting === hotel._id ? <FiLoader size={14} className="animate-spin" /> : <FiTrash2 size={14} />}
                                     </button>

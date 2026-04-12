@@ -228,18 +228,18 @@ export default function HajjUmrahPage() {
                     )}
                 </AnimatePresence>
             </section>
-        </div>
 
-        <BookingModal
-            isOpen={bookingModal.open}
-            onClose={() => setBookingModal({ open: false, pkg: null })}
-            type="hajj"
-            serviceName={bookingModal.pkg ? `${bookingModal.pkg.name} (${bookingModal.pkg.type === 'umrah' ? 'Umrah' : 'Hajj'})` : ""}
-            serviceId={bookingModal.pkg?._id || ""}
-            extraFields={[
-                { key: "travelDate", label: "Preferred Travel Date", type: "date", required: true },
-                { key: "persons", label: "Number of Persons", type: "number", placeholder: "1", required: true },
-            ]}
-        />
+            <BookingModal
+                isOpen={bookingModal.open}
+                onClose={() => setBookingModal({ open: false, pkg: null })}
+                type="hajj"
+                serviceName={bookingModal.pkg ? `${bookingModal.pkg.name} (${bookingModal.pkg.type === 'umrah' ? 'Umrah' : 'Hajj'})` : ""}
+                serviceId={bookingModal.pkg?._id || ""}
+                extraFields={[
+                    { key: "travelDate", label: "Preferred Travel Date", type: "date", required: true },
+                    { key: "persons", label: "Number of Persons", type: "number", placeholder: "1", required: true },
+                ]}
+            />
+        </div>
     );
 }

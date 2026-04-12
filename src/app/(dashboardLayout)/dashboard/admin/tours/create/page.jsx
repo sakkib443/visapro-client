@@ -213,6 +213,19 @@ function TourForm() {
                 faqs: faqs.filter(f => f.question && f.answer),
             };
 
+            // Remove empty optional fields that would fail enum validation
+            if (!payload.tourType) delete payload.tourType;
+            if (!payload.tourTypeBn) delete payload.tourTypeBn;
+            if (!payload.departureDate) delete payload.departureDate;
+            if (!payload.image) delete payload.image;
+            if (!payload.metaTitle) delete payload.metaTitle;
+            if (!payload.metaDescription) delete payload.metaDescription;
+            if (!payload.description) delete payload.description;
+            if (!payload.descriptionBn) delete payload.descriptionBn;
+            if (!payload.longDescription) delete payload.longDescription;
+            if (!payload.longDescriptionBn) delete payload.longDescriptionBn;
+            if (payload.oldPrice === undefined) delete payload.oldPrice;
+
             const url = isEdit ? `${API_BASE}/api/tours/${editId}` : `${API_BASE}/api/tours`;
             const method = isEdit ? "PATCH" : "POST";
 
