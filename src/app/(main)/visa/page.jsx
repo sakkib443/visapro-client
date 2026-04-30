@@ -91,7 +91,7 @@ function VisaContent() {
             const matchesSubmission = selectedSubmissionTypes.length === 0 || selectedSubmissionTypes.includes(country.submissionType);
             const matchesPrice = (country.startingPrice || country.visaTypes?.[0]?.fee || 0) <= priceRange;
             const matchesCategory = !initialCategory || (country.visaTypes || []).some(vt =>
-                vt.category === initialCategory || vt.slug === initialCategory || vt.categorySlug === initialCategory
+                vt.categorySlug === initialCategory
             );
             return matchesSearch && matchesRegion && matchesSubmission && matchesPrice && matchesCategory;
         });

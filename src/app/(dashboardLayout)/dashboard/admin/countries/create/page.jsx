@@ -13,7 +13,7 @@ import Link from "next/link";
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 const emptyVisaType = {
-    name: "", nameBn: "", processingTime: "", processingTimeBn: "",
+    categorySlug: "", name: "", nameBn: "", processingTime: "", processingTimeBn: "",
     fee: "", governmentFee: "", duration: "", durationBn: "",
     entryType: "single", isAvailable: true,
 };
@@ -50,6 +50,29 @@ export default function CreateCountryPage() {
         phone: "", email: "", website: "",
         workingHours: "", workingHoursBn: "", mapUrl: "",
     });
+    const [visaCategories, setVisaCategories] = useState([]);
+
+    // Fetch visa categories for the category dropdown
+    useEffect(() => {
+        fetch(`${API_BASE}/api/visa-categories/active`)
+            .then(r => r.json())
+            .then(data => {
+                if (data?.success && Array.isArray(data.data)) setVisaCategories(data.data);
+            })
+            .catch(() => {});
+    }, []);
+
+    // Track if form is dirty to warn before navigation
+    const [isDirty, setIsDirty] = useState(false);
+    useEffect(() => {
+        if (!isDirty) return;
+        const handler = (e) => {
+            e.preventDefault();
+            e.returnValue = "";
+        };
+        window.addEventListener("beforeunload", handler);
+        return () => window.removeEventListener("beforeunload", handler);
+    }, [isDirty]);
 
     // Fetch for edit mode
     useEffect(() => {
@@ -92,44 +115,160 @@ export default function CreateCountryPage() {
 
     const handleChange = (field, value) => {
         setForm(prev => ({ ...prev, [field]: value }));
+        setIsDirty(true);
+    };
+
+    // Pick category — auto-fills name/nameBn if user hasn't typed something custom
+    const handleCategoryPick = (idx, slug) => {
+        const cat = visaCategories.find(c => c.slug === slug);
+        setVisaTypes(prev => prev.map((vt, i) => {
+            if (i !== idx) return vt;
+            const updated = { ...vt, categorySlug: slug };
+            // Only auto-fill name/nameBn if empty, so admin's custom name (e.g. "Visitor Visa (600)") isn't overwritten
+            if (cat) {
+                if (!vt.name?.trim()) updated.name = cat.name || "";
+                if (!vt.nameBn?.trim()) updated.nameBn = cat.nameBn || "";
+            }
+            return updated;
+        }));
+        setIsDirty(true);
     };
 
     const handleVisaTypeChange = (idx, field, value) => {
         setVisaTypes(prev => prev.map((vt, i) =>
             i === idx ? { ...vt, [field]: value } : vt
         ));
+        setIsDirty(true);
     };
 
     const handleDocChange = (idx, field, value) => {
         setDocuments(prev => prev.map((doc, i) =>
             i === idx ? { ...doc, [field]: value } : doc
         ));
+        setIsDirty(true);
     };
 
     const handleEmbassyChange = (field, value) => {
         setEmbassy(prev => ({ ...prev, [field]: value }));
+        setIsDirty(true);
+    };
+
+    // ── Cloudinary image upload ──
+    const [uploading, setUploading] = useState(false);
+    const handleImageUpload = async (field, file) => {
+        if (!file) return;
+        if (!file.type.startsWith("image/")) {
+            toast.error("Please select an image file");
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error("Image must be smaller than 5MB");
+            return;
+        }
+        setUploading(true);
+        try {
+            const fd = new FormData();
+            fd.append("image", file);
+            const res = await fetch(`${API_BASE}/api/upload/single`, {
+                method: "POST",
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
+                body: fd,
+            });
+            const data = await res.json();
+            if (!res.ok || !data.success) throw new Error(data.message || "Upload failed");
+            handleChange(field, data.data.url);
+            toast.success("Image uploaded");
+        } catch (err) {
+            toast.error(err.message || "Upload failed");
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    // Strip empty strings from an object so backend Zod `.optional()` doesn't reject ""
+    const stripEmpty = (obj) => {
+        const out = {};
+        for (const [k, v] of Object.entries(obj)) {
+            if (v === "" || v === null || v === undefined) continue;
+            out[k] = v;
+        }
+        return out;
+    };
+
+    const isValidUrl = (s) => {
+        if (!s) return true;
+        try {
+            new URL(s);
+            return true;
+        } catch {
+            return false;
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // ── Client-side validation ──
         if (!form.name.trim()) {
+            setActiveSection("basic");
             toast.error("Country name is required");
+            return;
+        }
+        if (form.image && !isValidUrl(form.image)) {
+            setActiveSection("basic");
+            toast.error("Image URL is invalid");
+            return;
+        }
+        for (let i = 0; i < visaTypes.length; i++) {
+            const vt = visaTypes[i];
+            if (!vt.categorySlug?.trim()) {
+                setActiveSection("visa");
+                toast.error(`Visa Type #${i + 1}: Category is required`);
+                return;
+            }
+            if (!vt.name?.trim()) {
+                setActiveSection("visa");
+                toast.error(`Visa Type #${i + 1}: Name is required`);
+                return;
+            }
+        }
+        for (let i = 0; i < documents.length; i++) {
+            if (!documents[i].title?.trim()) {
+                setActiveSection("documents");
+                toast.error(`Document #${i + 1}: Title is required`);
+                return;
+            }
+        }
+        if (embassy.mapUrl && !isValidUrl(embassy.mapUrl)) {
+            setActiveSection("embassy");
+            toast.error("Embassy Map URL is invalid");
+            return;
+        }
+        if (embassy.website && !isValidUrl(embassy.website)) {
+            setActiveSection("embassy");
+            toast.error("Embassy Website URL is invalid");
             return;
         }
 
         setSaving(true);
         try {
             const body = {
-                ...form,
+                ...stripEmpty(form),
                 startingPrice: form.startingPrice ? Number(form.startingPrice) : undefined,
                 order: Number(form.order) || 0,
-                visaTypes: visaTypes.map(vt => ({
+                isActive: form.isActive,
+                isFeatured: form.isFeatured,
+                visaTypes: visaTypes.map(vt => stripEmpty({
                     ...vt,
                     fee: vt.fee ? Number(vt.fee) : undefined,
                     governmentFee: vt.governmentFee ? Number(vt.governmentFee) : undefined,
+                    isAvailable: vt.isAvailable,
                 })),
-                documentRequirements: documents,
-                embassyInfo: embassy,
+                documentRequirements: documents.map(d => stripEmpty({
+                    ...d,
+                    isRequired: d.isRequired,
+                })),
+                embassyInfo: stripEmpty(embassy),
             };
 
             const url = isEdit
@@ -147,6 +286,7 @@ export default function CreateCountryPage() {
 
             const data = await res.json();
             if (data.success) {
+                setIsDirty(false);
                 toast.success(isEdit ? "Country updated!" : "Country created!");
                 router.push("/dashboard/admin/countries");
             } else {
@@ -261,8 +401,28 @@ export default function CreateCountryPage() {
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className={labelClass}>Image URL</label>
-                                <input value={form.image} onChange={e => handleChange("image", e.target.value)} className={inputClass} placeholder="https://..." />
+                                <label className={labelClass}>Country Image</label>
+                                <div className="flex gap-2">
+                                    <input
+                                        value={form.image}
+                                        onChange={e => handleChange("image", e.target.value)}
+                                        className={inputClass}
+                                        placeholder="https://... or upload below"
+                                    />
+                                    <label className="flex-shrink-0 cursor-pointer px-3 py-2.5 rounded-md bg-[#1D7EDD] text-white text-[12px] font-bold hover:opacity-90 flex items-center gap-1.5">
+                                        {uploading ? <FiLoader className="animate-spin" size={13} /> : <FiPlus size={13} />}
+                                        {uploading ? "Uploading..." : "Upload"}
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            className="hidden"
+                                            onChange={e => handleImageUpload("image", e.target.files?.[0])}
+                                        />
+                                    </label>
+                                </div>
+                                {form.image && (
+                                    <img src={form.image} alt="Country preview" className="mt-2 h-16 rounded border border-gray-200 object-cover" />
+                                )}
                             </div>
                             <div>
                                 <label className={labelClass}>Tourists Per Year</label>
@@ -323,14 +483,33 @@ export default function CreateCountryPage() {
                                     <FiTrash2 size={15} />
                                 </button>
                                 <p className="text-[11px] font-bold text-gray-400 uppercase">Visa Type #{idx + 1}</p>
+                                <div>
+                                    <label className={labelClass}>Visa Category *</label>
+                                    <select
+                                        value={vt.categorySlug || ""}
+                                        onChange={e => handleCategoryPick(idx, e.target.value)}
+                                        className={inputClass}
+                                    >
+                                        <option value="">— Select category —</option>
+                                        {visaCategories.map(cat => (
+                                            <option key={cat.slug} value={cat.slug}>
+                                                {cat.icon ? `${cat.icon} ` : ""}{cat.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <p className="text-[10px] text-gray-400 mt-1">
+                                        Picks from Visa Categories. Auto-fills name below.
+                                    </p>
+                                </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     <div>
                                         <label className={labelClass}>Name *</label>
-                                        <input value={vt.name} onChange={e => handleVisaTypeChange(idx, "name", e.target.value)} className={inputClass} placeholder="Tourist Visa" />
+                                        <input value={vt.name} onChange={e => handleVisaTypeChange(idx, "name", e.target.value)} className={inputClass} placeholder="Visitor Visa (600)" />
+                                        <p className="text-[10px] text-gray-400 mt-1">Country-specific name (override allowed)</p>
                                     </div>
                                     <div>
                                         <label className={labelClass}>Name (Bengali)</label>
-                                        <input value={vt.nameBn || ""} onChange={e => handleVisaTypeChange(idx, "nameBn", e.target.value)} className={inputClass} placeholder="ট্যুরিস্ট ভিসা" />
+                                        <input value={vt.nameBn || ""} onChange={e => handleVisaTypeChange(idx, "nameBn", e.target.value)} className={inputClass} placeholder="ভিজিটর ভিসা" />
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
