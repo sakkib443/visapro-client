@@ -154,113 +154,291 @@ function TicketPreview({ form, vis }) {
         { key: "total", label: "Total (BDT)", visKey: "fare_total", style: { textAlign: "right", fontWeight: 700 } },
     ].filter(c => vis[c.visKey]);
 
+    /* Build atomic blocks for row-level pagination */
+    const blocks = [];
+    if (vis.bookingSection) blocks.push({ kind: 'booking' });
+    if (vis.passengerSection && passCols.length > 0) {
+        form.passengers.forEach((_, i) => blocks.push({ kind: 'passenger', idx: i }));
+    }
+    if (vis.flightSection) {
+        form.flights.forEach((_, i) => blocks.push({ kind: 'flight', idx: i }));
+    }
+    if (vis.fareSection && fareCols.length > 0) {
+        form.fares.forEach((_, i) => blocks.push({ kind: 'fare', idx: i }));
+        if (vis.grandTotal) blocks.push({ kind: 'fareTotal' });
+    }
+
     const [gifH, setGifH] = useState(0);
     const [pgAssign, setPgAssign] = useState(null);
     const measGifRef = useRef(null);
-    const secRefs = useRef({});
+    const bookingMeasRef = useRef(null);
+    const sectionHeadRefs = useRef({});
+    const rowRefs = useRef({});
 
-    const visIds = [
-        vis.bookingSection ? "booking" : null,
-        (vis.passengerSection && passCols.length > 0) ? "passenger" : null,
-        vis.flightSection ? "flight" : null,
-        (vis.fareSection && fareCols.length > 0) ? "fare" : null,
-    ].filter(Boolean);
+    /* -- Renderers -- */
+    const renderBookingInner = () => (
+        <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #d1d5db" }}>
+            <thead><tr>
+                {vis.bookingRef && <th style={S.thTeal}>Booking Reference</th>}
+                {vis.airlinePnr && <th style={S.thTeal}>Airline PNR</th>}
+                {vis.dateOfIssue && <th style={S.thTeal}>Date of Issue</th>}
+                {vis.status && <th style={{ ...S.thTeal, borderRight: "none" }}>Status</th>}
+            </tr></thead>
+            <tbody><tr>
+                {vis.bookingRef && <td style={{ ...S.td, fontWeight: 700, fontSize: 13 }}>{form.bookingRef || "---"}</td>}
+                {vis.airlinePnr && <td style={{ ...S.td, fontWeight: 700, fontSize: 13 }}>{form.airlinePnr || "---"}</td>}
+                {vis.dateOfIssue && <td style={S.td}>{form.dateOfIssue || "---"}</td>}
+                {vis.status && <td style={{ ...S.td, borderRight: "none" }}><span style={{ background: TEAL, color: "#fff", padding: "2px 10px", borderRadius: 3, fontSize: 11, fontWeight: 700 }}>{form.status || "Confirmed"}</span></td>}
+            </tr></tbody>
+        </table>
+    );
 
+    const passengerRowTds = (i) => {
+        const p = form.passengers[i];
+        return passCols.map((c, j) => <td key={c.key} style={{ ...S.td, ...c.style, borderRight: j < passCols.length - 1 ? "1px solid " + BORDER : "none" }}>{p[c.key] || "---"}</td>);
+    };
+
+    const renderPassengerHead = () => (
+        <div>
+            <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 3 }}>Passenger Information</div>
+            <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #d1d5db" }}>
+                <thead><tr>{passCols.map((c, i) => <th key={c.key} style={{ ...S.thTeal, borderRight: i < passCols.length - 1 ? "1px solid " + TEAL_DARK : "none" }}>{c.label}</th>)}</tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    );
+
+    const renderPassengerGroup = (indices) => (
+        <div>
+            <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 3 }}>Passenger Information</div>
+            <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #d1d5db" }}>
+                <thead><tr>{passCols.map((c, i) => <th key={c.key} style={{ ...S.thTeal, borderRight: i < passCols.length - 1 ? "1px solid " + TEAL_DARK : "none" }}>{c.label}</th>)}</tr></thead>
+                <tbody>{indices.map(i => <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#f8fafc" }}>{passengerRowTds(i)}</tr>)}</tbody>
+            </table>
+        </div>
+    );
+
+    const flightRowPair = (i, isFirstInData) => {
+        const f = form.flights[i];
+        const out = [];
+        out.push(
+            <tr key={"f" + i} style={{ background: i % 2 === 0 ? "#fff" : "#f8fafc", verticalAlign: "top" }}>
+                {vis.flt_airline && <td style={{ ...S.td, padding: "6px 8px" }}><div style={{ width: 22, height: 22, borderRadius: "50%", background: "#dbeafe", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 2 }}><span style={{ fontSize: 12 }}>&#9992;</span></div><div style={{ fontWeight: 700, color: TEAL_DARK, fontSize: 11 }}>{f.airline || "---"}</div><div style={{ fontSize: 10, color: "#6b7280" }}>{f.flightNo}</div></td>}
+                {vis.flt_from && <td style={{ ...S.td, padding: "6px 8px" }}><div style={{ fontSize: 20, fontWeight: 900, lineHeight: 1 }}>{f.from || "---"}</div><div style={{ fontSize: 10, color: "#6b7280", marginTop: 2 }}>{f.fromAirport}</div></td>}
+                {vis.flt_to && <td style={{ ...S.td, padding: "6px 8px" }}><div style={{ fontSize: 20, fontWeight: 900, lineHeight: 1 }}>{f.to || "---"}</div><div style={{ fontSize: 10, color: "#6b7280", marginTop: 2 }}>{f.toAirport}</div></td>}
+                {vis.flt_depart && <td style={{ ...S.td, padding: "6px 8px" }}><div style={{ fontSize: 10, color: "#6b7280" }}>{f.departDay}</div><div style={{ fontSize: 12, fontWeight: 700 }}>{f.departDate}</div><div style={{ fontSize: 15, fontWeight: 900, color: TEAL_DARK }}>{f.departTime}</div></td>}
+                {vis.flt_arrive && <td style={{ ...S.td, padding: "6px 8px" }}><div style={{ fontSize: 10, color: "#6b7280" }}>{f.arriveDay}</div><div style={{ fontSize: 12, fontWeight: 700 }}>{f.arriveDate}</div><div style={{ fontSize: 15, fontWeight: 900, color: TEAL_DARK }}>{f.arriveTime}</div></td>}
+                {showInfoCol && <td style={{ ...S.td, padding: "6px 8px", fontSize: 10, color: "#4b5563", lineHeight: 1.6, borderRight: "none" }}>{isFirstInData && infoFields.map(fld => <div key={fld.key}><b>{fld.label}:</b> {form[fld.key]}</div>)}</td>}
+            </tr>
+        );
+        if (vis.flt_transitInfo && f.transitInfo) {
+            out.push(
+                <tr key={"t" + i}><td colSpan={fltVisCount} style={{ background: "#f9f9f9", padding: "4px 12px", textAlign: "center", fontSize: 11, fontWeight: 600, color: "#1f2937", borderTop: "1px dashed " + BORDER, borderBottom: "1px dashed " + BORDER }}>{f.transitInfo}</td></tr>
+            );
+        }
+        return out;
+    };
+
+    const renderFlightHead = () => (
+        <div>
+            <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 3 }}>Itinerary Information</div>
+            <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #d1d5db" }}>
+                <thead><tr>
+                    {vis.flt_airline && <th style={{ ...S.thTeal, width: "10%" }}>Airline</th>}
+                    {vis.flt_from && <th style={S.thTeal}>From</th>}
+                    {vis.flt_to && <th style={S.thTeal}>To</th>}
+                    {vis.flt_depart && <th style={{ ...S.thTeal, width: "13%" }}>Depart</th>}
+                    {vis.flt_arrive && <th style={{ ...S.thTeal, width: "13%" }}>Arrive</th>}
+                    {showInfoCol && <th style={{ ...S.thTeal, width: "22%", borderRight: "none" }}>Info</th>}
+                </tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    );
+
+    const renderFlightGroup = (indices) => (
+        <div>
+            <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 3 }}>Itinerary Information</div>
+            <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #d1d5db" }}>
+                <thead><tr>
+                    {vis.flt_airline && <th style={{ ...S.thTeal, width: "10%" }}>Airline</th>}
+                    {vis.flt_from && <th style={S.thTeal}>From</th>}
+                    {vis.flt_to && <th style={S.thTeal}>To</th>}
+                    {vis.flt_depart && <th style={{ ...S.thTeal, width: "13%" }}>Depart</th>}
+                    {vis.flt_arrive && <th style={{ ...S.thTeal, width: "13%" }}>Arrive</th>}
+                    {showInfoCol && <th style={{ ...S.thTeal, width: "22%", borderRight: "none" }}>Info</th>}
+                </tr></thead>
+                <tbody>{indices.map(i => flightRowPair(i, i === 0))}</tbody>
+            </table>
+        </div>
+    );
+
+    const fareRowTds = (i) => {
+        const fare = form.fares[i];
+        return fareCols.map((c, j) => <td key={c.key} style={{ ...S.td, ...c.style, borderRight: j < fareCols.length - 1 ? "1px solid " + BORDER : "none" }}>{fare[c.key]}</td>);
+    };
+
+    const renderFareHead = () => (
+        <div>
+            <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 3 }}>Fare Details</div>
+            <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #d1d5db" }}>
+                <thead><tr>{fareCols.map((c, i) => <th key={c.key} style={{ ...S.thTeal, borderRight: i < fareCols.length - 1 ? "1px solid " + TEAL_DARK : "none", textAlign: "right" }}>{c.label}</th>)}</tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    );
+
+    const renderFareGroup = (indices, includeTotal) => (
+        <div>
+            <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 3 }}>Fare Details</div>
+            <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #d1d5db" }}>
+                <thead><tr>{fareCols.map((c, i) => <th key={c.key} style={{ ...S.thTeal, borderRight: i < fareCols.length - 1 ? "1px solid " + TEAL_DARK : "none", textAlign: "right" }}>{c.label}</th>)}</tr></thead>
+                <tbody>
+                    {indices.map(i => <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#f8fafc" }}>{fareRowTds(i)}</tr>)}
+                    {includeTotal && <tr style={{ background: "#fef3c7" }}><td colSpan={Math.max(1, fareCols.length - 1)} style={{ ...S.td, fontWeight: 900, fontSize: 12, textAlign: "right", paddingRight: 12 }}>Grand Total (BDT)</td><td style={{ ...S.td, fontWeight: 900, fontSize: 14, textAlign: "right", color: "#b45309", borderRight: "none" }}>{form.grandTotal}</td></tr>}
+                </tbody>
+            </table>
+        </div>
+    );
+
+    /* Pagination — measure each row + section header, pack into pages */
     useEffect(() => {
         const calc = () => {
             const h = measGifRef.current ? measGifRef.current.offsetHeight : 0;
             if (!h) return;
-            const slot = h * 0.68;
-            const pgs = [[]]; let used = 0;
-            visIds.forEach(id => {
-                const elH = (secRefs.current[id] ? secRefs.current[id].offsetHeight : 0) + 8;
-                if (used + elH > slot && pgs[pgs.length - 1].length > 0) { pgs.push([]); used = 0; }
-                pgs[pgs.length - 1].push(id); used += elH;
-            });
-            if (JSON.stringify(pgs) !== JSON.stringify(pgAssign) || h !== gifH) { setGifH(h); setPgAssign(pgs); }
+            const slot = h * 0.67;
+            const gap = 8;
+
+            const bookingH = bookingMeasRef.current ? bookingMeasRef.current.offsetHeight : 0;
+            const headH = {
+                passenger: sectionHeadRefs.current.passenger ? sectionHeadRefs.current.passenger.offsetHeight : 0,
+                flight: sectionHeadRefs.current.flight ? sectionHeadRefs.current.flight.offsetHeight : 0,
+                fare: sectionHeadRefs.current.fare ? sectionHeadRefs.current.fare.offsetHeight : 0,
+            };
+            const rowH = (key) => rowRefs.current[key] ? rowRefs.current[key].offsetHeight : 0;
+
+            const blockCost = (block, sectionOnPage) => {
+                let cost = gap;
+                if (block.kind === 'booking') {
+                    cost += bookingH;
+                } else if (block.kind === 'fareTotal') {
+                    cost += rowH('fareTotal');
+                    if (sectionOnPage !== 'fare') cost += headH.fare;
+                } else {
+                    cost += rowH(`${block.kind}-${block.idx}`);
+                    if (sectionOnPage !== block.kind) cost += headH[block.kind];
+                }
+                return cost;
+            };
+
+            const pages = [];
+            let curPage = [];
+            let curH = 0;
+            let curSection = null;
+
+            for (const block of blocks) {
+                const cost = blockCost(block, curSection);
+                if (curH + cost > slot && curPage.length > 0) {
+                    pages.push(curPage);
+                    curPage = [];
+                    curH = 0;
+                    curSection = null;
+                    const costNew = blockCost(block, null);
+                    curPage.push(block);
+                    curH += costNew;
+                } else {
+                    curPage.push(block);
+                    curH += cost;
+                }
+                curSection = block.kind === 'fareTotal' ? 'fare' : block.kind;
+            }
+            if (curPage.length > 0) pages.push(curPage);
+
+            if (JSON.stringify(pages) !== JSON.stringify(pgAssign) || h !== gifH) {
+                setGifH(h);
+                setPgAssign(pages);
+            }
         };
-        calc(); const t = setTimeout(calc, 150); return () => clearTimeout(t);
+        calc();
+        const t = setTimeout(calc, 150);
+        return () => clearTimeout(t);
     });
 
-    const RS = (id) => {
-        if (id === "booking") return (
-            <table key="bk" style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #d1d5db" }}>
-                <thead><tr>
-                    {vis.bookingRef && <th style={S.thTeal}>Booking Reference</th>}
-                    {vis.airlinePnr && <th style={S.thTeal}>Airline PNR</th>}
-                    {vis.dateOfIssue && <th style={S.thTeal}>Date of Issue</th>}
-                    {vis.status && <th style={{ ...S.thTeal, borderRight: "none" }}>Status</th>}
-                </tr></thead>
-                <tbody><tr>
-                    {vis.bookingRef && <td style={{ ...S.td, fontWeight: 700, fontSize: 13 }}>{form.bookingRef || "---"}</td>}
-                    {vis.airlinePnr && <td style={{ ...S.td, fontWeight: 700, fontSize: 13 }}>{form.airlinePnr || "---"}</td>}
-                    {vis.dateOfIssue && <td style={S.td}>{form.dateOfIssue || "---"}</td>}
-                    {vis.status && <td style={{ ...S.td, borderRight: "none" }}><span style={{ background: TEAL, color: "#fff", padding: "2px 10px", borderRadius: 3, fontSize: 11, fontWeight: 700 }}>{form.status || "Confirmed"}</span></td>}
-                </tr></tbody>
-            </table>
-        );
-        if (id === "passenger") return (
-            <div key="px">
-                <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 3 }}>Passenger Information</div>
-                <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #d1d5db" }}>
-                    <thead><tr>{passCols.map((c, i) => <th key={c.key} style={{ ...S.thTeal, borderRight: i < passCols.length - 1 ? "1px solid " + TEAL_DARK : "none" }}>{c.label}</th>)}</tr></thead>
-                    <tbody>{form.passengers.map((p, i) => (<tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#f8fafc" }}>{passCols.map((c, j) => <td key={c.key} style={{ ...S.td, ...c.style, borderRight: j < passCols.length - 1 ? "1px solid " + BORDER : "none" }}>{p[c.key] || "---"}</td>)}</tr>))}</tbody>
-                </table>
-            </div>
-        );
-        if (id === "flight") return (
-            <div key="fl">
-                <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 3 }}>Itinerary Information</div>
-                <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #d1d5db" }}>
-                    <thead><tr>
-                        {vis.flt_airline && <th style={{ ...S.thTeal, width: "10%" }}>Airline</th>}
-                        {vis.flt_from && <th style={S.thTeal}>From</th>}
-                        {vis.flt_to && <th style={S.thTeal}>To</th>}
-                        {vis.flt_depart && <th style={{ ...S.thTeal, width: "13%" }}>Depart</th>}
-                        {vis.flt_arrive && <th style={{ ...S.thTeal, width: "13%" }}>Arrive</th>}
-                        {showInfoCol && <th style={{ ...S.thTeal, width: "22%", borderRight: "none" }}>Info</th>}
-                    </tr></thead>
-                    <tbody>{form.flights.map((f, i) => (<>
-                        <tr key={"f"+i} style={{ background: i % 2 === 0 ? "#fff" : "#f8fafc", verticalAlign: "top" }}>
-                            {vis.flt_airline && <td style={{ ...S.td, padding: "6px 8px" }}><div style={{ width: 22, height: 22, borderRadius: "50%", background: "#dbeafe", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 2 }}><span style={{ fontSize: 12 }}>&#9992;</span></div><div style={{ fontWeight: 700, color: TEAL_DARK, fontSize: 11 }}>{f.airline || "---"}</div><div style={{ fontSize: 10, color: "#6b7280" }}>{f.flightNo}</div></td>}
-                            {vis.flt_from && <td style={{ ...S.td, padding: "6px 8px" }}><div style={{ fontSize: 20, fontWeight: 900, lineHeight: 1 }}>{f.from || "---"}</div><div style={{ fontSize: 10, color: "#6b7280", marginTop: 2 }}>{f.fromAirport}</div></td>}
-                            {vis.flt_to && <td style={{ ...S.td, padding: "6px 8px" }}><div style={{ fontSize: 20, fontWeight: 900, lineHeight: 1 }}>{f.to || "---"}</div><div style={{ fontSize: 10, color: "#6b7280", marginTop: 2 }}>{f.toAirport}</div></td>}
-                            {vis.flt_depart && <td style={{ ...S.td, padding: "6px 8px" }}><div style={{ fontSize: 10, color: "#6b7280" }}>{f.departDay}</div><div style={{ fontSize: 12, fontWeight: 700 }}>{f.departDate}</div><div style={{ fontSize: 15, fontWeight: 900, color: TEAL_DARK }}>{f.departTime}</div></td>}
-                            {vis.flt_arrive && <td style={{ ...S.td, padding: "6px 8px" }}><div style={{ fontSize: 10, color: "#6b7280" }}>{f.arriveDay}</div><div style={{ fontSize: 12, fontWeight: 700 }}>{f.arriveDate}</div><div style={{ fontSize: 15, fontWeight: 900, color: TEAL_DARK }}>{f.arriveTime}</div></td>}
-                            {showInfoCol && <td style={{ ...S.td, padding: "6px 8px", fontSize: 10, color: "#4b5563", lineHeight: 1.6, borderRight: "none" }}>{i === 0 && infoFields.map(fld => <div key={fld.key}><b>{fld.label}:</b> {form[fld.key]}</div>)}</td>}
-                        </tr>
-                        {vis.flt_transitInfo && f.transitInfo && <tr key={"t"+i}><td colSpan={fltVisCount} style={{ background: "#f9f9f9", padding: "4px 12px", textAlign: "center", fontSize: 11, fontWeight: 600, color: "#1f2937", borderTop: "1px dashed " + BORDER, borderBottom: "1px dashed " + BORDER }}>{f.transitInfo}</td></tr>}
-                    </>))}</tbody>
-                </table>
-            </div>
-        );
-        if (id === "fare") return (
-            <div key="fr">
-                <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 3 }}>Fare Details</div>
-                <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #d1d5db" }}>
-                    <thead><tr>{fareCols.map((c, i) => <th key={c.key} style={{ ...S.thTeal, borderRight: i < fareCols.length - 1 ? "1px solid " + TEAL_DARK : "none", textAlign: "right" }}>{c.label}</th>)}</tr></thead>
-                    <tbody>
-                        {form.fares.map((fare, i) => <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#f8fafc" }}>{fareCols.map((c, j) => <td key={c.key} style={{ ...S.td, ...c.style, borderRight: j < fareCols.length - 1 ? "1px solid " + BORDER : "none" }}>{fare[c.key]}</td>)}</tr>)}
-                        {vis.grandTotal && <tr style={{ background: "#fef3c7" }}><td colSpan={fareCols.length - 1} style={{ ...S.td, fontWeight: 900, fontSize: 12, textAlign: "right", paddingRight: 12 }}>Grand Total (BDT)</td><td style={{ ...S.td, fontWeight: 900, fontSize: 14, textAlign: "right", color: "#b45309", borderRight: "none" }}>{form.grandTotal}</td></tr>}
-                    </tbody>
-                </table>
-            </div>
-        );
-        return null;
+    /* Group consecutive same-kind blocks on a page into single table renders */
+    const renderPageContent = (pageBlocks) => {
+        const groups = [];
+        let cur = null;
+        for (const b of pageBlocks) {
+            const gkind = b.kind === 'fareTotal' ? 'fare' : b.kind;
+            if (!cur || cur.gkind !== gkind) {
+                cur = { gkind, items: [] };
+                groups.push(cur);
+            }
+            cur.items.push(b);
+        }
+        return groups.map((g, gi) => {
+            if (g.gkind === 'booking') return <div key={gi}>{renderBookingInner()}</div>;
+            if (g.gkind === 'passenger') return <div key={gi}>{renderPassengerGroup(g.items.map(b => b.idx))}</div>;
+            if (g.gkind === 'flight') return <div key={gi}>{renderFlightGroup(g.items.map(b => b.idx))}</div>;
+            if (g.gkind === 'fare') {
+                const indices = g.items.filter(b => b.kind === 'fare').map(b => b.idx);
+                const hasTotal = g.items.some(b => b.kind === 'fareTotal');
+                return <div key={gi}>{renderFareGroup(indices, hasTotal)}</div>;
+            }
+            return null;
+        });
     };
 
-    const finalPgs = pgAssign || [visIds];
+    const finalPgs = pgAssign || (blocks.length > 0 ? [blocks] : [[]]);
+
     return (
         <div id="ticket-print" style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: "#1f2937" }}>
             {/* Measure template height at real container width */}
             <img ref={measGifRef} src="/tickettemplate.png" alt="" crossOrigin="anonymous"
                 style={{ position: "absolute", top: 0, left: 0, width: "100%", visibility: "hidden", pointerEvents: "none", zIndex: -1 }} />
-            {/* Measure sections at real content width */}
+            {/* Measurement layer — each unit measured individually at real content width */}
             <div style={{ position: "absolute", top: 0, left: "4%", right: "4%", visibility: "hidden", pointerEvents: "none", zIndex: -1, display: "flex", flexDirection: "column", gap: 8 }}>
-                {visIds.map(id => <div key={id} ref={el => { secRefs.current[id] = el; }}>{RS(id)}</div>)}
+                {vis.bookingSection && <div ref={bookingMeasRef}>{renderBookingInner()}</div>}
+                {vis.passengerSection && passCols.length > 0 && (
+                    <div ref={el => { sectionHeadRefs.current.passenger = el; }}>{renderPassengerHead()}</div>
+                )}
+                {vis.passengerSection && passCols.length > 0 && form.passengers.map((_, i) => (
+                    <div key={`mp${i}`} ref={el => { rowRefs.current[`passenger-${i}`] = el; }}>
+                        <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #d1d5db" }}><tbody>
+                            <tr style={{ background: i % 2 === 0 ? "#fff" : "#f8fafc" }}>{passengerRowTds(i)}</tr>
+                        </tbody></table>
+                    </div>
+                ))}
+                {vis.flightSection && (
+                    <div ref={el => { sectionHeadRefs.current.flight = el; }}>{renderFlightHead()}</div>
+                )}
+                {vis.flightSection && form.flights.map((_, i) => (
+                    <div key={`mf${i}`} ref={el => { rowRefs.current[`flight-${i}`] = el; }}>
+                        <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #d1d5db" }}><tbody>
+                            {flightRowPair(i, i === 0)}
+                        </tbody></table>
+                    </div>
+                ))}
+                {vis.fareSection && fareCols.length > 0 && (
+                    <div ref={el => { sectionHeadRefs.current.fare = el; }}>{renderFareHead()}</div>
+                )}
+                {vis.fareSection && fareCols.length > 0 && form.fares.map((_, i) => (
+                    <div key={`mfare${i}`} ref={el => { rowRefs.current[`fare-${i}`] = el; }}>
+                        <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #d1d5db" }}><tbody>
+                            <tr style={{ background: i % 2 === 0 ? "#fff" : "#f8fafc" }}>{fareRowTds(i)}</tr>
+                        </tbody></table>
+                    </div>
+                ))}
+                {vis.fareSection && fareCols.length > 0 && vis.grandTotal && (
+                    <div ref={el => { rowRefs.current['fareTotal'] = el; }}>
+                        <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #d1d5db" }}><tbody>
+                            <tr style={{ background: "#fef3c7" }}><td colSpan={Math.max(1, fareCols.length - 1)} style={{ ...S.td, fontWeight: 900, fontSize: 12, textAlign: "right", paddingRight: 12 }}>Grand Total (BDT)</td><td style={{ ...S.td, fontWeight: 900, fontSize: 14, textAlign: "right", color: "#b45309", borderRight: "none" }}>{form.grandTotal}</td></tr>
+                        </tbody></table>
+                    </div>
+                )}
             </div>
-            {/* Pages */}
-            {finalPgs.map((pSecs, pi) => (
+            {/* Pages — template repeats on every page */}
+            {finalPgs.map((pageBlocks, pi) => (
                 <div key={pi} style={{ position: "relative" }}>
                     <img src="/tickettemplate.png" alt="e-Ticket" style={{ width: "100%", display: "block" }} crossOrigin="anonymous" />
                     {pi === 0 && vis.bookingRef && form.bookingRef && (
@@ -269,7 +447,7 @@ function TicketPreview({ form, vis }) {
                         </div>
                     )}
                     <div style={{ position: "absolute", top: "16%", left: "4%", right: "4%", bottom: "15%", overflow: "hidden", display: "flex", flexDirection: "column", gap: 8 }}>
-                        {pSecs.map(id => RS(id))}
+                        {renderPageContent(pageBlocks)}
                     </div>
                 </div>
             ))}

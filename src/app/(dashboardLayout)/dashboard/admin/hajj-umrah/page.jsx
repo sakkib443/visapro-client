@@ -42,13 +42,23 @@ export default function HajjUmrahPage() {
     const handleDelete = async (id) => {
         if (!confirm("Delete this package?")) return;
         try {
-            await fetch(`${API_BASE}/api/hajj-umrah/${id}`, {
+            const res = await fetch(`${API_BASE}/api/hajj-umrah/${id}`, {
                 method: "DELETE",
-                headers: token ? { Authorization: `Bearer ${token}` } : {},
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(token && { Authorization: `Bearer ${token}` }),
+                },
             });
-            toast.success("Package deleted");
-        } catch { toast.error("Failed to delete"); }
-        setPackages(prev => prev.filter(p => p._id !== id));
+            const data = await res.json();
+            if (!res.ok) {
+                toast.error(data?.message || `Failed to delete (${res.status})`);
+                return;
+            }
+            toast.success("Package deleted successfully");
+            setPackages(prev => prev.filter(p => p._id !== id));
+        } catch (err) {
+            toast.error("Network error — could not delete package");
+        }
     };
 
     const filtered = packages.filter(p => {

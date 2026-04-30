@@ -1,59 +1,112 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
+import toast from "react-hot-toast";
 import {
     FiPhone,
     FiMail,
     FiMapPin,
-    FiClock,
     FiArrowRight,
     FiSend,
 } from "react-icons/fi";
 import {
     FaFacebookF,
+    FaWhatsapp,
+    FaInstagram,
     FaTwitter,
     FaYoutube,
-    FaWhatsapp,
+    FaLinkedin,
+    FaTiktok,
 } from "react-icons/fa";
 import { useLanguage } from "@/context/LanguageContext";
+import {
+    useSiteSettings,
+    buildWhatsAppUrl,
+    buildTelUrl,
+    buildMailUrl,
+} from "@/context/SiteSettingsContext";
 
-const socialLinks = [
-    { icon: FaFacebookF, href: "https://facebook.com/visapro", label: "Facebook", color: "#1877F2" },
-    { icon: FaTwitter, href: "#", label: "Twitter", color: "#1DA1F2" },
-    { icon: FaYoutube, href: "#", label: "YouTube", color: "#FF0000" },
-    { icon: FaWhatsapp, href: "https://wa.me/8801712114770", label: "WhatsApp", color: "#25D366" },
-];
+const SOCIAL_META = {
+    facebook: { icon: FaFacebookF, label: "Facebook", color: "#1877F2" },
+    instagram: { icon: FaInstagram, label: "Instagram", color: "#E4405F" },
+    twitter: { icon: FaTwitter, label: "Twitter", color: "#1DA1F2" },
+    youtube: { icon: FaYoutube, label: "YouTube", color: "#FF0000" },
+    linkedin: { icon: FaLinkedin, label: "LinkedIn", color: "#0A66C2" },
+    tiktok: { icon: FaTiktok, label: "TikTok", color: "#000000" },
+};
 
 export default function Footer() {
     const currentYear = new Date().getFullYear();
     const { t, language } = useLanguage();
+    const { settings } = useSiteSettings();
     const bnFont = language === 'bn' ? 'Hind Siliguri, sans-serif' : 'Poppins, sans-serif';
     const headingFont = language === 'bn' ? 'Hind Siliguri, sans-serif' : 'Teko, sans-serif';
+
+    const [newsletterEmail, setNewsletterEmail] = useState("");
+    const [subscribing, setSubscribing] = useState(false);
+
+    // Build active social links from settings (only those with a URL set)
+    const activeSocial = Object.entries(settings.social || {})
+        .filter(([, url]) => url && url.trim())
+        .map(([key, url]) => {
+            const meta = SOCIAL_META[key];
+            if (!meta) return null;
+            return { key, url, ...meta };
+        })
+        .filter(Boolean);
+
+    // Always include WhatsApp at the end if a number is set
+    if (settings.whatsappNumber) {
+        activeSocial.push({
+            key: "whatsapp",
+            url: buildWhatsAppUrl(settings.whatsappNumber),
+            icon: FaWhatsapp,
+            label: "WhatsApp",
+            color: "#25D366",
+        });
+    }
+
+    const handleNewsletter = (e) => {
+        e.preventDefault();
+        const email = newsletterEmail.trim();
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            toast.error(language === 'bn' ? 'সঠিক ইমেইল লিখুন' : 'Please enter a valid email');
+            return;
+        }
+        setSubscribing(true);
+        // No backend endpoint yet — simulate success for now
+        setTimeout(() => {
+            toast.success(
+                language === 'bn'
+                    ? 'ধন্যবাদ! আপনি subscribe করেছেন।'
+                    : 'Thank you for subscribing!'
+            );
+            setNewsletterEmail("");
+            setSubscribing(false);
+        }, 600);
+    };
 
     const footerLinks = {
         services: [
             { name: t('footerVisaProcessing'), href: "/visa" },
-            { name: t('footerFlightBooking'), href: "/flight" },
             { name: t('footerHotelReservation'), href: "/hotel" },
             { name: t('footerTourPackages'), href: "/tour" },
             { name: t('footerHajjUmrah'), href: "/hajj-umrah" },
             { name: t('footerStudyAbroad'), href: "/study-abroad" },
         ],
         visaTypes: [
-            { name: t('footerTouristVisa'), href: "/visa/tourist" },
-            { name: t('footerWorkingVisa'), href: "/visa/working" },
-            { name: t('footerStudentVisa'), href: "/visa/student" },
-            { name: t('footerBusinessVisa'), href: "/visa/business" },
-            { name: t('footerMedicalVisa'), href: "/visa/medical" },
-            { name: t('footerTransitVisa'), href: "/visa/transit" },
+            { name: t('footerTouristVisa'), href: "/visa?category=tourist-visa" },
+            { name: t('footerWorkingVisa'), href: "/visa?category=working-visa" },
+            { name: t('footerStudentVisa'), href: "/visa?category=student-visa" },
+            { name: t('footerBusinessVisa'), href: "/visa?category=business-visa" },
+            { name: t('footerMedicalVisa'), href: "/visa?category=medical-visa" },
+            { name: t('footerTransitVisa'), href: "/visa?category=transit-visa" },
         ],
         quickLinks: [
             { name: t('aboutUs'), href: "/about" },
             { name: t('footerBlog'), href: "/blog" },
             { name: t('contactUs'), href: "/contact" },
-            { name: t('privacyPolicy'), href: "/privacy" },
-            { name: t('termsOfService'), href: "/terms" },
-            { name: t('faq'), href: "/faq" },
         ],
     };
 
@@ -79,7 +132,7 @@ export default function Footer() {
                     </div>
                     <div className="flex flex-col sm:flex-row gap-3">
                         <a
-                            href="tel:+8801712114770"
+                            href={buildTelUrl(settings.contactPhone)}
                             className="px-6 py-3.5 bg-white text-[#3590CF] rounded-lg font-semibold text-sm hover:-translate-y-1 transition-all flex items-center gap-2"
                             style={{ fontFamily: bnFont }}
                         >
@@ -114,49 +167,52 @@ export default function Footer() {
 
                         {/* Contact Info */}
                         <div className="space-y-3">
-                            <a href="tel:+8801712114770" className="flex items-center gap-3 text-white/70 hover:text-[#EF8C2C] transition-colors text-sm">
+                            <a href={buildTelUrl(settings.contactPhone)} className="flex items-center gap-3 text-white/70 hover:text-[#EF8C2C] transition-colors text-sm">
                                 <div className="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center flex-shrink-0">
                                     <FiPhone className="w-4 h-4 text-[#EF8C2C]" />
                                 </div>
                                 <div style={{ fontFamily: bnFont }}>
-                                    <p className="font-semibold text-white/90">017 1211 4770</p>
+                                    <p className="font-semibold text-white/90">{settings.contactPhone}</p>
                                     <p className="text-xs text-white/40">{t('hotlineTime')}</p>
                                 </div>
                             </a>
-                            <a href="mailto:support@visapro.com.bd" className="flex items-center gap-3 text-white/70 hover:text-[#EF8C2C] transition-colors text-sm">
+                            <a href={buildMailUrl(settings.contactEmail)} className="flex items-center gap-3 text-white/70 hover:text-[#EF8C2C] transition-colors text-sm">
                                 <div className="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center flex-shrink-0">
                                     <FiMail className="w-4 h-4 text-[#3590CF]" />
                                 </div>
-                                <span style={{ fontFamily: 'Poppins, sans-serif' }}>support@visapro.com.bd</span>
+                                <span style={{ fontFamily: 'Poppins, sans-serif' }}>{settings.contactEmail}</span>
                             </a>
-                            <div className="flex items-center gap-3 text-white/70 text-sm">
-                                <div className="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center flex-shrink-0">
-                                    <FiMapPin className="w-4 h-4 text-[#3590CF]" />
+                            {(settings.address || settings.addressBn) && (
+                                <div className="flex items-center gap-3 text-white/70 text-sm">
+                                    <div className="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center flex-shrink-0">
+                                        <FiMapPin className="w-4 h-4 text-[#3590CF]" />
+                                    </div>
+                                    <span style={{ fontFamily: bnFont }}>
+                                        {language === 'bn' && settings.addressBn ? settings.addressBn : settings.address}
+                                    </span>
                                 </div>
-                                <span style={{ fontFamily: bnFont }}>
-                                    {language === 'bn' ? '২৫/৪, ৪র্থ তলা, পান্থপথ, ঢাকা' : '25/4, 4th Floor, Panthpath, Dhaka'}
-                                </span>
-                            </div>
+                            )}
                         </div>
 
                         {/* Social Links */}
-                        <div className="flex gap-3 pt-2">
-                            {socialLinks.map((social) => (
-                                <a
-                                    key={social.label}
-                                    href={social.href}
-                                    aria-label={social.label}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-white/60 hover:text-white transition-all hover:-translate-y-1"
-                                    style={{ '--hover-bg': social.color }}
-                                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = social.color; }}
-                                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'; }}
-                                >
-                                    <social.icon size={16} />
-                                </a>
-                            ))}
-                        </div>
+                        {activeSocial.length > 0 && (
+                            <div className="flex flex-wrap gap-3 pt-2">
+                                {activeSocial.map((social) => (
+                                    <a
+                                        key={social.key}
+                                        href={social.url}
+                                        aria-label={social.label}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-white/60 hover:text-white transition-all hover:-translate-y-1"
+                                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = social.color; }}
+                                        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'; }}
+                                    >
+                                        <social.icon size={16} />
+                                    </a>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {/* Services */}
@@ -235,19 +291,24 @@ export default function Footer() {
                             <h5 className="text-sm font-semibold text-white/90 mb-3" style={{ fontFamily: bnFont }}>
                                 {t('newsletter')}
                             </h5>
-                            <form className="flex gap-2">
+                            <form onSubmit={handleNewsletter} className="flex gap-2">
                                 <input
                                     type="email"
+                                    value={newsletterEmail}
+                                    onChange={(e) => setNewsletterEmail(e.target.value)}
                                     placeholder={t('yourEmail')}
+                                    required
                                     className="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white outline-none focus:border-[#3590CF] transition-colors"
                                     style={{ fontFamily: bnFont }}
                                 />
                                 <button
                                     type="submit"
-                                    className="px-3 py-2 rounded-lg text-white transition-all hover:opacity-90"
+                                    disabled={subscribing}
+                                    className="px-3 py-2 rounded-lg text-white transition-all hover:opacity-90 disabled:opacity-50 cursor-pointer"
                                     style={{ backgroundColor: '#EF8C2C' }}
+                                    aria-label="Subscribe"
                                 >
-                                    <FiSend className="w-4 h-4" />
+                                    <FiSend className={`w-4 h-4 ${subscribing ? 'animate-pulse' : ''}`} />
                                 </button>
                             </form>
                         </div>
@@ -280,9 +341,9 @@ export default function Footer() {
                         © {currentYear} VisaPro Consultancy & Migration. {t('allRightsReserved')}
                     </p>
                     <div className="flex items-center gap-6 text-xs text-white/40" style={{ fontFamily: bnFont }}>
-                        <Link href="/terms" className="hover:text-[#EF8C2C] transition-colors">{t('terms')}</Link>
-                        <Link href="/privacy" className="hover:text-[#EF8C2C] transition-colors">{t('privacy')}</Link>
-                        <Link href="/faq" className="hover:text-[#EF8C2C] transition-colors">{t('faq')}</Link>
+                        <Link href="/about" className="hover:text-[#EF8C2C] transition-colors">{t('aboutUs')}</Link>
+                        <Link href="/contact" className="hover:text-[#EF8C2C] transition-colors">{t('contactUs')}</Link>
+                        <Link href="/blog" className="hover:text-[#EF8C2C] transition-colors">{t('footerBlog')}</Link>
                     </div>
                 </div>
             </div>

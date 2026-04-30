@@ -26,9 +26,9 @@ import {
     LuLoader,
     LuCircleX
 } from "react-icons/lu";
+import { FaWhatsapp } from "react-icons/fa";
 import { useLanguage } from "@/context/LanguageContext";
 import Link from "next/link";
-import BookingModal from "@/components/shared/BookingModal";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -44,7 +44,6 @@ export default function TourDetailsPage() {
     const [relatedTours, setRelatedTours] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
-    const [bookingModalOpen, setBookingModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchTour = async () => {
@@ -395,12 +394,25 @@ export default function TourDetailsPage() {
                                     ))}
                                 </div>
 
-                                <button onClick={() => setBookingModalOpen(true)} className="w-full py-3.5 rounded-md text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:shadow-lg hover:shadow-[#EF8C2C]/20" style={{ backgroundColor: '#EF8C2C', fontFamily }}>
+                                <a
+                                    href={`https://wa.me/8801234567890?text=${encodeURIComponent(
+                                        `🌍 Tour Booking Inquiry - VisaPro\n\n` +
+                                        `Tour: ${tour.title}${tour.titleBn ? ` (${tour.titleBn})` : ''}\n` +
+                                        `Destination: ${tour.destination}\n` +
+                                        `Duration: ${tour.duration}\n` +
+                                        `Type: ${tour.tourType || 'N/A'}\n` +
+                                        `Group Size: ${tour.groupSize ? `Max ${tour.groupSize}` : 'N/A'}\n` +
+                                        `Price: ${sym}${tour.price?.toLocaleString()} per person\n\n` +
+                                        `I would like to book this tour. Please assist me.`
+                                    )}`}
+                                    target="_blank" rel="noopener noreferrer"
+                                    className="w-full py-3.5 rounded-md text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:shadow-lg hover:shadow-[#25D366]/20 flex items-center justify-center gap-2"
+                                    style={{ backgroundColor: '#25D366', fontFamily }}
+                                >
+                                    <FaWhatsapp size={16} />
                                     {isBn ? 'এখনই বুক করুন' : 'Book Now'}
-                                </button>
-                                <button onClick={() => setBookingModalOpen(true)} className="w-full mt-3 py-3.5 rounded-md text-[11px] font-bold uppercase tracking-widest border-2 transition-all hover:bg-gray-50" style={{ borderColor: '#3590CF', color: '#3590CF', fontFamily }}>
-                                    {isBn ? 'কাস্টম প্ল্যান' : 'Custom Plan'}
-                                </button>
+                                </a>
+
                             </motion.div>
 
                             {/* Why Choose Us */}
@@ -439,14 +451,23 @@ export default function TourDetailsPage() {
                                         {isBn ? 'কাস্টম ট্যুর প্ল্যান করতে আমাদের সাথে যোগাযোগ করুন।' : 'Contact us to customize your perfect tour package.'}
                                     </p>
                                     <div className="space-y-2">
-                                        <button className="w-full py-3 rounded-md flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white transition-all hover:opacity-90" style={{ backgroundColor: '#EF8C2C', fontFamily }}>
+                                        <a
+                                            href="tel:+8801234567890"
+                                            className="w-full py-3 rounded-md flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white transition-all hover:opacity-90"
+                                            style={{ backgroundColor: '#EF8C2C', fontFamily }}
+                                        >
                                             <LuPhone size={13} />
                                             {isBn ? 'কল করুন' : 'Call Now'}
-                                        </button>
-                                        <button className="w-full py-3 rounded-md flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white border border-white/15 transition-all hover:bg-white/5" style={{ fontFamily }}>
-                                            <LuMessageCircle size={13} />
-                                            {isBn ? 'মেসেজ করুন' : 'Send Message'}
-                                        </button>
+                                        </a>
+                                        <a
+                                            href={`https://wa.me/8801234567890?text=${encodeURIComponent(`Hi, I need help with tour booking for "${tour.title}". Please contact me.`)}`}
+                                            target="_blank" rel="noopener noreferrer"
+                                            className="w-full py-3 rounded-md flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white border border-white/15 transition-all hover:bg-white/5"
+                                            style={{ fontFamily }}
+                                        >
+                                            <FaWhatsapp size={13} />
+                                            {isBn ? 'হোয়াটসঅ্যাপ' : 'WhatsApp'}
+                                        </a>
                                     </div>
                                 </div>
                             </motion.div>
@@ -528,27 +549,33 @@ export default function TourDetailsPage() {
                         {isBn ? 'আজই আপনার স্বপ্নের ট্যুর বুক করুন। আমাদের বিশেষজ্ঞ দল সবকিছু সাজিয়ে দেবে।' : 'Book your dream tour today. Our expert team will arrange everything for you.'}
                     </p>
                     <div className="flex flex-wrap justify-center gap-4">
-                        <button onClick={() => setBookingModalOpen(true)} className="px-10 py-4 rounded-md text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:shadow-lg hover:shadow-[#EF8C2C]/20 hover:-translate-y-0.5" style={{ backgroundColor: '#EF8C2C', fontFamily }}>
+                        <a
+                            href={`https://wa.me/8801234567890?text=${encodeURIComponent(
+                                `🌍 Tour Booking - VisaPro\n\n` +
+                                `Tour: ${tour.title}\n` +
+                                `Destination: ${tour.destination}\n` +
+                                `Price: ${sym}${tour.price?.toLocaleString()} per person\n\n` +
+                                `I would like to book this tour. Please assist me.`
+                            )}`}
+                            target="_blank" rel="noopener noreferrer"
+                            className="px-10 py-4 rounded-md text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:shadow-lg hover:shadow-[#25D366]/20 hover:-translate-y-0.5 flex items-center gap-2"
+                            style={{ backgroundColor: '#25D366', fontFamily }}
+                        >
+                            <FaWhatsapp size={16} />
                             {isBn ? 'এখনই বুক করুন' : 'Book Now'}
-                        </button>
-                        <button className="px-10 py-4 rounded-md text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:shadow-lg hover:-translate-y-0.5" style={{ backgroundColor: '#021E14', fontFamily }}>
+                        </a>
+                        <a
+                            href={`https://wa.me/8801234567890?text=${encodeURIComponent(`Hi, I need help with tour booking. Please contact me.`)}`}
+                            target="_blank" rel="noopener noreferrer"
+                            className="px-10 py-4 rounded-md text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:shadow-lg hover:-translate-y-0.5 flex items-center gap-2"
+                            style={{ backgroundColor: '#021E14', fontFamily }}
+                        >
+                            <FaWhatsapp size={16} />
                             {isBn ? 'যোগাযোগ করুন' : 'Contact Us'}
-                        </button>
+                        </a>
                     </div>
                 </div>
             </section>
-
-            <BookingModal
-                isOpen={bookingModalOpen}
-                onClose={() => setBookingModalOpen(false)}
-                type="tour"
-                serviceName={tour.title || ''}
-                serviceId={tour._id || ''}
-                extraFields={[
-                    { key: 'travelDate', label: isBn ? 'ভ্রমণের তারিখ' : 'Travel Date', type: 'date', required: true },
-                    { key: 'persons', label: isBn ? 'যাত্রী সংখ্যা' : 'Number of Travelers', type: 'number', required: true, placeholder: '1' },
-                ]}
-            />
         </div>
     );
 }

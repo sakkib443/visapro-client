@@ -3,6 +3,7 @@
 import { ThemeProvider } from "@/context/ThemeContext";
 import { ModuleProvider } from "@/context/ModuleContext";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { SiteSettingsProvider } from "@/context/SiteSettingsContext";
 import { Toaster } from "react-hot-toast";
 import ReduxProvider from "@/redux/ReduxProvider";
 import Preloader from "@/components/shared/Preloader";
@@ -14,6 +15,7 @@ export default function ClientProviders({ children }) {
             <ThemeProvider>
                 <ModuleProvider>
                     <LanguageProvider>
+                        <SiteSettingsProvider>
                         <Toaster
                             position="top-center"
                             toastOptions={{
@@ -38,6 +40,7 @@ export default function ClientProviders({ children }) {
                             }}
                         />
                         {children}
+                        </SiteSettingsProvider>
                     </LanguageProvider>
                 </ModuleProvider>
             </ThemeProvider>

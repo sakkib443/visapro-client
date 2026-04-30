@@ -1,242 +1,319 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
 import {
-    LuCalendar, LuClock, LuArrowLeft, LuArrowRight, LuEye, LuTag
+    LuCalendar, LuClock, LuArrowLeft, LuArrowRight, LuEye, LuTag, LuLoader, LuShare2
 } from "react-icons/lu";
 import { useLanguage } from "@/context/LanguageContext";
 
-// Mock blog data
-const mockBlog = {
-    _id: "1",
-    title: "Complete Guide to UK Tourist Visa Application 2026",
-    titleBn: "যুক্তরাজ্যের ট্যুরিস্ট ভিসা আবেদনের সম্পূর্ণ গাইড ২০২৬",
-    slug: "uk-tourist-visa-guide-2026",
-    excerpt: "Step-by-step guide to applying for a UK tourist visa from Bangladesh.",
-    content: `
-        <h2>Introduction</h2>
-        <p>Applying for a UK tourist visa from Bangladesh can seem daunting, but with proper preparation and the right documentation, the process becomes straightforward. This comprehensive guide walks you through every step of the application process.</p>
-        
-        <h2>Basic Requirements</h2>
-        <p>Before you start your application, make sure you have the following documents ready:</p>
-        <ul>
-            <li>Valid passport with at least 6 months validity</li>
-            <li>Recent passport-sized photographs</li>
-            <li>Bank statements for the last 6 months</li>
-            <li>Employment letter or business documents</li>
-            <li>Travel itinerary and hotel reservations</li>
-            <li>Travel insurance coverage</li>
-        </ul>
-        
-        <h2>Step 1: Online Application</h2>
-        <p>Visit the official UK government visa application website and fill out the Standard Visitor Visa form. Be honest and thorough in your responses. Any inconsistencies between your application and supporting documents could lead to a rejection.</p>
-        
-        <h2>Step 2: Document Preparation</h2>
-        <p>Organize your documents in a neat folder. All documents should be in English or have certified translations. Include cover letters explaining the purpose of your visit and your ties to Bangladesh that will ensure your return.</p>
-        
-        <h2>Step 3: Biometrics Appointment</h2>
-        <p>After submitting your online application, book a biometrics appointment at the nearest Visa Application Centre (VAC). In Dhaka, the VAC is located at Gulshan. Arrive on time with all your original documents.</p>
-        
-        <h2>Step 4: Processing & Decision</h2>
-        <p>Standard processing takes 15-20 working days. You can opt for priority processing (5-7 days) or super priority processing (24 hours) for additional fees. You'll be notified via email once a decision is made.</p>
-        
-        <h2>Common Mistakes to Avoid</h2>
-        <p>Many applications are refused due to avoidable mistakes. Don't submit insufficient financial evidence, provide inconsistent information, or forget to demonstrate strong ties to your home country. Always provide a clear travel purpose with supporting evidence.</p>
-        
-        <h2>Visa Fees</h2>
-        <p>The current fee for a Standard Visitor Visa (6 months) is £100. Longer-term visas are available for frequent travelers: 2-year visa at £376, 5-year visa at £670, and 10-year visa at £837.</p>
-        
-        <h2>How VisaPro Can Help</h2>
-        <p>At VisaPro, we've helped thousands of applicants successfully obtain their UK visas. Our expert team reviews your documents, prepares your application, and guides you through every step. Contact us for a free consultation to discuss your visa requirements.</p>
-    `,
-    thumbnail: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=1200",
-    category: "Visa Guides",
-    tags: ["UK Visa", "Tourist Visa", "Travel", "Immigration"],
-    author: {
-        name: "VisaPro Team",
-        bio: "Expert visa consultants with 10+ years of experience."
-    },
-    createdAt: "2026-02-20",
-    readTime: "8 min",
-    views: 4520
-};
-
-const relatedPosts = [
-    {
-        _id: "3",
-        title: "How We Helped 500+ Families Get Their Schengen Visa",
-        slug: "500-families-schengen-visa-success",
-        thumbnail: "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=400",
-        category: "Success Stories",
-        readTime: "6 min"
-    },
-    {
-        _id: "4",
-        title: "Australia PR Visa: Points Calculator & Eligibility Guide",
-        slug: "australia-pr-visa-points-guide",
-        thumbnail: "https://images.unsplash.com/photo-1523482580672-f109ba8cb9be?w=400",
-        category: "Immigration",
-        readTime: "12 min"
-    },
-    {
-        _id: "6",
-        title: "Malaysia Work Visa: Requirements & Application Process",
-        slug: "malaysia-work-visa-requirements",
-        thumbnail: "https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=400",
-        category: "Visa Guides",
-        readTime: "9 min"
-    },
-];
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 export default function BlogPostPage() {
     const params = useParams();
     const { language } = useLanguage();
-    const blog = mockBlog;
+    const [blog, setBlog] = useState(null);
+    const [relatedPosts, setRelatedPosts] = useState([]);
+    const [loading, setLoading] = useState(true);
     const isBn = language === 'bn';
+
+    useEffect(() => {
+        const fetchBlog = async () => {
+            setLoading(true);
+            try {
+                const res = await fetch(`${API_BASE}/api/blogs/slug/${params.slug}`);
+                const data = await res.json();
+                if (data.success && data.data) {
+                    setBlog(data.data);
+                    setRelatedPosts(data.data.relatedBlogs || []);
+                }
+            } catch (err) {
+                console.error("Failed to fetch blog:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        if (params.slug) fetchBlog();
+    }, [params.slug]);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-white flex items-center justify-center">
+                <LuLoader className="w-10 h-10 text-[#EF8C2C] animate-spin" />
+            </div>
+        );
+    }
+
+    if (!blog) {
+        return (
+            <div className="min-h-screen bg-white flex flex-col items-center justify-center gap-4">
+                <h2 className="text-3xl font-bold text-gray-900 uppercase" style={{ fontFamily: 'Teko, sans-serif' }}>
+                    {isBn ? 'ব্লগ পোস্ট পাওয়া যায়নি' : 'BLOG POST NOT FOUND'}
+                </h2>
+                <Link href="/blog" className="text-[#3590CF] hover:underline text-sm font-medium">
+                    {isBn ? '← ব্লগে ফিরুন' : '← Back to Blog'}
+                </Link>
+            </div>
+        );
+    }
+
+    const authorName = blog.author?.firstName
+        ? `${blog.author.firstName} ${blog.author.lastName || ''}`
+        : 'VisaPro Team';
+
+    const authorInitials = authorName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
     return (
         <div className="min-h-screen bg-white">
 
-            {/* Hero / Header */}
-            <section className="relative pt-6">
-                <div className="absolute inset-0 h-[320px] md:h-[400px] overflow-hidden">
-                    <img src={blog.thumbnail} alt={blog.title} className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-white via-white/60 to-transparent" />
+            {/* ====== HERO SECTION — Left: Title & Meta | Right: Image ====== */}
+            <section className="relative overflow-hidden border-b border-gray-200" style={{ background: 'linear-gradient(135deg, #f0f5fa 0%, #e8eff7 40%, #eef4f9 100%)' }}>
+                {/* Background decorations */}
+                <div className="absolute inset-0 pointer-events-none">
+                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#3590CF]/5 rounded-full blur-[120px] -mr-32 -mt-32" />
+                    <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-[#EF8C2C]/5 rounded-full blur-[100px] -ml-20 -mb-20" />
+                    <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'radial-gradient(#94a3b8 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
                 </div>
-                <div className="max-w-[850px] mx-auto px-6 relative z-10 pt-[200px] md:pt-[250px]">
-                    <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}>
+
+                <div className="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
+                    {/* Back button */}
+                    <div className="pt-8 pb-4">
                         <Link
                             href="/blog"
-                            className="inline-flex items-center gap-2 text-gray-500 hover:text-[#3590CF] transition-colors text-sm font-medium mb-6"
+                            className="inline-flex items-center gap-2 text-gray-400 hover:text-[#3590CF] transition-colors text-sm font-medium"
                             style={{ fontFamily: 'Poppins, sans-serif' }}
                         >
                             <LuArrowLeft className="w-4 h-4" />
                             {isBn ? 'ব্লগে ফিরুন' : 'Back to Blog'}
                         </Link>
+                    </div>
 
-                        <div className="flex items-center gap-3 mb-4">
-                            <span
-                                className="px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest text-white"
-                                style={{ fontFamily: 'Poppins, sans-serif', backgroundColor: '#3590CF' }}
-                            >
-                                {blog.category}
-                            </span>
-                        </div>
-
-                        <h1
-                            className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight uppercase"
-                            style={{ fontFamily: 'Teko, sans-serif' }}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center pb-12 lg:pb-16">
+                        {/* LEFT — Title & Meta */}
+                        <motion.div
+                            initial={{ opacity: 0, x: -30 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.6 }}
                         >
-                            {isBn ? blog.titleBn : blog.title}
-                        </h1>
-
-                        <div className="flex flex-wrap items-center gap-5 text-gray-400 mb-8" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                            <div className="flex items-center gap-2">
-                                <div className="w-8 h-8 rounded-full bg-[#3590CF]/10 flex items-center justify-center text-[#3590CF] text-xs font-bold">
-                                    VP
+                            {/* Tags pills */}
+                            {blog.tags?.length > 0 && (
+                                <div className="flex flex-wrap gap-2 mb-5">
+                                    {blog.tags.slice(0, 3).map((tag) => (
+                                        <span
+                                            key={tag}
+                                            className="px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest border border-[#3590CF]/20 text-[#3590CF]/70 bg-[#3590CF]/5"
+                                            style={{ fontFamily: 'Poppins, sans-serif' }}
+                                        >
+                                            {tag}
+                                        </span>
+                                    ))}
                                 </div>
-                                <span className="text-sm font-semibold text-gray-700">{blog.author?.name}</span>
+                            )}
+
+                            {/* Title */}
+                            <h1
+                                className="text-3xl md:text-4xl lg:text-5xl xl:text-[3.5rem] font-bold text-gray-900 leading-[1.05] mb-6 uppercase"
+                                style={{ fontFamily: 'Teko, sans-serif' }}
+                            >
+                                {isBn ? blog.titleBn || blog.title : blog.title}
+                            </h1>
+
+                            {/* Excerpt */}
+                            <p
+                                className="text-gray-500 text-sm md:text-[15px] leading-relaxed mb-8 max-w-lg"
+                                style={{ fontFamily: 'Poppins, sans-serif' }}
+                            >
+                                {isBn ? blog.excerptBn || blog.excerpt : blog.excerpt}
+                            </p>
+
+                            {/* Author & Meta */}
+                            <div className="flex flex-wrap items-center gap-5" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#3590CF] to-[#2A74A8] flex items-center justify-center text-white text-xs font-bold shadow-md shadow-[#3590CF]/15">
+                                        {authorInitials}
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-semibold text-gray-800">{authorName}</p>
+                                        <p className="text-[10px] text-gray-400 uppercase tracking-wider">Author</p>
+                                    </div>
+                                </div>
+
+                                <div className="h-8 w-px bg-gray-200 hidden sm:block" />
+
+                                <div className="flex items-center gap-4 text-gray-400">
+                                    <span className="flex items-center gap-1.5 text-xs font-medium">
+                                        <LuCalendar className="w-3.5 h-3.5" />
+                                        {new Date(blog.publishedAt || blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                    </span>
+                                    <span className="flex items-center gap-1.5 text-xs font-medium">
+                                        <LuClock className="w-3.5 h-3.5" />
+                                        {blog.readingTime || 5} min read
+                                    </span>
+                                    <span className="flex items-center gap-1.5 text-xs font-medium">
+                                        <LuEye className="w-3.5 h-3.5" />
+                                        {blog.totalViews?.toLocaleString() || 0}
+                                    </span>
+                                </div>
                             </div>
-                            <span className="flex items-center gap-1.5 text-xs font-medium"><LuCalendar className="w-3.5 h-3.5" />{blog.createdAt}</span>
-                            <span className="flex items-center gap-1.5 text-xs font-medium"><LuClock className="w-3.5 h-3.5" />{blog.readTime}</span>
-                            <span className="flex items-center gap-1.5 text-xs font-medium"><LuEye className="w-3.5 h-3.5" />{blog.views?.toLocaleString()} {isBn ? 'ভিউ' : 'views'}</span>
-                        </div>
-                    </motion.div>
+                        </motion.div>
+
+                        {/* RIGHT — Featured Image */}
+                        <motion.div
+                            initial={{ opacity: 0, x: 30 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.6, delay: 0.15 }}
+                            className="relative"
+                        >
+                            <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-gray-300/40 border border-white/80">
+                                <div className="aspect-[16/10]">
+                                    <img
+                                        src={blog.thumbnail}
+                                        alt={blog.title}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+                                {/* Floating stat badge */}
+                                <div className="absolute bottom-4 left-4 flex gap-2">
+                                    <div className="backdrop-blur-xl bg-white/80 border border-white/90 rounded-lg px-3 py-1.5 flex items-center gap-1.5 shadow-sm">
+                                        <LuEye className="w-3.5 h-3.5 text-gray-600" />
+                                        <span className="text-gray-700 text-[10px] font-bold" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                                            {blog.totalViews?.toLocaleString() || 0} {isBn ? 'ভিউ' : 'views'}
+                                        </span>
+                                    </div>
+                                    <div className="backdrop-blur-xl bg-white/80 border border-white/90 rounded-lg px-3 py-1.5 flex items-center gap-1.5 shadow-sm">
+                                        <LuClock className="w-3.5 h-3.5 text-gray-600" />
+                                        <span className="text-gray-700 text-[10px] font-bold" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                                            {blog.readingTime || 5} min
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            {/* Decorative ring */}
+                            <div className="absolute -bottom-4 -right-4 w-32 h-32 border-2 border-[#EF8C2C]/15 rounded-2xl -z-10" />
+                            <div className="absolute -top-3 -left-3 w-20 h-20 border-2 border-[#3590CF]/10 rounded-xl -z-10" />
+                        </motion.div>
+                    </div>
                 </div>
+
             </section>
 
-            {/* Content */}
-            <section className="py-10">
-                <div className="max-w-[850px] mx-auto px-6">
-                    <article
+            {/* ====== CONTENT SECTION ====== */}
+            <section className="py-10 md:py-14">
+                <div className="max-w-7xl mx-auto px-6 lg:px-12">
+                    <motion.article
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
                         className="prose prose-lg max-w-none 
                             prose-headings:font-bold prose-headings:text-gray-900 prose-headings:uppercase
                             prose-h2:text-xl prose-h2:mt-10 prose-h2:mb-4
                             prose-p:text-gray-600 prose-p:leading-relaxed prose-p:text-[15px]
                             prose-li:text-gray-600 prose-li:text-[15px]
                             prose-a:text-[#3590CF] prose-a:no-underline hover:prose-a:underline
-                            prose-strong:text-gray-800"
+                            prose-strong:text-gray-800
+                            prose-img:rounded-xl prose-img:shadow-lg"
                         style={{ fontFamily: 'Poppins, sans-serif' }}
-                        dangerouslySetInnerHTML={{ __html: blog.content }}
+                        dangerouslySetInnerHTML={{ __html: isBn ? blog.contentBn || blog.content : blog.content }}
                     />
 
-                    {/* Tags */}
-                    <div className="mt-12 pt-8 border-t border-gray-100">
-                        <div className="flex items-center gap-2 mb-3">
-                            <LuTag className="w-4 h-4 text-gray-400" />
-                            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                                {isBn ? 'ট্যাগ' : 'Tags'}
-                            </span>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                            {blog.tags?.map((tag) => (
-                                <span
-                                    key={tag}
-                                    className="px-4 py-1.5 bg-gray-50 border border-gray-100 rounded-full text-xs font-semibold text-gray-500"
-                                    style={{ fontFamily: 'Poppins, sans-serif' }}
-                                >
-                                    {tag}
+                    {/* Tags bottom */}
+                    {blog.tags?.length > 0 && (
+                        <div className="mt-14 pt-8 border-t border-gray-100">
+                            <div className="flex items-center gap-2 mb-3">
+                                <LuTag className="w-4 h-4 text-gray-400" />
+                                <span className="text-xs font-bold text-gray-400 uppercase tracking-widest" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                                    {isBn ? 'ট্যাগ' : 'Tags'}
                                 </span>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                {blog.tags.map((tag) => (
+                                    <span
+                                        key={tag}
+                                        className="px-4 py-1.5 bg-gray-50 border border-gray-100 rounded-full text-xs font-semibold text-gray-500 hover:bg-[#3590CF]/5 hover:border-[#3590CF]/20 hover:text-[#3590CF] transition-all cursor-default"
+                                        style={{ fontFamily: 'Poppins, sans-serif' }}
+                                    >
+                                        {tag}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* CTA Box */}
+                    <div
+                        className="mt-14 p-8 md:p-10 rounded-2xl relative overflow-hidden"
+                        style={{ background: 'linear-gradient(135deg, #0a1628 0%, #1a3355 100%)' }}
+                    >
+                        <div className="absolute top-0 right-0 w-48 h-48 bg-[#3590CF]/10 rounded-full blur-[60px]" />
+                        <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#EF8C2C]/10 rounded-full blur-[50px]" />
+
+                        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center gap-6">
+                            <div className="flex-1">
+                                <h3 className="text-2xl md:text-3xl font-bold text-white uppercase mb-2" style={{ fontFamily: 'Teko, sans-serif' }}>
+                                    {isBn ? 'ভিসা সহায়তা প্রয়োজন?' : 'NEED VISA ASSISTANCE?'}
+                                </h3>
+                                <p className="text-white/50 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                                    {isBn
+                                        ? 'আমাদের বিশেষজ্ঞ টিম আপনাকে সব ধরনের ভিসা প্রসেসিংয়ে সাহায্য করবে।'
+                                        : 'Our expert team is here to help you with all types of visa processing and documentation.'}
+                                </p>
+                            </div>
+                            <Link
+                                href="/contact"
+                                className="inline-flex items-center gap-2 px-7 py-3.5 text-white rounded-xl font-bold text-xs uppercase tracking-wider transition-all hover:-translate-y-0.5 shadow-lg shadow-[#EF8C2C]/30 shrink-0"
+                                style={{ fontFamily: 'Poppins, sans-serif', background: 'linear-gradient(135deg, #EF8C2C 0%, #d67a20 100%)' }}
+                            >
+                                {isBn ? 'ফ্রি কনসাল্টেশন' : 'FREE CONSULTATION'} <LuArrowRight className="w-4 h-4" />
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* ====== RELATED POSTS ====== */}
+            {relatedPosts.length > 0 && (
+                <section className="py-16 border-t border-gray-100" style={{ background: '#f8fafb' }}>
+                    <div className="max-w-7xl mx-auto px-6 lg:px-12">
+                        <div className="flex items-center gap-3 mb-8">
+                            <div className="w-1 h-8 rounded-full bg-[#EF8C2C]" />
+                            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 uppercase" style={{ fontFamily: 'Teko, sans-serif' }}>
+                                {isBn ? 'আরো পড়ুন' : 'MORE ARTICLES'}
+                            </h2>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {relatedPosts.slice(0, 3).map((post, i) => (
+                                <motion.div
+                                    key={post._id}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: i * 0.1 }}
+                                >
+                                    <Link
+                                        href={`/blog/${post.slug}`}
+                                        className="group bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-[#EF8C2C]/20 hover:shadow-xl transition-all duration-500 block"
+                                    >
+                                        <div className="aspect-[16/10] overflow-hidden">
+                                            <img src={post.thumbnail} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                                        </div>
+                                        <div className="p-5">
+                                            <h3 className="font-bold text-gray-900 mt-1 line-clamp-2 uppercase group-hover:text-[#EF8C2C] transition-colors text-lg" style={{ fontFamily: 'Teko, sans-serif' }}>
+                                                {isBn ? post.titleBn || post.title : post.title}
+                                            </h3>
+                                            <div className="flex items-center gap-3 text-xs text-gray-400 mt-3 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                                                <span className="flex items-center gap-1"><LuClock className="w-3 h-3" />{post.readingTime || 5} min</span>
+                                                <span className="flex items-center gap-1"><LuEye className="w-3 h-3" />{post.totalViews?.toLocaleString() || 0}</span>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                </motion.div>
                             ))}
                         </div>
                     </div>
-
-                    {/* CTA Box */}
-                    <div className="mt-12 p-8 rounded-2xl border border-gray-100" style={{ background: 'linear-gradient(135deg, #f8fafb 0%, #f0f5fa 100%)' }}>
-                        <h3 className="text-xl font-bold text-gray-900 uppercase mb-2" style={{ fontFamily: 'Teko, sans-serif' }}>
-                            {isBn ? 'ভিসা সহায়তা প্রয়োজন?' : 'NEED VISA ASSISTANCE?'}
-                        </h3>
-                        <p className="text-gray-500 text-sm mb-5" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                            {isBn
-                                ? 'আমাদের বিশেষজ্ঞ টিম আপনাকে সব ধরনের ভিসা প্রসেসিংয়ে সাহায্য করবে।'
-                                : 'Our expert team is here to help you with all types of visa processing and documentation.'}
-                        </p>
-                        <Link
-                            href="/contact"
-                            className="inline-flex items-center gap-2 px-6 py-3 text-white rounded-xl font-bold text-xs uppercase tracking-wider transition-all hover:-translate-y-0.5"
-                            style={{ fontFamily: 'Poppins, sans-serif', background: 'linear-gradient(135deg, #3590CF 0%, #2A74A8 100%)' }}
-                        >
-                            {isBn ? 'ফ্রি কনসাল্টেশন' : 'FREE CONSULTATION'} <LuArrowRight className="w-4 h-4" />
-                        </Link>
-                    </div>
-                </div>
-            </section>
-
-            {/* Related Posts */}
-            <section className="py-16 border-t border-gray-100" style={{ background: '#f8fafb' }}>
-                <div className="max-w-7xl mx-auto px-6 lg:px-12">
-                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8 uppercase" style={{ fontFamily: 'Teko, sans-serif' }}>
-                        {isBn ? 'আরো পড়ুন' : 'MORE ARTICLES'}
-                    </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {relatedPosts.map((post) => (
-                            <Link
-                                key={post._id}
-                                href={`/blog/${post.slug}`}
-                                className="group bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-[#EF8C2C]/20 hover:shadow-lg transition-all duration-500"
-                            >
-                                <div className="aspect-[16/10] overflow-hidden">
-                                    <img src={post.thumbnail} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                                </div>
-                                <div className="p-5">
-                                    <span className="text-[9px] font-bold uppercase tracking-widest text-[#3590CF]" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                                        {post.category}
-                                    </span>
-                                    <h3 className="font-bold text-gray-900 mt-2 line-clamp-2 uppercase group-hover:text-[#EF8C2C] transition-colors" style={{ fontFamily: 'Teko, sans-serif' }}>
-                                        {post.title}
-                                    </h3>
-                                    <p className="text-xs text-gray-400 mt-2 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                                        {post.readTime} read
-                                    </p>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
-                </div>
-            </section>
+                </section>
+            )}
         </div>
     );
 }

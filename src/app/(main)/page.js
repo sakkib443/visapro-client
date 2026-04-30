@@ -2,6 +2,7 @@
 
 import Hero from "@/components/sections/Hero";
 import Services from "@/components/sections/Services";
+import Testimonials from "@/components/sections/Testimonials";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -14,7 +15,10 @@ import {
   LuShieldCheck,
   LuCompass,
   LuPlane,
-  LuMap
+  LuMap,
+  LuRocket,
+  LuTarget,
+  LuAward
 } from "react-icons/lu";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -55,25 +59,6 @@ export default function HomePage() {
     { num: "98%", label: t('statSuccessRate'), color: "#10B981" },
     { num: "50+", label: t('countriesCovered'), color: "#8B5CF6" },
     { num: "24/7", label: t('customerSupport'), color: "#3590CF" },
-  ];
-
-  // Testimonials
-  const testimonials = [
-    {
-      name: t('testimonial1Name'),
-      text: t('testimonial1Text'),
-      rating: 5,
-    },
-    {
-      name: t('testimonial2Name'),
-      text: t('testimonial2Text'),
-      rating: 5,
-    },
-    {
-      name: t('testimonial3Name'),
-      text: t('testimonial3Text'),
-      rating: 5,
-    },
   ];
 
   return (
@@ -166,10 +151,10 @@ export default function HomePage() {
               <p className="text-gray-500 text-[13px] leading-relaxed mb-6 z-10" style={{ fontFamily: bnFont || 'Poppins, sans-serif' }}>
                 {t('oneClickBookingDesc')}
               </p>
-              <div className="mt-auto flex items-center gap-2 text-[#00E676] group/link cursor-pointer">
+              <Link href="/tour" className="mt-auto flex items-center gap-2 text-[#00E676] group/link cursor-pointer">
                 <span className="text-[10px] font-bold uppercase tracking-widest" style={{ fontFamily: bnFont }}>{t('learnMore')}</span>
                 <LuArrowRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
-              </div>
+              </Link>
             </motion.div>
 
             {/* Discount & Offer */}
@@ -185,10 +170,10 @@ export default function HomePage() {
               <p className="text-gray-500 text-[13px] leading-relaxed mb-6 z-10" style={{ fontFamily: bnFont || 'Poppins, sans-serif' }}>
                 {t('discountOfferDesc')}
               </p>
-              <div className="mt-auto flex items-center gap-2 text-[#2196F3] group/link cursor-pointer">
+              <Link href="/contact" className="mt-auto flex items-center gap-2 text-[#2196F3] group/link cursor-pointer">
                 <span className="text-[10px] font-bold uppercase tracking-widest" style={{ fontFamily: bnFont }}>{t('viewOffers')}</span>
                 <LuArrowRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
-              </div>
+              </Link>
             </motion.div>
 
             {/* Local Expertise */}
@@ -204,19 +189,19 @@ export default function HomePage() {
               <p className="text-gray-500 text-[13px] leading-relaxed mb-6 z-10" style={{ fontFamily: bnFont || 'Poppins, sans-serif' }}>
                 {t('localExpertiseDesc')}
               </p>
-              <div className="mt-auto flex items-center gap-2 text-[#FBC02D] group/link cursor-pointer">
+              <Link href="/about" className="mt-auto flex items-center gap-2 text-[#FBC02D] group/link cursor-pointer">
                 <span className="text-[10px] font-bold uppercase tracking-widest" style={{ fontFamily: bnFont }}>{t('meetExperts')}</span>
                 <LuArrowRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
-              </div>
+              </Link>
             </motion.div>
           </div>
 
           <div className="mt-12 flex justify-center">
             <div className="inline-flex flex-col sm:flex-row items-center gap-3 sm:gap-4 bg-white/50 backdrop-blur-md px-4 sm:px-6 py-3 sm:py-2 rounded-2xl sm:rounded-full border border-gray-100 shadow-sm">
               <span className="text-[11px] text-gray-500 font-medium text-center sm:text-left" style={{ fontFamily: bnFont || 'Poppins, sans-serif' }}>{t('customizeNote')}</span>
-              <button className="flex items-center gap-2 bg-gray-900 text-white px-5 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-primary transition-all shadow-md whitespace-nowrap" style={{ fontFamily: bnFont }}>
+              <Link href="/contact" className="flex items-center gap-2 bg-gray-900 text-white px-5 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-primary transition-all shadow-md whitespace-nowrap" style={{ fontFamily: bnFont }}>
                 {t('customizePackage')} <LuArrowRight className="w-3 h-3" />
-              </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -415,57 +400,7 @@ export default function HomePage() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-20 px-4 bg-white">
-        <div className="max-w-6xl mx-auto text-center">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="h-[1px] w-12 bg-gradient-to-r from-transparent to-[#EF8C2C]" />
-            <div className="flex items-center gap-2 px-5 py-2 rounded-full border border-[#EF8C2C]/15 bg-[#EF8C2C]/[0.05]">
-              <span className="text-[#EF8C2C] text-xs font-semibold tracking-[0.25em] uppercase" style={{ fontFamily: bnFont || 'Poppins, sans-serif' }}>{t('testimonials')}</span>
-            </div>
-            <div className="h-[1px] w-12 bg-gradient-to-l from-transparent to-[#EF8C2C]" />
-          </div>
-          <h2
-            className="text-4xl md:text-5xl lg:text-6xl font-bold mb-10 md:mb-14"
-            style={{ fontFamily: headingFont, color: '#111827', textTransform: 'uppercase' }}
-          >
-            {t('voicesOfOur')} <span style={{ color: '#3590CF' }}>{t('clients')}</span>
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {testimonials.map((review, i) => (
-              <div
-                key={i}
-                className="p-8 rounded-xl border border-gray-100 bg-white text-left hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
-              >
-                <div className="flex gap-1 mb-4">
-                  {Array.from({ length: review.rating }).map((_, j) => (
-                    <span key={j} className="text-[#EF8C2C] text-lg">★</span>
-                  ))}
-                </div>
-                <p className="text-gray-600 text-sm mb-6 leading-relaxed" style={{ fontFamily: bnFont || 'Poppins, sans-serif' }}>
-                  &quot;{review.text}&quot;
-                </p>
-                <div className="flex items-center gap-3">
-                  <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm"
-                    style={{ backgroundColor: i % 2 === 0 ? '#3590CF' : '#EF8C2C' }}
-                  >
-                    {review.name[0]}
-                  </div>
-                  <div>
-                    <p className="font-bold text-gray-800 text-sm" style={{ fontFamily: bnFont || 'Poppins, sans-serif' }}>
-                      {review.name}
-                    </p>
-                    <p className="text-xs text-gray-400" style={{ fontFamily: bnFont || 'Poppins, sans-serif' }}>
-                      {t('verifiedClient')}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <Testimonials />
 
     </div>
   );

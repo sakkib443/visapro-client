@@ -12,6 +12,7 @@ import {
     LuLoader,
 } from "react-icons/lu";
 import { FaKaaba, FaMosque } from "react-icons/fa6";
+import { FaWhatsapp } from "react-icons/fa";
 import { useLanguage } from "@/context/LanguageContext";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
@@ -28,6 +29,7 @@ const fallbackUmrah = [
     { _id: "fu3", name: "14-Day Umrah", nameBn: "১৪-দিনের ওমরাহ", price: 2500, duration: "14 Days", durationBn: "১৪ দিন", hotel: "4-Star", hotelBn: "৪-স্টার", description: "Comprehensive Umrah with extended stays in both cities.", descriptionBn: "মক্কা ও মদিনা উভয় স্থানে দীর্ঘ থাকা সহ ব্যাপক ওমরাহ প্যাকেজ।", features: ["Visa Processing", "Return Flights", "4-Star Hotel", "Full Board Meals", "Guided Umrah", "All Ziyarah", "Private Transport"], featuresBn: ["ভিসা প্রসেসিং", "রিটার্ন ফ্লাইট", "৪-স্টার হোটেল", "ফুল বোর্ড খাবার", "গাইডেড ওমরাহ", "সব জিয়ারাহ", "প্রাইভেট ট্রান্সপোর্ট"], type: "umrah" },
     { _id: "fu4", name: "Ramadan Umrah", nameBn: "রমজান ওমরাহ", price: 3200, duration: "15 Days", durationBn: "১৫ দিন", hotel: "5-Star", hotelBn: "৫-স্টার", description: "Experience Ramadan in the holy cities with premium services.", descriptionBn: "প্রিমিয়াম সেবা সহ পবিত্র শহরগুলোতে রমজান উপভোগ করুন।", features: ["Visa Processing", "Return Flights", "5-Star Hotel", "Iftar & Suhoor", "Premium Guided Umrah", "All Ziyarah", "Private Transport", "Laundry"], featuresBn: ["ভিসা প্রসেসিং", "রিটার্ন ফ্লাইট", "৫-স্টার হোটেল", "ইফতার ও সেহরি", "প্রিমিয়াম গাইডেড ওমরাহ", "সব জিয়ারাহ", "প্রাইভেট ট্রান্সপোর্ট", "লন্ড্রি"], type: "umrah" },
 ];
+
 
 export default function HajjUmrahPage() {
     const [activeTab, setActiveTab] = useState("hajj");
@@ -99,7 +101,7 @@ export default function HajjUmrahPage() {
                     </motion.p>
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="flex flex-wrap gap-4 justify-center">
                         <a href="#packages" className="px-8 py-3 rounded-lg text-[11px] font-bold uppercase tracking-widest transition-all hover:opacity-90" style={{ backgroundColor: '#EF8C2C', color: '#FFFFFF' }}>{isBn ? 'প্যাকেজ দেখুন' : 'View Packages'}</a>
-                        <a href="#contact" className="px-8 py-3 rounded-lg border text-[11px] font-bold uppercase tracking-widest transition-all hover:bg-white/10" style={{ borderColor: 'rgba(255,255,255,0.3)', color: '#FFFFFF' }}>{isBn ? 'কোটেশন নিন' : 'Get a Quote'}</a>
+                        <a href={`https://wa.me/8801234567890?text=${encodeURIComponent("Hi, I'd like to get a quote for Hajj/Umrah package.")}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-8 py-3 rounded-lg border text-[11px] font-bold uppercase tracking-widest transition-all hover:bg-white/10" style={{ borderColor: 'rgba(255,255,255,0.3)', color: '#FFFFFF' }}><FaWhatsapp size={16} />{isBn ? 'কোটেশন নিন' : 'Get a Quote'}</a>
                     </motion.div>
                 </div>
             </section>
@@ -152,7 +154,7 @@ export default function HajjUmrahPage() {
                                             {isBn ? 'সবচেয়ে জনপ্রিয়' : 'Most Popular'}
                                         </div>
                                     )}
-                                    <div className={`p-6 ${pkg.isPopular ? "pt-10" : ""}`}>
+                                    <div className={`p-6 flex flex-col h-full ${pkg.isPopular ? "pt-10" : ""}`}>
                                         <h3 className="text-2xl font-black uppercase tracking-wider mb-1" style={{ fontFamily: headingFont, color: '#021E14' }}>
                                             {isBn ? (pkg.nameBn || pkg.name) : pkg.name}
                                         </h3>
@@ -171,6 +173,7 @@ export default function HajjUmrahPage() {
                                             <div className="flex items-center gap-2 text-[11px] text-gray-500"><LuUsers size={13} style={{ color: '#EF8C2C' }} />{pkg.groupSize || 30} {isBn ? 'জন' : 'pax'}</div>
                                             <div className="flex items-center gap-2 text-[11px] text-gray-500"><LuHotel size={13} style={{ color: '#EF8C2C' }} />{isBn ? (pkg.hotelBn || pkg.hotel || '') : (pkg.hotel || '')}</div>
                                             <div className="flex items-center gap-2 text-[11px] text-gray-500"><LuMapPin size={13} style={{ color: '#EF8C2C' }} />{isBn ? (pkg.distanceBn || pkg.distance || '') : (pkg.distance || '')}</div>
+                                            {pkg.departureDate && <div className="flex items-center gap-2 text-[11px] text-gray-500 col-span-2"><LuCalendar size={13} style={{ color: '#EF8C2C' }} />{isBn ? 'ডিপার্চার:' : 'Departure:'} {new Date(pkg.departureDate).toLocaleDateString(isBn ? 'bn-BD' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' })}</div>}
                                         </div>
 
                                         <div className="border-t border-gray-100 my-5" />
@@ -181,11 +184,24 @@ export default function HajjUmrahPage() {
                                             ))}
                                         </div>
 
-                                        <button onClick={() => setBookingModal({ open: true, pkg })}
-                                            className={`w-full py-3 rounded-lg text-[11px] font-bold uppercase tracking-widest transition-all ${pkg.isPopular ? "text-white hover:opacity-90" : "border hover:bg-gray-50"}`}
-                                            style={pkg.isPopular ? { backgroundColor: '#EF8C2C' } : { borderColor: '#021E14', color: '#021E14' }}>
-                                            {isBn ? 'বুক করুন' : 'Book Now'}
-                                        </button>
+                                        <div className="mt-auto pt-2">
+                                            <a href={`https://wa.me/8801234567890?text=${encodeURIComponent(
+                                                `🕋 Hajj & Umrah Inquiry\n\n` +
+                                                `Service: ${pkg.type === 'hajj' ? 'Hajj (হজ্জ)' : 'Umrah (ওমরাহ)'}\n` +
+                                                `Package: ${pkg.name}${pkg.nameBn ? ` (${pkg.nameBn})` : ''}\n` +
+                                                `Price: ৳${pkg.price?.toLocaleString()} per person\n` +
+                                                `Duration: ${pkg.duration}\n` +
+                                                `Hotel: ${pkg.hotel || 'N/A'}\n` +
+                                                `Departure: ${pkg.departureDate ? new Date(pkg.departureDate).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Flexible'}\n\n` +
+                                                `I would like to get more information about this package. Please contact me.`
+                                            )}`}
+                                                target="_blank" rel="noopener noreferrer"
+                                                className="w-full flex items-center justify-center gap-2 py-3 rounded-lg text-[11px] font-bold uppercase tracking-widest transition-all hover:opacity-90 text-white"
+                                                style={{ backgroundColor: '#25D366' }}>
+                                                <FaWhatsapp size={16} />
+                                                {isBn ? 'হোয়াটসঅ্যাপে কথা বলুন' : 'Quick Discussion'}
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
@@ -193,41 +209,73 @@ export default function HajjUmrahPage() {
                     )}
 
                     {activeTab === "umrah" && (
-                        <motion.div key="umrah" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                        <motion.div key="umrah" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             {umrahPackages.map((pkg) => (
-                                <div key={pkg._id} className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-lg transition-all hover:border-[#EF8C2C]/30 group">
-                                    <div className="flex items-center gap-2 mb-3">
-                                        <FaMosque size={16} style={{ color: '#EF8C2C' }} />
-                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{isBn ? (pkg.durationBn || pkg.duration) : pkg.duration} • {isBn ? (pkg.hotelBn || pkg.hotel || '') : (pkg.hotel || '')}</span>
-                                    </div>
-                                    <h3 className="text-xl font-black uppercase tracking-wider mb-2" style={{ fontFamily: headingFont, color: '#021E14' }}>
-                                        {isBn ? (pkg.nameBn || pkg.name) : pkg.name}
-                                    </h3>
-                                    <p className="text-[11px] text-gray-500 font-normal leading-relaxed mb-4">{isBn ? (pkg.descriptionBn || pkg.description || '') : (pkg.description || '')}</p>
+                                <div key={pkg._id} className={`relative bg-white rounded-xl border overflow-hidden transition-all hover:shadow-lg ${pkg.isPopular ? "border-[#EF8C2C] shadow-md" : "border-gray-200"}`}>
+                                    {pkg.isPopular && (
+                                        <div className="absolute top-0 left-0 right-0 py-1.5 text-center text-[9px] font-bold uppercase tracking-widest text-white" style={{ backgroundColor: '#EF8C2C' }}>
+                                            {isBn ? 'সবচেয়ে জনপ্রিয়' : 'Most Popular'}
+                                        </div>
+                                    )}
+                                    <div className={`p-6 flex flex-col h-full ${pkg.isPopular ? "pt-10" : ""}`}>
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <FaMosque size={14} style={{ color: '#EF8C2C' }} />
+                                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{isBn ? (pkg.durationBn || pkg.duration) : pkg.duration} • {isBn ? (pkg.hotelBn || pkg.hotel || '') : (pkg.hotel || '')}</span>
+                                        </div>
+                                        <h3 className="text-2xl font-black uppercase tracking-wider mb-1" style={{ fontFamily: headingFont, color: '#021E14' }}>
+                                            {isBn ? (pkg.nameBn || pkg.name) : pkg.name}
+                                        </h3>
+                                        <p className="text-[11px] text-gray-400 font-normal mb-5">{isBn ? (pkg.descriptionBn || pkg.description || '') : (pkg.description || '')}</p>
 
-                                    <div className="text-3xl font-black mb-4" style={{ fontFamily: headingFont, color: '#021E14' }}>
-                                        ৳{pkg.price?.toLocaleString()} <span className="text-xs font-normal text-gray-400">{isBn ? '/জন' : '/person'}</span>
-                                    </div>
+                                        <div className="mb-5">
+                                            <div className="flex items-end gap-2">
+                                                <span className="text-4xl font-black" style={{ fontFamily: headingFont, color: '#021E14' }}>৳{pkg.price?.toLocaleString()}</span>
+                                                {pkg.oldPrice && <span className="text-sm text-gray-400 line-through mb-1">৳{pkg.oldPrice?.toLocaleString()}</span>}
+                                            </div>
+                                            <p className="text-[10px] text-gray-400 mt-1">{isBn ? 'প্রতি জন' : 'Per Person'}</p>
+                                        </div>
 
-                                    <div className="space-y-2 mb-5">
-                                        {(isBn ? (pkg.featuresBn?.length ? pkg.featuresBn : pkg.features) : pkg.features)?.map((f, i) => (
-                                            <div key={i} className="flex items-center gap-2"><LuCheck size={12} style={{ color: '#EF8C2C' }} /><span className="text-[11px] text-gray-600">{f}</span></div>
-                                        ))}
-                                    </div>
+                                        <div className="grid grid-cols-2 gap-3 mb-5">
+                                            <div className="flex items-center gap-2 text-[11px] text-gray-500"><LuCalendar size={13} style={{ color: '#EF8C2C' }} />{isBn ? (pkg.durationBn || pkg.duration) : pkg.duration}</div>
+                                            <div className="flex items-center gap-2 text-[11px] text-gray-500"><LuUsers size={13} style={{ color: '#EF8C2C' }} />{pkg.groupSize || 30} {isBn ? 'জন' : 'pax'}</div>
+                                            <div className="flex items-center gap-2 text-[11px] text-gray-500"><LuHotel size={13} style={{ color: '#EF8C2C' }} />{isBn ? (pkg.hotelBn || pkg.hotel || '') : (pkg.hotel || '')}</div>
+                                            {pkg.departureDate && <div className="flex items-center gap-2 text-[11px] text-gray-500"><LuCalendar size={13} style={{ color: '#EF8C2C' }} />{new Date(pkg.departureDate).toLocaleDateString(isBn ? 'bn-BD' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' })}</div>}
+                                        </div>
 
-                                    <button onClick={() => setBookingModal({ open: true, pkg })}
-                                        className="w-full py-2.5 rounded-lg border text-[10px] font-bold uppercase tracking-widest transition-all hover:text-white"
-                                        style={{ borderColor: '#e5e7eb', color: '#021E14' }}
-                                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#021E14'; e.currentTarget.style.color = '#fff'; }}
-                                        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = '#021E14'; }}>
-                                        {isBn ? 'বুক করুন' : 'Book Now'}
-                                    </button>
+                                        <div className="border-t border-gray-100 my-5" />
+
+                                        <div className="space-y-2.5 mb-6">
+                                            {(isBn ? (pkg.featuresBn?.length ? pkg.featuresBn : pkg.features) : pkg.features)?.map((f, i) => (
+                                                <div key={i} className="flex items-center gap-2.5"><LuCheck size={14} style={{ color: '#EF8C2C' }} /><span className="text-[12px] text-gray-600 font-normal">{f}</span></div>
+                                            ))}
+                                        </div>
+
+                                        <div className="mt-auto pt-2">
+                                            <a href={`https://wa.me/8801234567890?text=${encodeURIComponent(
+                                                `🕌 Hajj & Umrah Inquiry\n\n` +
+                                                `Service: ${pkg.type === 'hajj' ? 'Hajj (হজ্জ)' : 'Umrah (ওমরাহ)'}\n` +
+                                                `Package: ${pkg.name}${pkg.nameBn ? ` (${pkg.nameBn})` : ''}\n` +
+                                                `Price: ৳${pkg.price?.toLocaleString()} per person\n` +
+                                                `Duration: ${pkg.duration}\n` +
+                                                `Hotel: ${pkg.hotel || 'N/A'}\n` +
+                                                `Departure: ${pkg.departureDate ? new Date(pkg.departureDate).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Flexible'}\n\n` +
+                                                `I would like to get more information about this package. Please contact me.`
+                                            )}`}
+                                                target="_blank" rel="noopener noreferrer"
+                                                className="w-full flex items-center justify-center gap-2 py-3 rounded-lg text-[11px] font-bold uppercase tracking-widest transition-all hover:opacity-90 text-white"
+                                                style={{ backgroundColor: '#25D366' }}>
+                                                <FaWhatsapp size={16} />
+                                                {isBn ? 'হোয়াটসঅ্যাপে কথা বলুন' : 'Quick Discussion'}
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
                             ))}
                         </motion.div>
                     )}
                 </AnimatePresence>
             </section>
+
 
             <BookingModal
                 isOpen={bookingModal.open}

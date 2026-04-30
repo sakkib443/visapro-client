@@ -2,8 +2,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { LuCalendar, LuPackage, LuClock, LuCircleCheck, LuCircleX, LuLoader } from "react-icons/lu";
-import { useSelector } from "react-redux";
-import { selectToken } from "@/redux/features/authSlice";
 
 const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
 
@@ -22,9 +20,9 @@ export default function MyBookingsPage() {
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState("all");
-    const token = useSelector(selectToken);
 
     useEffect(() => {
+        const token = localStorage.getItem("token") || sessionStorage.getItem("token");
         if (!token) { setLoading(false); return; }
 
         fetch(`${BACKEND}/api/bookings/my`, {
@@ -33,7 +31,7 @@ export default function MyBookingsPage() {
             .then(r => r.json())
             .then(d => { setBookings(d.data || []); setLoading(false); })
             .catch(() => setLoading(false));
-    }, [token]);
+    }, []);
 
     const filtered = filter === "all" ? bookings : bookings.filter(b => b.type === filter);
 

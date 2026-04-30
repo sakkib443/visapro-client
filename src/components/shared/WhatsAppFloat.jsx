@@ -4,14 +4,15 @@ import { useState, useEffect } from "react";
 import { FaWhatsapp } from "react-icons/fa";
 import { LuX } from "react-icons/lu";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSiteSettings, buildWhatsAppUrl } from "@/context/SiteSettingsContext";
 
-const WHATSAPP_NUMBER = "8801712114770"; // Bangladesh number without +
 const DEFAULT_MESSAGE = "Hello! I need help with visa/tour services.";
 
 export default function WhatsAppFloat() {
     const [showTooltip, setShowTooltip] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
     const [isPulsing, setIsPulsing] = useState(true);
+    const { settings } = useSiteSettings();
 
     // Show button after a slight delay for smooth page load
     useEffect(() => {
@@ -26,8 +27,12 @@ export default function WhatsAppFloat() {
     }, []);
 
     const handleClick = () => {
-        const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(DEFAULT_MESSAGE)}`;
-        window.open(url, "_blank", "noopener,noreferrer");
+        if (!settings.whatsappNumber) return;
+        window.open(
+            buildWhatsAppUrl(settings.whatsappNumber, DEFAULT_MESSAGE),
+            "_blank",
+            "noopener,noreferrer"
+        );
     };
 
     return (

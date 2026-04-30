@@ -30,7 +30,7 @@ const socialFields = [
     { key: "tiktok", label: "TikTok", icon: FaTiktok, color: "#000000", placeholder: "https://tiktok.com/@your-handle" },
 ];
 
-export default function SettingsPage() {
+export default function SocialLinksPage() {
     const token = useSelector(selectToken);
     const { settings: liveSettings, refetch } = useSiteSettings();
 
@@ -85,7 +85,7 @@ export default function SettingsPage() {
             });
             const data = await res.json();
             if (!res.ok || !data.success) throw new Error(data.message || "Save failed");
-            toast.success("Settings saved successfully");
+            toast.success("Social links saved successfully");
             await refetch();
         } catch (err) {
             toast.error(err.message || "Save failed");
@@ -98,9 +98,14 @@ export default function SettingsPage() {
         <div className="p-6 max-w-4xl mx-auto">
             <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Site Settings</h1>
+                    <div className="flex items-center gap-2 text-sm text-gray-400 mb-1">
+                        <span>Design & Content</span>
+                        <span>/</span>
+                        <span className="text-gray-600 font-medium">Social Links</span>
+                    </div>
+                    <h1 className="text-2xl font-bold text-gray-900">Social Media Links</h1>
                     <p className="text-sm text-gray-500 mt-0.5">
-                        Manage social media links shown across the website
+                        Manage social media links shown in Footer, Navbar & across the website
                     </p>
                 </div>
                 <button
@@ -154,7 +159,7 @@ export default function SettingsPage() {
                         className="flex items-center gap-2 px-6 py-3 bg-[#1D7EDD] hover:bg-[#1565c0] disabled:bg-gray-300 text-white font-semibold rounded-lg transition-colors cursor-pointer"
                     >
                         {saving ? <FiLoader className="animate-spin" /> : <FiSave />}
-                        {saving ? "Saving..." : "Save Settings"}
+                        {saving ? "Saving..." : "Save Social Links"}
                     </button>
                 </div>
             </form>
