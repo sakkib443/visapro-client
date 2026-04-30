@@ -22,15 +22,16 @@ import {
 import { FaWhatsapp } from "react-icons/fa";
 
 import { useLanguage } from "@/context/LanguageContext";
+import { useSiteSettings, buildWhatsAppUrl } from "@/context/SiteSettingsContext";
 import toast from "react-hot-toast";
 
 const contactInfo = [
     {
         icon: LuMail,
         title: "Email Assistance",
-        titleBn: "ইমেইল সহায়তা",
-        value: "support@visapro.com.bd",
-        link: "mailto:support@visapro.com.bd",
+        titleBn: "ইমেইল সহায়তা",
+        value: "{{contactEmail}}",
+        link: "mailto:{{contactEmail}}",
         color: "#3590CF",
         tag: "Inquiry",
         tagBn: "জিজ্ঞাসা"
@@ -39,18 +40,18 @@ const contactInfo = [
         icon: LuPhone,
         title: "Hotline Support",
         titleBn: "হটলাইন সাপোর্ট",
-        value: "017 1211 4770",
-        link: "tel:+8801712114770",
+        value: "{{contactPhone}}",
+        link: "tel:{{contactPhoneTel}}",
         color: "#EF8C2C",
-        tag: "9:30 AM - 8:30 PM",
-        tagBn: "সকাল ৯:৩০ - রাত ৮:৩০"
+        tag: "{{workingHours}}",
+        tagBn: "{{workingHoursBn}}"
     },
     {
         icon: LuMapPin,
         title: "Headquarters",
-        titleBn: "প্রধান কার্যালয়",
-        value: "25/4, 4th Floor, Panthpath, Dhaka",
-        valueBn: "২৫/৪, ৪র্থ তলা, পান্থপথ, ঢাকা",
+        titleBn: "প্রধান কার্যালয়",
+        value: "{{address}}",
+        valueBn: "{{addressBn}}",
         color: "#3590CF",
         tag: "Location",
         tagBn: "অবস্থান"
@@ -58,23 +59,18 @@ const contactInfo = [
     {
         icon: LuClock,
         title: "Working Hours",
-        titleBn: "সার্ভিস সময়",
-        value: "Sat - Thu: Open",
-        valueBn: "শনি - বৃহঃ: খোলা",
+        titleBn: "সার্ভিস সময়",
+        value: "{{workingDays}}",
+        valueBn: "{{workingDaysBn}}",
         color: "#EF8C2C",
-        tag: "Schedule",
-        tagBn: "সময়সূচী"
+        tag: "{{workingHours}}",
+        tagBn: "{{workingHoursBn}}"
     },
-];
-
-const stats = [
-    { label: "Visa Success", labelBn: "ভিসা সাফল্য", value: "98%", icon: LuFileCheck },
-    { label: "Countries", labelBn: "দেশসমূহ", value: "50+", icon: LuGlobe },
-    { label: "Happy Clients", labelBn: "সন্তুষ্ট ক্লায়েন্ট", value: "10K+", icon: LuUsers },
 ];
 
 export default function ContactPage() {
     const { language } = useLanguage();
+    const { settings } = useSiteSettings();
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -84,11 +80,45 @@ export default function ContactPage() {
     });
     const [loading, setLoading] = useState(false);
 
+    // Interpolate contact info placeholders with live settings
+    const phoneTel = (settings.contactPhone || "").replace(/[^\d+]/g, "");
+
+    const templateMap = {
+        "{{contactEmail}}": settings.contactEmail,
+        "{{contactPhone}}": settings.contactPhone,
+        "{{address}}": settings.address,
+        "{{addressBn}}": settings.addressBn,
+        "{{workingDays}}": settings.workingDays,
+        "{{workingDaysBn}}": settings.workingDaysBn,
+        "{{workingHours}}": settings.workingHours,
+        "{{workingHoursBn}}": settings.workingHoursBn,
+    };
+
+    const resolve = (val) => templateMap[val] ?? val;
+
+    const interpolated = contactInfo.map((info) => ({
+        ...info,
+        value: resolve(info.value),
+        valueBn: resolve(info.valueBn),
+        tag: resolve(info.tag),
+        tagBn: resolve(info.tagBn),
+        link: info.link === "mailto:{{contactEmail}}" ? `mailto:${settings.contactEmail || ""}`
+            : info.link === "tel:{{contactPhoneTel}}" ? `tel:${phoneTel}`
+            : info.link,
+    }));
+
+    // Dynamic stats from settings
+    const stats = [
+        { label: "Visa Success", labelBn: "ভিসা সাফল্য", value: settings.visaSuccessRate, icon: LuFileCheck },
+        { label: "Countries", labelBn: "দেশসমূহ", value: settings.countriesCount, icon: LuGlobe },
+        { label: "Happy Clients", labelBn: "সন্তুষ্ট ক্লায়েন্ট", value: settings.happyClientsCount, icon: LuUsers },
+    ];
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         await new Promise(resolve => setTimeout(resolve, 1500));
-        toast.success(language === 'bn' ? 'আবেদনটি জমা হয়েছে!' : 'Visa inquiry submitted successfully!');
+        toast.success(language === 'bn' ? 'আবেদনটি জমা হয়েছে!' : 'Visa inquiry submitted successfully!');
         setFormData({ name: "", email: "", subject: "", message: "", visaType: "Tourist Visa" });
         setLoading(false);
     };
@@ -208,7 +238,7 @@ export default function ContactPage() {
 
                     {/* CONTACT CARDS */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        {contactInfo.map((info, index) => (
+                        {interpolated.map((info, index) => (
                             <motion.a
                                 key={index}
                                 href={info.link || "#"}
@@ -253,7 +283,7 @@ export default function ContactPage() {
                         >
                             <div className="mb-8">
                                 <h2 className="text-3xl md:text-5xl font-bold text-gray-900 uppercase leading-none mb-3" style={{ fontFamily: 'Teko, sans-serif' }}>
-                                    {isBn ? 'ভিসা ইনকোয়ারি' : 'VISA'} <span className="text-secondary">{isBn ? 'ফরম' : 'INQUIRY FORM'}</span>
+                                    {isBn ? 'ভিসা ইনকোয়ারি' : 'VISA'} <span className="text-secondary">{isBn ? 'ফরম' : 'INQUIRY FORM'}</span>
                                 </h2>
                                 <p className="text-gray-500 text-[13px] leading-relaxed" style={{ fontFamily: 'Poppins, sans-serif' }}>
                                     {isBn
@@ -300,18 +330,18 @@ export default function ContactPage() {
                                             <option>{isBn ? 'ট্যুরিস্ট ভিসা' : 'Tourist Visa'}</option>
                                             <option>{isBn ? 'বিজনেস ভিসা' : 'Business Visa'}</option>
                                             <option>{isBn ? 'স্টুডেন্ট ভিসা' : 'Student Visa'}</option>
-                                            <option>{isBn ? 'ওয়ার্ক পারমিট' : 'Work Permit'}</option>
+                                            <option>{isBn ? 'ওয়ার্ক পারমিট' : 'Work Permit'}</option>
                                         </select>
                                     </div>
 
                                     <div className="space-y-1.5">
-                                        <label className="text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">{isBn ? 'বিষয়' : 'Subject'}</label>
+                                        <label className="text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">{isBn ? 'বিষয়' : 'Subject'}</label>
                                         <input
                                             type="text"
                                             value={formData.subject}
                                             onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                                             className="w-full px-4 py-3 bg-gray-50 border border-transparent rounded-lg focus:bg-white focus:border-secondary/20 focus:ring-4 focus:ring-secondary/5 transition-all text-sm font-semibold text-gray-900 outline-none"
-                                            placeholder={isBn ? "বিষয় লিখুন" : "QUERY SUBJECT"}
+                                            placeholder={isBn ? "বিষয় লিখুন" : "QUERY SUBJECT"}
                                             required
                                         />
                                     </div>
@@ -364,19 +394,19 @@ export default function ContactPage() {
                                     </h3>
                                     <p className="text-gray-500 text-sm leading-relaxed" style={{ fontFamily: 'Poppins, sans-serif' }}>
                                         {isBn
-                                            ? 'যেকোনো জরুরি প্রয়োজনে নীচের হোয়াটসঅ্যাপ অথবা সরাসরি আমাদের অফিসে চলে আসুন।'
+                                            ? 'যেকোনো জরুরি প্রয়োজনে নীচের হোয়াটসঅ্যাপ অথবা সরাসরি আমাদের অফিসে চলে আসুন।'
                                             : 'For immediate assistance, reach out via WhatsApp or visit our headquarters in Panthpath.'}
                                     </p>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <a href="https://wa.me/8801712114770" className="flex items-center gap-4 p-5 bg-green-50 rounded-2xl border border-green-100/50 hover:bg-green-100 transition-all group">
+                                    <a href={buildWhatsAppUrl(settings.whatsappNumber)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 p-5 bg-green-50 rounded-2xl border border-green-100/50 hover:bg-green-100 transition-all group">
                                         <div className="w-10 h-10 rounded-xl bg-green-500 flex items-center justify-center text-white shadow-lg shadow-green-200">
                                             <FaWhatsapp size={20} />
                                         </div>
                                         <div className="flex flex-col">
                                             <span className="text-[10px] font-bold text-green-600 uppercase tracking-widest leading-none mb-1">WhatsApp</span>
-                                            <span className="text-sm font-bold text-gray-900">017 1211 4770</span>
+                                            <span className="text-sm font-bold text-gray-900">{settings.whatsappNumber || settings.contactPhone}</span>
                                         </div>
                                     </a>
 
@@ -400,7 +430,7 @@ export default function ContactPage() {
                                 className="relative h-[350px] rounded-xl overflow-hidden border border-gray-100 shadow-xl"
                             >
                                 <iframe
-                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3651.902633038936!2d90.38531!3d23.7508!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755b8b0acc6aed9%3A0xc3f8e58f00d3d540!2sPanthapath%2C%20Dhaka!5e0!3m2!1sen!2sbd!4v1704000000000!5m2!1sen!2sbd"
+                                    src={settings.mapEmbedUrl}
                                     width="100%"
                                     height="100%"
                                     style={{ border: 0 }}
@@ -410,7 +440,7 @@ export default function ContactPage() {
                                 />
                                 <div className="absolute top-6 left-6 px-4 py-2 bg-white/90 backdrop-blur-md rounded-xl shadow-lg border border-gray-100">
                                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block leading-tight">{isBn ? 'অফিস লোকেশন' : 'VISIT OFFICE'}</span>
-                                    <span className="text-sm font-bold text-gray-900" style={{ fontFamily: 'Teko, sans-serif' }}>PANTHAPATH, DHAKA</span>
+                                    <span className="text-sm font-bold text-gray-900" style={{ fontFamily: 'Teko, sans-serif' }}>{isBn ? settings.mapLabelBn : settings.mapLabel}</span>
                                 </div>
                             </motion.div>
                         </div>

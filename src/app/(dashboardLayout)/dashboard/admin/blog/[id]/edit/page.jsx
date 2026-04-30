@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, useRef, useCallback } from "react";
+import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import { selectToken } from "@/redux/features/authSlice";
-import { FiFileText, FiArrowLeft, FiSave, FiLoader, FiUploadCloud, FiLink, FiImage } from "react-icons/fi";
+import { FiFileText, FiArrowLeft, FiSave, FiLoader, FiUploadCloud, FiLink } from "react-icons/fi";
 import dynamic from "next/dynamic";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false, loading: () => <div className="h-[300px] bg-gray-50 rounded-lg animate-pulse" /> });
@@ -14,7 +14,6 @@ import "react-quill-new/dist/quill.snow.css";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-// ========== Image Upload Helper ==========
 async function uploadToCloudinary(file, token) {
     const formData = new FormData();
     formData.append("image", file);
@@ -28,7 +27,6 @@ async function uploadToCloudinary(file, token) {
     return data.data.url;
 }
 
-// ========== Quill formats ==========
 const quillFormats = [
     "header", "font", "bold", "italic", "underline", "strike",
     "color", "background", "align", "list", "bullet",
@@ -36,63 +34,75 @@ const quillFormats = [
     "indent", "direction",
 ];
 
-export default function CreateBlogPage() {
+export default function EditBlogPage() {
     const router = useRouter();
+    const params = useParams();
     const token = useSelector(selectToken);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
     const [activeTab, setActiveTab] = useState("en");
     const [thumbnailUploading, setThumbnailUploading] = useState(false);
-    const [thumbnailMode, setThumbnailMode] = useState("upload"); // upload | link
+    const [thumbnailMode, setThumbnailMode] = useState("upload");
     const quillRefEn = useRef(null);
     const quillRefBn = useRef(null);
 
     const [formData, setFormData] = useState({
-        title: "",
-        titleBn: "",
-        slug: "",
-        content: "",
-        contentBn: "",
-        excerpt: "",
-        excerptBn: "",
-        thumbnail: "",
-        tags: "",
-        status: "draft",
-        isFeatured: false,
+        title: "", titleBn: "", slug: "", content: "", contentBn: "",
+        excerpt: "", excerptBn: "", thumbnail: "", tags: "",
+        status: "draft", isFeatured: false,
     });
 
-    const generateSlug = (title) => title.toLowerCase().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-");
+    useEffect(() => {
+        const fetchBlog = async () => {
+            setLoading(true);
+            try {
+                const res = await fetch(`${API_BASE}/api/blogs/${params.id}`, {
+                    headers: token ? { Authorization: `Bearer ${token}` } : {},
+                });
+                const data = await res.json();
+                if (data.success && data.data) {
+                    const blog = data.data;
+                    setFormData({
+                        title: blog.title || "", titleBn: blog.titleBn || "",
+                        slug: blog.slug || "", content: blog.content || "",
+                        contentBn: blog.contentBn || "", excerpt: blog.excerpt || "",
+                        excerptBn: blog.excerptBn || "", thumbnail: blog.thumbnail || "",
+                        tags: blog.tags?.join(", ") || "", status: blog.status || "draft",
+                        isFeatured: blog.isFeatured || false,
+                    });
+                    if (blog.thumbnail) setThumbnailMode("link");
+                } else {
+                    toast.error("Blog not found");
+                    router.push("/dashboard/admin/blog");
+                }
+            } catch { toast.error("Failed to load blog"); }
+            finally { setLoading(false); }
+        };
+        if (params.id) fetchBlog();
+    }, [params.id]);
 
-    // ========== Thumbnail Upload ==========
     const handleThumbnailUpload = async (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
-        if (!file.type.startsWith("image/")) { toast.error("Please select an image file"); return; }
-
         setThumbnailUploading(true);
         try {
             const url = await uploadToCloudinary(file, token);
             setFormData(prev => ({ ...prev, thumbnail: url }));
             toast.success("Thumbnail uploaded!");
-        } catch (err) {
-            toast.error(err.message || "Upload failed");
-        } finally {
-            setThumbnailUploading(false);
-        }
+        } catch (err) { toast.error(err.message || "Upload failed"); }
+        finally { setThumbnailUploading(false); }
     };
 
-    // ========== Quill Image Handler (custom toolbar button) ==========
     const imageHandler = useCallback((quillRef) => {
         const input = document.createElement("input");
         input.setAttribute("type", "file");
         input.setAttribute("accept", "image/*");
         input.click();
-
         input.onchange = async () => {
             const file = input.files?.[0];
             if (!file) return;
             const editor = quillRef.current?.getEditor();
             if (!editor) return;
-
             const loadingToast = toast.loading("Uploading image...");
             try {
                 const url = await uploadToCloudinary(file, token);
@@ -100,13 +110,10 @@ export default function CreateBlogPage() {
                 editor.insertEmbed(range.index, "image", url);
                 editor.setSelection(range.index + 1);
                 toast.success("Image inserted!", { id: loadingToast });
-            } catch (err) {
-                toast.error(err.message || "Upload failed", { id: loadingToast });
-            }
+            } catch (err) { toast.error(err.message || "Upload failed", { id: loadingToast }); }
         };
     }, [token]);
 
-    // Quill modules with custom image handler
     const getQuillModules = useCallback((quillRef) => ({
         toolbar: {
             container: [
@@ -121,62 +128,48 @@ export default function CreateBlogPage() {
                 [{ indent: "-1" }, { indent: "+1" }],
                 ["clean"],
             ],
-            handlers: {
-                image: () => imageHandler(quillRef),
-            },
+            handlers: { image: () => imageHandler(quillRef) },
         },
     }), [imageHandler]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!formData.title.trim()) { toast.error("Title is required"); return; }
-        if (!formData.excerpt.trim() || formData.excerpt.trim().length < 20) { toast.error("Excerpt must be at least 20 characters"); return; }
-        if (!formData.content.trim() || formData.content.replace(/<[^>]*>/g, '').trim().length < 100) { toast.error("Content must be at least 100 characters"); return; }
-        if (!formData.thumbnail.trim()) { toast.error("Thumbnail is required"); return; }
-
-        setLoading(true);
+        setSaving(true);
         try {
             const payload = {
                 ...formData,
                 tags: formData.tags ? formData.tags.split(",").map(t => t.trim()).filter(Boolean) : [],
             };
-
-            const res = await fetch(`${API_BASE}/api/blogs`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-                },
+            const res = await fetch(`${API_BASE}/api/blogs/${params.id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
                 body: JSON.stringify(payload),
             });
-
             const data = await res.json();
             if (res.ok && data.success) {
-                toast.success("Blog post created!");
+                toast.success("Blog updated!");
                 router.push("/dashboard/admin/blog");
-            } else {
-                toast.error(data.message || "Failed to create post");
-            }
-        } catch {
-            toast.error("Error creating post");
-        } finally {
-            setLoading(false);
-        }
+            } else { toast.error(data.message || "Failed to update"); }
+        } catch { toast.error("Error updating post"); }
+        finally { setSaving(false); }
     };
+
+    if (loading) {
+        return <div className="flex justify-center items-center min-h-[60vh]"><FiLoader className="animate-spin text-[#021E14]" size={32} /></div>;
+    }
 
     return (
         <div className="p-6 lg:p-8">
             <div className="flex items-center gap-4 mb-8">
-                <Link href="/dashboard/admin/blog" className="p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
-                    <FiArrowLeft size={20} />
-                </Link>
+                <Link href="/dashboard/admin/blog" className="p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"><FiArrowLeft size={20} /></Link>
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg">
                         <FiFileText className="text-white text-xl" />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Create Blog Post</h1>
-                        <p className="text-sm text-gray-500">Write a new blog article</p>
+                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Edit Blog Post</h1>
+                        <p className="text-sm text-gray-500">Update blog article</p>
                     </div>
                 </div>
             </div>
@@ -186,116 +179,77 @@ export default function CreateBlogPage() {
 
                     {/* Language Tabs */}
                     <div className="flex gap-1 bg-gray-100 dark:bg-gray-700 p-1 rounded-lg w-fit">
-                        <button type="button" onClick={() => setActiveTab("en")} className={`px-5 py-2 rounded-md text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${activeTab === "en" ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm" : "text-gray-500 hover:text-gray-700"}`}>
-                            🇬🇧 English
-                        </button>
-                        <button type="button" onClick={() => setActiveTab("bn")} className={`px-5 py-2 rounded-md text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${activeTab === "bn" ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm" : "text-gray-500 hover:text-gray-700"}`}>
-                            🇧🇩 বাংলা
-                        </button>
+                        <button type="button" onClick={() => setActiveTab("en")} className={`px-5 py-2 rounded-md text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${activeTab === "en" ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm" : "text-gray-500 hover:text-gray-700"}`}>🇬🇧 English</button>
+                        <button type="button" onClick={() => setActiveTab("bn")} className={`px-5 py-2 rounded-md text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${activeTab === "bn" ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm" : "text-gray-500 hover:text-gray-700"}`}>🇧🇩 বাংলা</button>
                     </div>
 
-                    {/* English Fields */}
+                    {/* English */}
                     {activeTab === "en" && (
                         <div className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label className="text-sm font-bold text-gray-500 uppercase block mb-2">Title *</label>
-                                    <input type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value, slug: generateSlug(e.target.value) })} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#021E14] focus:ring-1 focus:ring-[#021E14]/10" placeholder="Blog title in English" required />
+                                    <input type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#021E14] focus:ring-1 focus:ring-[#021E14]/10" required />
                                 </div>
                                 <div>
                                     <label className="text-sm font-bold text-gray-500 uppercase block mb-2">Slug</label>
                                     <input type="text" value={formData.slug} onChange={(e) => setFormData({ ...formData, slug: e.target.value })} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none font-mono focus:border-[#021E14] focus:ring-1 focus:ring-[#021E14]/10" />
                                 </div>
                             </div>
-
                             <div>
                                 <label className="text-sm font-bold text-gray-500 uppercase block mb-2">Excerpt *</label>
-                                <textarea value={formData.excerpt} onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })} rows={3} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none resize-none focus:border-[#021E14] focus:ring-1 focus:ring-[#021E14]/10" placeholder="Brief summary (min 20 chars)..." />
+                                <textarea value={formData.excerpt} onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })} rows={3} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none resize-none focus:border-[#021E14] focus:ring-1 focus:ring-[#021E14]/10" placeholder="Brief summary..." />
                             </div>
-
                             <div>
                                 <label className="text-sm font-bold text-gray-500 uppercase block mb-2">Content * <span className="text-gray-400 normal-case font-normal">— Click 📷 in toolbar to upload images</span></label>
                                 <div className="blog-editor">
-                                    <ReactQuill
-                                        ref={quillRefEn}
-                                        theme="snow"
-                                        value={formData.content}
-                                        onChange={(val) => setFormData({ ...formData, content: val })}
-                                        modules={getQuillModules(quillRefEn)}
-                                        formats={quillFormats}
-                                        placeholder="Write your blog content here..."
-                                    />
+                                    <ReactQuill ref={quillRefEn} theme="snow" value={formData.content} onChange={(val) => setFormData({ ...formData, content: val })} modules={getQuillModules(quillRefEn)} formats={quillFormats} placeholder="Write your blog content here..." />
                                 </div>
                             </div>
                         </div>
                     )}
 
-                    {/* Bangla Fields */}
+                    {/* Bangla */}
                     {activeTab === "bn" && (
                         <div className="space-y-6">
                             <div>
                                 <label className="text-sm font-bold text-gray-500 uppercase block mb-2">শিরোনাম (Bangla)</label>
                                 <input type="text" value={formData.titleBn} onChange={(e) => setFormData({ ...formData, titleBn: e.target.value })} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#021E14] focus:ring-1 focus:ring-[#021E14]/10" placeholder="বাংলায় ব্লগের শিরোনাম" />
                             </div>
-
                             <div>
                                 <label className="text-sm font-bold text-gray-500 uppercase block mb-2">সারসংক্ষেপ (Bangla)</label>
                                 <textarea value={formData.excerptBn} onChange={(e) => setFormData({ ...formData, excerptBn: e.target.value })} rows={3} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none resize-none focus:border-[#021E14] focus:ring-1 focus:ring-[#021E14]/10" placeholder="সংক্ষিপ্ত বিবরণ..." />
                             </div>
-
                             <div>
                                 <label className="text-sm font-bold text-gray-500 uppercase block mb-2">কন্টেন্ট (Bangla) <span className="text-gray-400 normal-case font-normal">— টুলবারে 📷 ক্লিক করে ছবি আপলোড করুন</span></label>
                                 <div className="blog-editor">
-                                    <ReactQuill
-                                        ref={quillRefBn}
-                                        theme="snow"
-                                        value={formData.contentBn}
-                                        onChange={(val) => setFormData({ ...formData, contentBn: val })}
-                                        modules={getQuillModules(quillRefBn)}
-                                        formats={quillFormats}
-                                        placeholder="বাংলায় কন্টেন্ট লিখুন..."
-                                    />
+                                    <ReactQuill ref={quillRefBn} theme="snow" value={formData.contentBn} onChange={(val) => setFormData({ ...formData, contentBn: val })} modules={getQuillModules(quillRefBn)} formats={quillFormats} placeholder="বাংলায় কন্টেন্ট লিখুন..." />
                                 </div>
                             </div>
                         </div>
                     )}
 
-                    {/* ========== Thumbnail Section ========== */}
+                    {/* Thumbnail */}
                     <div className="pt-4 border-t border-gray-100 dark:border-gray-700">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-sm font-bold text-gray-500 uppercase">Thumbnail *</h3>
                             <div className="flex gap-1 bg-gray-100 p-0.5 rounded-lg">
-                                <button type="button" onClick={() => setThumbnailMode("upload")} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[10px] font-bold uppercase transition-all cursor-pointer ${thumbnailMode === "upload" ? "bg-white shadow-sm text-gray-900" : "text-gray-400"}`}>
-                                    <FiUploadCloud size={12} /> Upload
-                                </button>
-                                <button type="button" onClick={() => setThumbnailMode("link")} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[10px] font-bold uppercase transition-all cursor-pointer ${thumbnailMode === "link" ? "bg-white shadow-sm text-gray-900" : "text-gray-400"}`}>
-                                    <FiLink size={12} /> URL
-                                </button>
+                                <button type="button" onClick={() => setThumbnailMode("upload")} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[10px] font-bold uppercase transition-all cursor-pointer ${thumbnailMode === "upload" ? "bg-white shadow-sm text-gray-900" : "text-gray-400"}`}><FiUploadCloud size={12} /> Upload</button>
+                                <button type="button" onClick={() => setThumbnailMode("link")} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[10px] font-bold uppercase transition-all cursor-pointer ${thumbnailMode === "link" ? "bg-white shadow-sm text-gray-900" : "text-gray-400"}`}><FiLink size={12} /> URL</button>
                             </div>
                         </div>
-
                         {thumbnailMode === "upload" ? (
-                            <div className="space-y-3">
-                                <label className={`flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-xl cursor-pointer transition-all ${thumbnailUploading ? "border-[#EF8C2C] bg-[#EF8C2C]/5" : "border-gray-200 hover:border-[#021E14] hover:bg-gray-50"}`}>
-                                    {thumbnailUploading ? (
-                                        <div className="flex items-center gap-2 text-[#EF8C2C]">
-                                            <FiLoader className="animate-spin" size={20} />
-                                            <span className="text-sm font-semibold">Uploading...</span>
-                                        </div>
-                                    ) : (
-                                        <div className="flex flex-col items-center gap-2 text-gray-400">
-                                            <FiUploadCloud size={28} />
-                                            <span className="text-sm font-semibold">Click to upload thumbnail</span>
-                                            <span className="text-[10px]">PNG, JPG, WebP (Max 5MB)</span>
-                                        </div>
-                                    )}
-                                    <input type="file" accept="image/*" onChange={handleThumbnailUpload} className="hidden" disabled={thumbnailUploading} />
-                                </label>
-                            </div>
+                            <label className={`flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-xl cursor-pointer transition-all ${thumbnailUploading ? "border-[#EF8C2C] bg-[#EF8C2C]/5" : "border-gray-200 hover:border-[#021E14] hover:bg-gray-50"}`}>
+                                {thumbnailUploading ? (
+                                    <div className="flex items-center gap-2 text-[#EF8C2C]"><FiLoader className="animate-spin" size={20} /><span className="text-sm font-semibold">Uploading...</span></div>
+                                ) : (
+                                    <div className="flex flex-col items-center gap-2 text-gray-400"><FiUploadCloud size={28} /><span className="text-sm font-semibold">Click to upload thumbnail</span><span className="text-[10px]">PNG, JPG, WebP (Max 5MB)</span></div>
+                                )}
+                                <input type="file" accept="image/*" onChange={handleThumbnailUpload} className="hidden" disabled={thumbnailUploading} />
+                            </label>
                         ) : (
                             <input type="text" value={formData.thumbnail} onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#021E14] focus:ring-1 focus:ring-[#021E14]/10" placeholder="https://example.com/image.jpg" />
                         )}
-
                         {formData.thumbnail && (
                             <div className="mt-3 relative group">
                                 <img src={formData.thumbnail} alt="Thumbnail Preview" className="w-full h-48 object-cover rounded-xl border border-gray-100" onError={(e) => e.target.style.display = 'none'} />
@@ -310,23 +264,22 @@ export default function CreateBlogPage() {
                         <input type="text" value={formData.tags} onChange={(e) => setFormData({ ...formData, tags: e.target.value })} className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#021E14] focus:ring-1 focus:ring-[#021E14]/10" placeholder="visa, travel, guide" />
                         {formData.tags && (
                             <div className="flex flex-wrap gap-1.5 mt-2">
-                                {formData.tags.split(",").map((t, i) => t.trim() && (
-                                    <span key={i} className="px-2.5 py-1 bg-gray-100 rounded-full text-[10px] font-semibold text-gray-600">{t.trim()}</span>
-                                ))}
+                                {formData.tags.split(",").map((t, i) => t.trim() && <span key={i} className="px-2.5 py-1 bg-gray-100 rounded-full text-[10px] font-semibold text-gray-600">{t.trim()}</span>)}
                             </div>
                         )}
                     </div>
 
-                    {/* Status & Featured */}
+                    {/* Status */}
                     <div className="pt-4 border-t border-gray-100 dark:border-gray-700 space-y-4">
                         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl">
                             <div className="flex-1">
                                 <p className="font-bold text-gray-900 dark:text-white">Status</p>
-                                <p className="text-sm text-gray-500">Publish immediately or save as draft</p>
+                                <p className="text-sm text-gray-500">Change post visibility</p>
                             </div>
                             <select value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })} className="px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none w-40 cursor-pointer">
                                 <option value="draft">Draft</option>
                                 <option value="published">Published</option>
+                                <option value="archived">Archived</option>
                             </select>
                         </div>
                         <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl">
@@ -338,8 +291,8 @@ export default function CreateBlogPage() {
 
                 <div className="flex gap-4 mt-6">
                     <Link href="/dashboard/admin/blog" className="flex-1 text-center py-3 border border-gray-200 rounded-lg text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors">Cancel</Link>
-                    <button type="submit" disabled={loading} className="flex-1 flex items-center justify-center gap-2 py-3 bg-[#021E14] text-white rounded-lg text-sm font-semibold hover:bg-[#032b1e] disabled:bg-gray-300 transition-colors cursor-pointer">
-                        {loading ? <FiLoader className="animate-spin" /> : <FiSave />} Create Post
+                    <button type="submit" disabled={saving} className="flex-1 flex items-center justify-center gap-2 py-3 bg-[#EF8C2C] text-white rounded-lg text-sm font-semibold hover:bg-[#d67a20] disabled:bg-gray-300 transition-colors cursor-pointer">
+                        {saving ? <FiLoader className="animate-spin" /> : <FiSave />} {saving ? "Updating..." : "Update Post"}
                     </button>
                 </div>
             </form>

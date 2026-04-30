@@ -23,6 +23,10 @@ import {
     logout,
 } from "@/redux/features/authSlice";
 import { useLanguage } from "@/context/LanguageContext";
+import {
+    useSiteSettings,
+    buildMailUrl,
+} from "@/context/SiteSettingsContext";
 
 export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -33,6 +37,7 @@ export default function Navbar() {
     const [isLangOpen, setIsLangOpen] = useState(false);
     const langRef = useRef(null);
     const { language, setLanguage, t } = useLanguage();
+    const { settings } = useSiteSettings();
 
     const dispatch = useDispatch();
     const user = useSelector(selectCurrentUser);
@@ -43,26 +48,8 @@ export default function Navbar() {
     const bnFont = isBn ? 'Hind Siliguri, sans-serif' : 'Poppins, sans-serif';
     const headingFont = isBn ? 'Hind Siliguri, sans-serif' : 'Teko, sans-serif';
 
-    // Dynamic visa categories from database
-    const [visaCategories, setVisaCategories] = useState([]);
-
     useEffect(() => {
         setMounted(true);
-
-        // Fetch active visa categories from API
-        const fetchCategories = async () => {
-            try {
-                const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-                const res = await fetch(`${API_BASE}/api/visa-categories/active`);
-                const data = await res.json();
-                if (data.success && data.data) {
-                    setVisaCategories(data.data);
-                }
-            } catch (err) {
-                console.error("Failed to fetch visa categories:", err);
-            }
-        };
-        fetchCategories();
     }, []);
 
     // Close language dropdown on outside click
@@ -90,34 +77,9 @@ export default function Navbar() {
         setIsMobileOpen(false);
     }, [pathname]);
 
-    // Default icon map for categories
-    const defaultIcons = {
-        'tourist': '🌴', 'working': '💼', 'student': '🎓',
-        'business': '📊', 'medical': '🏥', 'transit': '✈️',
-        'family': '👨‍👩‍👧‍👦', 'immigration': '🏠', 'pilgrimage': '🕌',
-    };
-
-    const getCategoryIcon = (cat) => {
-        if (cat.icon) return cat.icon;
-        const slug = (cat.slug || cat.name || '').toLowerCase();
-        for (const [key, icon] of Object.entries(defaultIcons)) {
-            if (slug.includes(key)) return icon;
-        }
-        return '📋';
-    };
-
     const navLinks = [
         { name: t('home'), href: "/" },
-        {
-            name: t('visa'),
-            href: "/visa",
-            hasDropdown: true,
-            dropdownItems: visaCategories.map(cat => ({
-                name: language === 'bn' && cat.nameBn ? cat.nameBn : cat.name,
-                href: `/visa?category=${encodeURIComponent(cat.name)}`,
-                icon: getCategoryIcon(cat),
-            })),
-        },
+        { name: t('visa'), href: "/visa" },
         { name: t('tour'), href: "/tour" },
         { name: isBn ? 'হোটেল' : 'Hotel', href: "/hotel" },
         { name: t('hajjUmrah'), href: "/hajj-umrah" },
@@ -142,14 +104,18 @@ export default function Navbar() {
             <div className="hidden lg:block bg-[#1a1a2e] text-white/80 text-xs">
                 <div className="max-w-[1400px] mx-auto px-6 flex items-center justify-between h-10">
                     <div className="flex items-center gap-6">
-                        <a href="mailto:support@visapro.com.bd" className="flex items-center gap-1.5 hover:text-[#EF8C2C] transition-colors">
+                        <a href={buildMailUrl(settings.contactEmail)} className="flex items-center gap-1.5 hover:text-[#EF8C2C] transition-colors">
                             <FiMail className="w-3 h-3" />
-                            <span style={{ fontFamily: 'Poppins, sans-serif' }}>{t('topEmail')}</span>
+                            <span style={{ fontFamily: 'Poppins, sans-serif' }}>{settings.contactEmail}</span>
                         </a>
-                        <span className="flex items-center gap-1.5">
-                            <FiMapPin className="w-3 h-3" />
-                            <span style={{ fontFamily: bnFont }}>{t('topAddress')}</span>
-                        </span>
+                        {(settings.address || settings.addressBn) && (
+                            <span className="flex items-center gap-1.5">
+                                <FiMapPin className="w-3 h-3" />
+                                <span style={{ fontFamily: bnFont }}>
+                                    {isBn && settings.addressBn ? settings.addressBn : settings.address}
+                                </span>
+                            </span>
+                        )}
                     </div>
                     <div className="flex items-center gap-4">
                         <span className="flex items-center gap-1.5">

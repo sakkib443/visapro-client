@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     LuSearch,
@@ -49,11 +50,17 @@ function HotelContent() {
     const fontFamily = isBn ? 'Hind Siliguri, sans-serif' : 'Poppins, sans-serif';
     const headingFont = isBn ? 'Hind Siliguri, sans-serif' : 'Teko, sans-serif';
 
+    const searchParams = useSearchParams();
+    const initialCity = searchParams.get("city") || "";
+    const initialStar = searchParams.get("star") || "all";
+    const initialCheckIn = searchParams.get("checkIn") || "";
+
     const [hotels, setHotels] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [searchQuery, setSearchQuery] = useState("");
+    const [searchQuery, setSearchQuery] = useState(initialCity);
     const [selectedCategory, setSelectedCategory] = useState("all");
-    const [selectedStar, setSelectedStar] = useState("all");
+    const [selectedStar, setSelectedStar] = useState(initialStar);
+    const [checkInDate, setCheckInDate] = useState(initialCheckIn);
     const [priceRange, setPriceRange] = useState(50000);
     const [viewMode, setViewMode] = useState("grid");
     const [sortBy, setSortBy] = useState("Featured");
@@ -99,6 +106,7 @@ function HotelContent() {
         setSearchQuery("");
         setSelectedCategory("all");
         setSelectedStar("all");
+        setCheckInDate("");
         setPriceRange(50000);
     };
 
@@ -119,6 +127,7 @@ function HotelContent() {
 
 
     return (
+        <>
         <div className="bg-[#F8FAFC] min-h-screen text-[#021E14]" style={{ fontFamily }}>
             {/* 1. Hero Section */}
             <section className="relative py-14 md:py-20 flex items-center justify-center overflow-hidden">
@@ -606,6 +615,7 @@ function HotelContent() {
                 { key: "rooms", label: "Number of Rooms", type: "number", placeholder: "1", required: true },
             ]}
         />
+        </>
     );
 }
 

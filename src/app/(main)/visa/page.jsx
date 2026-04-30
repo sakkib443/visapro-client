@@ -35,6 +35,7 @@ const continents = [
 function VisaContent() {
     const searchParams = useSearchParams();
     const initialRegion = searchParams.get("region") || "";
+    const initialCategory = searchParams.get("category") || "";
     const { language } = useLanguage();
     const isBn = language === 'bn';
     const fontFamily = isBn ? 'Hind Siliguri, sans-serif' : 'Poppins, sans-serif';
@@ -89,7 +90,10 @@ function VisaContent() {
             const matchesRegion = selectedRegions.length === 0 || selectedRegions.includes(country.region);
             const matchesSubmission = selectedSubmissionTypes.length === 0 || selectedSubmissionTypes.includes(country.submissionType);
             const matchesPrice = (country.startingPrice || country.visaTypes?.[0]?.fee || 0) <= priceRange;
-            return matchesSearch && matchesRegion && matchesSubmission && matchesPrice;
+            const matchesCategory = !initialCategory || (country.visaTypes || []).some(vt =>
+                vt.category === initialCategory || vt.slug === initialCategory || vt.categorySlug === initialCategory
+            );
+            return matchesSearch && matchesRegion && matchesSubmission && matchesPrice && matchesCategory;
         });
 
         // Sort

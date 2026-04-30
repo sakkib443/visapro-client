@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper/modules";
@@ -34,7 +35,8 @@ export default function Services() {
             icon: <LuTicket />,
             image: "https://images.unsplash.com/photo-1544016768-982d1554f0b9?w=800&fit=crop",
             color: "#1D7EDD",
-            stats: t('visaProcessingStats')
+            stats: t('visaProcessingStats'),
+            href: "/visa"
         },
         {
             title: t('flightBooking'),
@@ -43,7 +45,8 @@ export default function Services() {
             icon: <LuPlane />,
             image: "https://images.pexels.com/photos/46148/aircraft-jet-landing-cloud-46148.jpeg?auto=compress&cs=tinysrgb&w=800",
             color: "#EF8C2C",
-            stats: t('flightBookingStats')
+            stats: t('flightBookingStats'),
+            href: "/contact"
         },
         {
             title: t('hotelReservation'),
@@ -52,7 +55,8 @@ export default function Services() {
             icon: <LuBed />,
             image: "https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=800",
             color: "#10B981",
-            stats: t('hotelReservationStats')
+            stats: t('hotelReservationStats'),
+            href: "/hotel"
         },
         {
             title: t('tourPackages'),
@@ -61,7 +65,8 @@ export default function Services() {
             icon: <LuMapPin />,
             image: "https://images.pexels.com/photos/457882/pexels-photo-457882.jpeg?auto=compress&cs=tinysrgb&w=800",
             color: "#8B5CF6",
-            stats: t('tourPackagesStats')
+            stats: t('tourPackagesStats'),
+            href: "/tour"
         },
         {
             title: t('hajjUmrahService'),
@@ -70,7 +75,8 @@ export default function Services() {
             icon: <LuMoon />,
             image: "https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?w=800&fit=crop",
             color: "#F59E0B",
-            stats: t('hajjUmrahStats')
+            stats: t('hajjUmrahStats'),
+            href: "/hajj-umrah"
         },
         {
             title: t('studyAbroadService'),
@@ -79,7 +85,8 @@ export default function Services() {
             icon: <LuGraduationCap />,
             image: "https://images.pexels.com/photos/159711/books-bookstore-book-reading-159711.jpeg?auto=compress&cs=tinysrgb&w=800",
             color: "#EC4899",
-            stats: t('studyAbroadStats')
+            stats: t('studyAbroadStats'),
+            href: "/study-abroad"
         }
     ];
 
@@ -178,7 +185,11 @@ export default function Services() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: index * 0.08, duration: 0.5 }}
-                                className="group relative bg-white rounded-2xl overflow-hidden border border-gray-100/80 hover:border-gray-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] transition-all duration-700 h-full flex flex-col"
+                                className="h-full"
+                            >
+                            <Link
+                                href={service.href}
+                                className="group relative bg-white rounded-2xl overflow-hidden border border-gray-100/80 hover:border-gray-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] transition-all duration-700 h-full flex flex-col cursor-pointer"
                             >
                                 {/* Image Section */}
                                 <div className="relative h-44 overflow-hidden">
@@ -245,18 +256,18 @@ export default function Services() {
 
                                     {/* CTA */}
                                     <div className="flex items-center justify-between">
-                                        <button
+                                        <span
                                             className="flex items-center gap-2 text-[12px] font-bold uppercase tracking-wider transition-all duration-300 group-hover:gap-3"
                                             style={{ color: service.color, fontFamily: bnFont || '"Poppins", sans-serif' }}
                                         >
                                             {t('learnMore')}
-                                            <div
+                                            <span
                                                 className="w-7 h-7 rounded-full flex items-center justify-center transition-all duration-500 group-hover:scale-110"
                                                 style={{ backgroundColor: `${service.color}12` }}
                                             >
                                                 <LuArrowUpRight className="text-sm" style={{ color: service.color }} />
-                                            </div>
-                                        </button>
+                                            </span>
+                                        </span>
 
                                         {/* Service Number */}
                                         <span className="text-gray-200 text-3xl font-black select-none" style={{ fontFamily: '"Teko", sans-serif' }}>
@@ -264,6 +275,7 @@ export default function Services() {
                                         </span>
                                     </div>
                                 </div>
+                            </Link>
                             </motion.div>
                         </SwiperSlide>
                     ))}
@@ -304,10 +316,10 @@ export default function Services() {
                         </p>
                     </div>
 
-                    <button className="group/cta flex items-center gap-3 px-7 py-3.5 rounded-full bg-gradient-to-r from-[#1D7EDD] to-[#3BAAFF] text-white text-xs font-bold uppercase tracking-[0.15em] hover:shadow-[0_8px_32px_rgba(29,126,221,0.3)] transition-all duration-500 hover:-translate-y-0.5" style={{ fontFamily: bnFont || '"Poppins", sans-serif' }}>
+                    <Link href="/contact" className="group/cta flex items-center gap-3 px-7 py-3.5 rounded-full bg-gradient-to-r from-[#1D7EDD] to-[#3BAAFF] text-white text-xs font-bold uppercase tracking-[0.15em] hover:shadow-[0_8px_32px_rgba(29,126,221,0.3)] transition-all duration-500 hover:-translate-y-0.5" style={{ fontFamily: bnFont || '"Poppins", sans-serif' }}>
                         {language === 'bn' ? 'সব সেবা দেখুন' : 'View All Services'}
                         <LuArrowRight className="text-sm group-hover/cta:translate-x-1 transition-transform" />
-                    </button>
+                    </Link>
                 </motion.div>
             </div>
         </section>

@@ -11,115 +11,43 @@ import {
     LuGlobe,
     LuBookOpen,
     LuPlane,
-    LuEye
+    LuEye,
+    LuLoader
 } from "react-icons/lu";
 import { useLanguage } from "@/context/LanguageContext";
 
-// Blog Categories
-const categories = [
-    { name: "All", nameBn: "সব" },
-    { name: "Visa Guides", nameBn: "ভিসা গাইড" },
-    { name: "Travel Tips", nameBn: "ভ্রমণ টিপস" },
-    { name: "Immigration", nameBn: "ইমিগ্রেশন" },
-    { name: "Study Abroad", nameBn: "বিদেশে পড়াশোনা" },
-    { name: "Success Stories", nameBn: "সাফল্যের গল্প" },
-];
-
-// Mock blog data — visa/travel themed
-const mockBlogs = [
-    {
-        _id: "1",
-        title: "Complete Guide to UK Tourist Visa Application 2026",
-        titleBn: "যুক্তরাজ্যের ট্যুরিস্ট ভিসা আবেদনের সম্পূর্ণ গাইড ২০২৬",
-        slug: "uk-tourist-visa-guide-2026",
-        excerpt: "Step-by-step guide to applying for a UK tourist visa from Bangladesh. Requirements, documents, fees, and tips to increase your approval chances.",
-        thumbnail: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800",
-        category: "Visa Guides",
-        author: { name: "VisaPro Team" },
-        createdAt: "2026-02-20",
-        readTime: "8 min",
-        views: 4520
-    },
-    {
-        _id: "2",
-        title: "Top 10 Scholarships for Bangladeshi Students in Canada",
-        titleBn: "কানাডায় বাংলাদেশি শিক্ষার্থীদের জন্য সেরা ১০টি বৃত্তি",
-        slug: "scholarships-bangladeshi-students-canada",
-        excerpt: "Explore the best scholarship opportunities for Bangladeshi students looking to study in Canada. Full funding, partial scholarships, and more.",
-        thumbnail: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800",
-        category: "Study Abroad",
-        author: { name: "VisaPro Team" },
-        createdAt: "2026-02-18",
-        readTime: "10 min",
-        views: 3890
-    },
-    {
-        _id: "3",
-        title: "How We Helped 500+ Families Get Their Schengen Visa",
-        titleBn: "কীভাবে আমরা ৫০০+ পরিবারকে শেনজেন ভিসা পেতে সাহায্য করেছি",
-        slug: "500-families-schengen-visa-success",
-        excerpt: "Real success stories of families who trusted VisaPro for their European travel dreams. Read about their journeys and our approach.",
-        thumbnail: "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=800",
-        category: "Success Stories",
-        author: { name: "VisaPro Team" },
-        createdAt: "2026-02-15",
-        readTime: "6 min",
-        views: 2760
-    },
-    {
-        _id: "4",
-        title: "Australia PR Visa: Points Calculator & Eligibility Guide",
-        titleBn: "অস্ট্রেলিয়া পিআর ভিসা: পয়েন্ট ক্যালকুলেটর ও যোগ্যতা গাইড",
-        slug: "australia-pr-visa-points-guide",
-        excerpt: "Everything you need to know about the Australian Permanent Residency visa, including the points system, eligibility, and processing times.",
-        thumbnail: "https://images.unsplash.com/photo-1523482580672-f109ba8cb9be?w=800",
-        category: "Immigration",
-        author: { name: "VisaPro Team" },
-        createdAt: "2026-02-12",
-        readTime: "12 min",
-        views: 5120
-    },
-    {
-        _id: "5",
-        title: "Essential Packing Tips for Hajj & Umrah Pilgrims",
-        titleBn: "হজ্জ ও উমরাহ যাত্রীদের জন্য প্রয়োজনীয় প্যাকিং টিপস",
-        slug: "packing-tips-hajj-umrah",
-        excerpt: "A comprehensive packing checklist and travel tips for first-time Hajj and Umrah pilgrims from Bangladesh.",
-        thumbnail: "https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?w=800",
-        category: "Travel Tips",
-        author: { name: "VisaPro Team" },
-        createdAt: "2026-02-10",
-        readTime: "7 min",
-        views: 3340
-    },
-    {
-        _id: "6",
-        title: "Malaysia Work Visa: Requirements & Application Process",
-        titleBn: "মালয়েশিয়া ওয়ার্ক ভিসা: প্রয়োজনীয়তা ও আবেদন প্রক্রিয়া",
-        slug: "malaysia-work-visa-requirements",
-        excerpt: "Complete guide to getting a work visa for Malaysia. Learn about different work permit categories, required documents, and processing timeline.",
-        thumbnail: "https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=800",
-        category: "Visa Guides",
-        author: { name: "VisaPro Team" },
-        createdAt: "2026-02-08",
-        readTime: "9 min",
-        views: 2180
-    },
-];
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 export default function BlogPage() {
     const { language } = useLanguage();
-    const [blogs, setBlogs] = useState(mockBlogs);
+    const [blogs, setBlogs] = useState([]);
     const [search, setSearch] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState("All");
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchBlogs = async () => {
+            setLoading(true);
+            try {
+                const res = await fetch(`${API_BASE}/api/blogs?status=published&limit=50`);
+                const data = await res.json();
+                if (data.success && data.data) {
+                    setBlogs(data.data);
+                }
+            } catch (err) {
+                console.error("Failed to fetch blogs:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchBlogs();
+    }, []);
 
     const filteredBlogs = blogs
         .filter(blog => {
-            if (selectedCategory !== "All" && blog.category !== selectedCategory) return false;
             if (search && !blog.title?.toLowerCase().includes(search.toLowerCase()) && !blog.titleBn?.includes(search)) return false;
             return true;
         })
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        .sort((a, b) => new Date(b.publishedAt || b.createdAt) - new Date(a.publishedAt || a.createdAt));
 
     const isBn = language === 'bn';
     const featuredPost = filteredBlogs[0];
@@ -164,7 +92,7 @@ export default function BlogPage() {
                             <span style={{ color: '#EF8C2C' }}>{isBn ? 'সর্বশেষ আপডেট' : 'LATEST UPDATES'}</span>
                         </motion.h1>
 
-                        {/* Search & Filters */}
+                        {/* Search */}
                         <div className="flex flex-col items-center gap-5 w-full max-w-xl">
                             <div className="relative w-full">
                                 <LuSearch className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -177,29 +105,20 @@ export default function BlogPage() {
                                     style={{ fontFamily: 'Poppins, sans-serif' }}
                                 />
                             </div>
-
-                            <div className="flex flex-wrap items-center justify-center gap-2">
-                                {categories.map((cat) => (
-                                    <button
-                                        key={cat.name}
-                                        onClick={() => setSelectedCategory(cat.name)}
-                                        className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all duration-300 ${selectedCategory === cat.name
-                                            ? 'bg-[#EF8C2C] text-white shadow-md'
-                                            : 'bg-white border border-gray-100 text-gray-400 hover:bg-gray-50 hover:text-gray-600'
-                                            }`}
-                                        style={{ fontFamily: 'Poppins, sans-serif' }}
-                                    >
-                                        {isBn ? cat.nameBn : cat.name}
-                                    </button>
-                                ))}
-                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
+            {/* Loading */}
+            {loading && (
+                <div className="flex justify-center py-20">
+                    <LuLoader className="w-8 h-8 text-[#EF8C2C] animate-spin" />
+                </div>
+            )}
+
             {/* --- FEATURED POST --- */}
-            {featuredPost && (
+            {!loading && featuredPost && (
                 <section className="py-12 bg-white">
                     <div className="max-w-7xl mx-auto px-6 lg:px-12">
                         <Link href={`/blog/${featuredPost.slug}`} className="group block">
@@ -222,19 +141,16 @@ export default function BlogPage() {
                                             {isBn ? 'ফিচার্ড' : 'FEATURED'}
                                         </span>
                                     </div>
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#3590CF] mb-3 block" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                                        {featuredPost.category}
-                                    </span>
                                     <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 leading-tight uppercase group-hover:text-[#EF8C2C] transition-colors" style={{ fontFamily: 'Teko, sans-serif' }}>
-                                        {isBn ? featuredPost.titleBn : featuredPost.title}
+                                        {isBn ? featuredPost.titleBn || featuredPost.title : featuredPost.title}
                                     </h2>
                                     <p className="text-gray-500 text-sm leading-relaxed mb-6 line-clamp-3" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                                        {featuredPost.excerpt}
+                                        {isBn ? featuredPost.excerptBn || featuredPost.excerpt : featuredPost.excerpt}
                                     </p>
                                     <div className="flex items-center gap-4 text-[10px] font-semibold text-gray-400 uppercase tracking-wider" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                                        <span className="flex items-center gap-1.5"><LuCalendar className="w-3.5 h-3.5" />{featuredPost.createdAt}</span>
-                                        <span className="flex items-center gap-1.5"><LuClock className="w-3.5 h-3.5" />{featuredPost.readTime}</span>
-                                        <span className="flex items-center gap-1.5"><LuEye className="w-3.5 h-3.5" />{featuredPost.views?.toLocaleString()}</span>
+                                        <span className="flex items-center gap-1.5"><LuCalendar className="w-3.5 h-3.5" />{new Date(featuredPost.publishedAt || featuredPost.createdAt).toLocaleDateString()}</span>
+                                        <span className="flex items-center gap-1.5"><LuClock className="w-3.5 h-3.5" />{featuredPost.readingTime || 5} min</span>
+                                        <span className="flex items-center gap-1.5"><LuEye className="w-3.5 h-3.5" />{featuredPost.totalViews?.toLocaleString() || 0}</span>
                                     </div>
                                 </div>
                             </motion.div>
@@ -244,37 +160,31 @@ export default function BlogPage() {
             )}
 
             {/* --- BLOG GRID --- */}
-            <section className="pb-16 bg-white">
-                <div className="max-w-7xl mx-auto px-6 lg:px-12">
-                    {otherPosts.length > 0 && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {otherPosts.map((blog, index) => (
-                                <BlogCard key={blog._id} blog={blog} index={index} isBn={isBn} />
-                            ))}
-                        </div>
-                    )}
+            {!loading && (
+                <section className="pb-16 bg-white">
+                    <div className="max-w-7xl mx-auto px-6 lg:px-12">
+                        {otherPosts.length > 0 && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {otherPosts.map((blog, index) => (
+                                    <BlogCard key={blog._id} blog={blog} index={index} isBn={isBn} />
+                                ))}
+                            </div>
+                        )}
 
-                    {filteredBlogs.length === 0 && (
-                        <div className="text-center py-20">
-                            <LuSearch className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                            <h3 className="text-xl font-bold text-gray-400 uppercase" style={{ fontFamily: 'Teko, sans-serif' }}>
-                                {isBn ? 'কোনো আর্টিকেল পাওয়া যায়নি' : 'NO ARTICLES FOUND'}
-                            </h3>
-                            <p className="text-gray-400 text-sm mt-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                                {isBn ? 'অন্যভাবে খোঁজার চেষ্টা করুন' : 'Try adjusting your search or filters'}
-                            </p>
-                        </div>
-                    )}
-
-                    {filteredBlogs.length > 6 && (
-                        <div className="text-center mt-14">
-                            <button className="inline-flex items-center gap-3 px-10 py-4 bg-gray-900 hover:bg-[#EF8C2C] text-white rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all shadow-lg active:scale-[0.98]" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                                {isBn ? 'আরো দেখুন' : 'LOAD MORE'} <LuArrowRight className="w-4 h-4" />
-                            </button>
-                        </div>
-                    )}
-                </div>
-            </section>
+                        {filteredBlogs.length === 0 && (
+                            <div className="text-center py-20">
+                                <LuSearch className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                                <h3 className="text-xl font-bold text-gray-400 uppercase" style={{ fontFamily: 'Teko, sans-serif' }}>
+                                    {isBn ? 'কোনো আর্টিকেল পাওয়া যায়নি' : 'NO ARTICLES FOUND'}
+                                </h3>
+                                <p className="text-gray-400 text-sm mt-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                                    {isBn ? 'অন্যভাবে খোঁজার চেষ্টা করুন' : 'Try adjusting your search or filters'}
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </section>
+            )}
 
             {/* --- CTA SECTION --- */}
             <section className="py-14 border-t border-gray-100" style={{ background: 'linear-gradient(135deg, #f8fafb 0%, #f0f5fa 100%)' }}>
@@ -316,32 +226,27 @@ function BlogCard({ blog, index, isBn }) {
         >
             <Link href={`/blog/${blog.slug}`} className="block relative aspect-[16/10] overflow-hidden">
                 <img src={blog.thumbnail} alt={blog.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                <div className="absolute top-3 left-3">
-                    <span className="px-3 py-1 bg-white/90 backdrop-blur-md text-gray-900 text-[9px] font-bold uppercase tracking-widest rounded-lg shadow-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                        {blog.category}
-                    </span>
-                </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </Link>
             <div className="p-5 flex flex-col flex-grow">
                 <div className="flex items-center gap-4 text-[9px] font-semibold text-gray-400 uppercase tracking-wider mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    <span className="flex items-center gap-1.5"><LuCalendar className="w-3 h-3" />{blog.createdAt}</span>
-                    <span className="flex items-center gap-1.5"><LuClock className="w-3 h-3" />{blog.readTime}</span>
+                    <span className="flex items-center gap-1.5"><LuCalendar className="w-3 h-3" />{new Date(blog.publishedAt || blog.createdAt).toLocaleDateString()}</span>
+                    <span className="flex items-center gap-1.5"><LuClock className="w-3 h-3" />{blog.readingTime || 5} min</span>
                 </div>
                 <Link href={`/blog/${blog.slug}`}>
                     <h3 className="text-lg font-bold text-gray-900 mb-3 line-clamp-2 leading-tight uppercase group-hover:text-[#EF8C2C] transition-colors" style={{ fontFamily: 'Teko, sans-serif' }}>
-                        {isBn ? blog.titleBn : blog.title}
+                        {isBn ? blog.titleBn || blog.title : blog.title}
                     </h3>
                 </Link>
                 <p className="text-gray-500 text-[13px] leading-relaxed mb-5 line-clamp-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    {blog.excerpt}
+                    {isBn ? blog.excerptBn || blog.excerpt : blog.excerpt}
                 </p>
                 <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between">
                     <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                        {blog.author?.name}
+                        {blog.author?.firstName ? `${blog.author.firstName} ${blog.author.lastName || ''}` : 'VisaPro Team'}
                     </span>
                     <span className="flex items-center gap-1.5 text-[10px] font-semibold text-gray-400" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                        <LuEye className="w-3.5 h-3.5" />{blog.views?.toLocaleString()}
+                        <LuEye className="w-3.5 h-3.5" />{blog.totalViews?.toLocaleString() || 0}
                     </span>
                 </div>
             </div>

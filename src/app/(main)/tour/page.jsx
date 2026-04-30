@@ -54,12 +54,18 @@ function TourContent() {
     const fontFamily = isBn ? 'Hind Siliguri, sans-serif' : 'Poppins, sans-serif';
     const headingFont = isBn ? 'Hind Siliguri, sans-serif' : 'Teko, sans-serif';
 
+    const searchParams = useSearchParams();
+    const initialDestination = searchParams.get("destination") || "";
+    const initialCategory = searchParams.get("category") || "all";
+    const initialDate = searchParams.get("date") || "";
+
     const [tours, setTours] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [searchQuery, setSearchQuery] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState("all");
+    const [searchQuery, setSearchQuery] = useState(initialDestination);
+    const [selectedCategory, setSelectedCategory] = useState(initialCategory);
     const [priceRange, setPriceRange] = useState(200000);
     const [selectedType, setSelectedType] = useState("all");
+    const [travelDate, setTravelDate] = useState(initialDate);
     const [viewMode, setViewMode] = useState("grid");
     const [sortBy, setSortBy] = useState("Featured");
     const [showFilters, setShowFilters] = useState(false);
@@ -104,6 +110,7 @@ function TourContent() {
         setSelectedCategory("all");
         setPriceRange(200000);
         setSelectedType("all");
+        setTravelDate("");
     };
 
     const getCurrencySymbol = (currency) => {

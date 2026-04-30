@@ -30,6 +30,8 @@ import {
     FiMessageSquare,
     FiClipboard,
     FiBookOpen,
+    FiLayout,
+    FiPhone,
 } from "react-icons/fi";
 import { LuPlane, LuGraduationCap, LuHotel, LuShieldCheck } from "react-icons/lu";
 import { FaKaaba } from "react-icons/fa6";
@@ -169,7 +171,7 @@ const menuItems = [
     },
     {
         name: "Reviews",
-        href: "/dashboard/admin/reviews",
+        href: "/dashboard/admin/testimonials",
         icon: FiStar,
     },
     {
@@ -189,20 +191,23 @@ const menuItems = [
         hidden: true,
     },
     {
-        section: "SETTINGS",
-        hidden: true,
+        section: "DESIGN & CONTENT",
     },
     {
-        name: "Reports",
-        href: "/dashboard/admin/reports",
-        icon: FiBarChart2,
-        hidden: true,
+        name: "Design & Content",
+        icon: FiLayout,
+        children: [
+            { name: "Contact Page", href: "/dashboard/admin/design-content/contact", icon: FiPhone },
+            { name: "Social Links", href: "/dashboard/admin/design-content/social", icon: FiGlobe },
+        ],
+    },
+    {
+        section: "SETTINGS",
     },
     {
         name: "Settings",
         href: "/dashboard/admin/settings",
         icon: FiSettings,
-        hidden: true,
     },
     {
         name: "Profile",
