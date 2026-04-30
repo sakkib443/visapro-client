@@ -24,6 +24,7 @@ import {
     LuCalendarDays,
     LuBuilding2,
 } from "react-icons/lu";
+import { FaWhatsapp } from "react-icons/fa";
 import { useLanguage } from "@/context/LanguageContext";
 import Link from "next/link";
 
@@ -439,18 +440,25 @@ export default function HotelDetailsPage() {
                                     ))}
                                 </div>
 
-                                <button
-                                    className="w-full py-3.5 rounded-md text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:shadow-lg hover:shadow-[#EF8C2C]/20 flex items-center justify-center gap-2"
-                                    style={{ backgroundColor: '#EF8C2C', fontFamily }}
+                                <a
+                                    href={`https://wa.me/8801234567890?text=${encodeURIComponent(
+                                        `🏨 Hotel Booking Inquiry - VisaPro\n\n` +
+                                        `Hotel: ${hotel.name}${hotel.nameBn ? ` (${hotel.nameBn})` : ''}\n` +
+                                        `Location: ${hotel.location}, ${hotel.city}\n` +
+                                        `Star Rating: ${'★'.repeat(hotel.starRating || 1)} (${hotel.starRating || 1} Star)\n` +
+                                        `Room Type: ${hotel.roomType || 'N/A'}\n` +
+                                        `Price: ${sym}${hotel.pricePerNight?.toLocaleString()} per night\n` +
+                                        `Check-in: ${hotel.checkInTime || '14:00'} | Check-out: ${hotel.checkOutTime || '12:00'}\n\n` +
+                                        `I would like to book this hotel. Please assist me.`
+                                    )}`}
+                                    target="_blank" rel="noopener noreferrer"
+                                    className="w-full py-3.5 rounded-md text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:shadow-lg hover:shadow-[#25D366]/20 flex items-center justify-center gap-2"
+                                    style={{ backgroundColor: '#25D366', fontFamily }}
                                 >
-                                    {isBn ? 'এখনই বুক করুন' : 'Book Now'} <LuArrowRight size={13} />
-                                </button>
-                                <button
-                                    className="w-full mt-3 py-3.5 rounded-md text-[11px] font-bold uppercase tracking-widest border-2 transition-all hover:bg-gray-50"
-                                    style={{ borderColor: '#3590CF', color: '#3590CF', fontFamily }}
-                                >
-                                    {isBn ? 'কাস্টম প্ল্যান' : 'Custom Plan'}
-                                </button>
+                                    <FaWhatsapp size={16} />
+                                    {isBn ? 'এখনই বুক করুন' : 'Book Now'}
+                                </a>
+
                             </motion.div>
 
                             {/* Why Choose Us */}
@@ -605,18 +613,30 @@ export default function HotelDetailsPage() {
                         }
                     </p>
                     <div className="flex flex-wrap justify-center gap-4">
-                        <button
-                            className="px-10 py-4 rounded-md text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:shadow-lg hover:shadow-[#EF8C2C]/20 hover:-translate-y-0.5"
-                            style={{ backgroundColor: '#EF8C2C', fontFamily }}
+                        <a
+                            href={`https://wa.me/8801234567890?text=${encodeURIComponent(
+                                `🏨 Hotel Booking - VisaPro\n\n` +
+                                `Hotel: ${hotel.name}\n` +
+                                `Location: ${hotel.city}\n` +
+                                `Price: ${sym}${hotel.pricePerNight?.toLocaleString()} per night\n\n` +
+                                `I would like to book this hotel. Please assist me.`
+                            )}`}
+                            target="_blank" rel="noopener noreferrer"
+                            className="px-10 py-4 rounded-md text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:shadow-lg hover:shadow-[#25D366]/20 hover:-translate-y-0.5 flex items-center gap-2"
+                            style={{ backgroundColor: '#25D366', fontFamily }}
                         >
+                            <FaWhatsapp size={16} />
                             {isBn ? 'এখনই বুক করুন' : 'Book Now'}
-                        </button>
-                        <button
-                            className="px-10 py-4 rounded-md text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:shadow-lg hover:-translate-y-0.5"
+                        </a>
+                        <a
+                            href={`https://wa.me/8801234567890?text=${encodeURIComponent(`Hi, I need help with hotel booking. Please contact me.`)}`}
+                            target="_blank" rel="noopener noreferrer"
+                            className="px-10 py-4 rounded-md text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:shadow-lg hover:-translate-y-0.5 flex items-center gap-2"
                             style={{ backgroundColor: '#021E14', fontFamily }}
                         >
+                            <FaWhatsapp size={16} />
                             {isBn ? 'যোগাযোগ করুন' : 'Contact Us'}
-                        </button>
+                        </a>
                     </div>
                 </div>
             </section>

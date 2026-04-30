@@ -528,14 +528,7 @@ function HotelContent() {
                                                                     )}
                                                                 </div>
                                                             </div>
-                                                            <div className="flex gap-2">
-                                                                <button
-                                                                    onClick={() => setBookingModal({ open: true, hotel })}
-                                                                    className="px-4 py-2.5 border border-[#EF8C2C] text-[#EF8C2C] hover:bg-[#EF8C2C] hover:text-white rounded-md text-[10px] font-bold uppercase tracking-wider transition-all"
-                                                                    style={{ fontFamily }}
-                                                                >
-                                                                    {isBn ? 'বুক করুন' : 'Book'}
-                                                                </button>
+                                                            <div>
                                                                 <Link
                                                                     href={`/hotel/${hotel.slug || hotel._id}`}
                                                                     className="px-5 py-2.5 bg-[#EF8C2C] hover:bg-[#d97b1f] text-white rounded-md text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5"
