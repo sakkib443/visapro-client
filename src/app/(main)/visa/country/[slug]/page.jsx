@@ -31,6 +31,7 @@ import { FaWhatsapp } from "react-icons/fa";
 import { useLanguage } from "@/context/LanguageContext";
 import Link from "next/link";
 import CountryFlag from "@/components/shared/CountryFlag";
+import BookingModal from "@/components/shared/BookingModal";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -49,6 +50,7 @@ export default function CountryDetailPage() {
     const [expandAll, setExpandAll] = useState(false);
     const [selectedVisaType, setSelectedVisaType] = useState(null);
     const [travelDate, setTravelDate] = useState('');
+    const [bookingOpen, setBookingOpen] = useState(false);
 
     useEffect(() => {
         const fetchCountry = async () => {
@@ -725,25 +727,14 @@ export default function CountryDetailPage() {
                                     </div>
 
                                     {/* CTA Button */}
-                                    <a
-                                        href={`https://wa.me/8801234567890?text=${encodeURIComponent(
-                                            `🛂 Visa Inquiry - VisaPro\n\n` +
-                                            `Country: ${country.name}${country.nameBn ? ` (${country.nameBn})` : ''}\n` +
-                                            `Visa Type: ${selectedVisaType?.name || 'N/A'}${selectedVisaType?.nameBn ? ` (${selectedVisaType.nameBn})` : ''}\n` +
-                                            `Service Fee: ৳${serviceFee > 0 ? serviceFee.toLocaleString() : 'N/A'}\n` +
-                                            `Embassy Fee: ৳${govFee > 0 ? govFee.toLocaleString() : 'N/A'}\n` +
-                                            `Total: ৳${totalFee > 0 ? totalFee.toLocaleString() : 'N/A'}\n` +
-                                            (travelDate ? `Travel Date: ${new Date(travelDate).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}\n` : '') +
-                                            `\nI would like to start the visa application process. Please assist me.`
-                                        )}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="w-full py-3.5 rounded-lg text-[13px] font-bold text-white transition-all duration-200 hover:shadow-lg hover:shadow-[#25D366]/20 active:scale-[0.98] mt-1 flex items-center justify-center gap-2"
-                                        style={{ background: '#25D366', fontFamily }}
+                                    <button
+                                        onClick={() => setBookingOpen(true)}
+                                        className="w-full py-3.5 rounded-lg text-[13px] font-bold text-white transition-all duration-200 hover:shadow-lg hover:shadow-[#EF8C2C]/20 active:scale-[0.98] mt-1 flex items-center justify-center gap-2"
+                                        style={{ background: '#EF8C2C', fontFamily }}
                                     >
-                                        <FaWhatsapp size={17} />
+                                        <LuCalendar size={17} />
                                         {isBn ? 'আবেদন শুরু করুন' : 'Start Application'}
-                                    </a>
+                                    </button>
                                 </div>
                             </div>
 
@@ -810,6 +801,18 @@ export default function CountryDetailPage() {
                     </div>
                 </div>
             </div>
+            <BookingModal
+                isOpen={bookingOpen}
+                onClose={() => setBookingOpen(false)}
+                type="visa"
+                serviceName={`${country?.name || ''} - ${selectedVisaType?.name || 'Visa'}`}
+                serviceId={country?._id || ""}
+                extraFields={[
+                    { key: "visaType", label: isBn ? "ভিসার ধরন" : "Visa Type", type: "text", required: true, placeholder: selectedVisaType?.name || '' },
+                    { key: "travelDate", label: isBn ? "ভ্রমণের তারিখ" : "Travel Date", type: "date", required: true },
+                    { key: "persons", label: isBn ? "যাত্রীর সংখ্যা" : "Number of Travelers", type: "number", placeholder: "1", required: true },
+                ]}
+            />
         </div>
     );
 }

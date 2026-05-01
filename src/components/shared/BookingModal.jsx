@@ -1,16 +1,15 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { LuX, LuSend, LuLoader } from "react-icons/lu";
-import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
-import { selectToken } from "@/redux/features/authSlice";
+import { selectToken, selectCurrentUser } from "@/redux/features/authSlice";
 
 const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
 
 export default function BookingModal({ isOpen, onClose, type, serviceName, serviceId = "", extraFields = [] }) {
-    const router = useRouter();
     const token = useSelector(selectToken);
+    const user = useSelector(selectCurrentUser);
     const [form, setForm] = useState({ name: "", email: "", phone: "", message: "", ...Object.fromEntries(extraFields.map(f => [f.key, ""])) });
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
@@ -18,20 +17,24 @@ export default function BookingModal({ isOpen, onClose, type, serviceName, servi
 
     const typeLabels = { visa: "Visa Application", hotel: "Hotel Booking", tour: "Tour Booking", hajj: "Hajj/Umrah Booking", study: "Study Abroad" };
 
+    // Auto-fill from logged-in user data
+    useEffect(() => {
+        if (isOpen && user) {
+            setForm(prev => ({
+                ...prev,
+                name: prev.name || user.name || "",
+                email: prev.email || user.email || "",
+                phone: prev.phone || user.phone || "",
+            }));
+        }
+    }, [isOpen, user]);
+
     const handleChange = (e) => setForm(p => ({ ...p, [e.target.name]: e.target.value }));
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
         setLoading(true);
-
-        // Check auth token from Redux store
-        if (!token) {
-            setLoading(false);
-            onClose();
-            router.push("/login");
-            return;
-        }
 
         try {
             const { name, email, phone, message, ...rest } = form;
@@ -43,9 +46,14 @@ export default function BookingModal({ isOpen, onClose, type, serviceName, servi
                 details: { ...rest, message },
             };
 
+            const headers = { "Content-Type": "application/json" };
+            if (token) {
+                headers["Authorization"] = `Bearer ${token}`;
+            }
+
             const res = await fetch(`${BACKEND}/api/bookings`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                headers,
                 body: JSON.stringify(body),
             });
             const data = await res.json();
@@ -147,7 +155,7 @@ export default function BookingModal({ isOpen, onClose, type, serviceName, servi
                                 </button>
 
                                 <p className="text-xs text-gray-400 text-center">
-                                    You must be logged in to book. We'll contact you to confirm.
+                                    No login required. We'll contact you to confirm your booking.
                                 </p>
                             </form>
                         )}

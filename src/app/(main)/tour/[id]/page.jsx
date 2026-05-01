@@ -29,6 +29,7 @@ import {
 import { FaWhatsapp } from "react-icons/fa";
 import { useLanguage } from "@/context/LanguageContext";
 import Link from "next/link";
+import BookingModal from "@/components/shared/BookingModal";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -43,6 +44,7 @@ export default function TourDetailsPage() {
     const [tour, setTour] = useState(null);
     const [relatedTours, setRelatedTours] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [bookingOpen, setBookingOpen] = useState(false);
     const [error, setError] = useState(false);
 
     useEffect(() => {
@@ -394,24 +396,14 @@ export default function TourDetailsPage() {
                                     ))}
                                 </div>
 
-                                <a
-                                    href={`https://wa.me/8801234567890?text=${encodeURIComponent(
-                                        `🌍 Tour Booking Inquiry - VisaPro\n\n` +
-                                        `Tour: ${tour.title}${tour.titleBn ? ` (${tour.titleBn})` : ''}\n` +
-                                        `Destination: ${tour.destination}\n` +
-                                        `Duration: ${tour.duration}\n` +
-                                        `Type: ${tour.tourType || 'N/A'}\n` +
-                                        `Group Size: ${tour.groupSize ? `Max ${tour.groupSize}` : 'N/A'}\n` +
-                                        `Price: ${sym}${tour.price?.toLocaleString()} per person\n\n` +
-                                        `I would like to book this tour. Please assist me.`
-                                    )}`}
-                                    target="_blank" rel="noopener noreferrer"
-                                    className="w-full py-3.5 rounded-md text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:shadow-lg hover:shadow-[#25D366]/20 flex items-center justify-center gap-2"
-                                    style={{ backgroundColor: '#25D366', fontFamily }}
+                                <button
+                                    onClick={() => setBookingOpen(true)}
+                                    className="w-full py-3.5 rounded-md text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:shadow-lg hover:shadow-[#EF8C2C]/20 flex items-center justify-center gap-2"
+                                    style={{ backgroundColor: '#EF8C2C', fontFamily }}
                                 >
-                                    <FaWhatsapp size={16} />
+                                    <LuCalendarDays size={16} />
                                     {isBn ? 'এখনই বুক করুন' : 'Book Now'}
-                                </a>
+                                </button>
 
                             </motion.div>
 
@@ -576,6 +568,17 @@ export default function TourDetailsPage() {
                     </div>
                 </div>
             </section>
+            <BookingModal
+                isOpen={bookingOpen}
+                onClose={() => setBookingOpen(false)}
+                type="tour"
+                serviceName={tour?.title || ''}
+                serviceId={tour?._id || ""}
+                extraFields={[
+                    { key: "travelDate", label: isBn ? "ভ্রমণের তারিখ" : "Travel Date", type: "date", required: true },
+                    { key: "persons", label: isBn ? "যাত্রীর সংখ্যা" : "Number of Travelers", type: "number", placeholder: "1", required: true },
+                ]}
+            />
         </div>
     );
 }

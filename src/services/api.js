@@ -38,6 +38,12 @@ export const apiFetch = async (endpoint, options = {}) => {
     const data = await response.json();
 
     if (!response.ok) {
+        // Auto-logout on 401 (token expired or invalid)
+        if (response.status === 401 && typeof window !== "undefined") {
+            localStorage.removeItem("visapro-auth");
+            window.location.href = "/login";
+            return;
+        }
         const error = new Error(data.message || "Something went wrong");
         error.errorSources = data.errorSources;
         error.data = data;

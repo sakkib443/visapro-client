@@ -302,13 +302,37 @@ export default function DashboardLayout({ children }) {
     const router = useRouter();
     const pathname = usePathname();
 
-    useEffect(() => {
-        if (!token || !isAuthenticated) {
-            router.replace("/login");
-        } else {
-            setIsLoading(false);
+    // Helper: check if JWT token is expired
+    const isTokenExpired = (tkn) => {
+        if (!tkn) return true;
+        try {
+            const payload = JSON.parse(atob(tkn.split('.')[1]));
+            // exp is in seconds, Date.now() is in ms
+            return payload.exp * 1000 < Date.now();
+        } catch {
+            return true;
         }
-    }, [token, isAuthenticated, router]);
+    };
+
+    useEffect(() => {
+        // Initial check
+        if (!token || !isAuthenticated || isTokenExpired(token)) {
+            dispatch(logout());
+            router.replace("/login");
+            return;
+        }
+        setIsLoading(false);
+
+        // Periodic check every 60 seconds — auto-logout if token expired
+        const interval = setInterval(() => {
+            if (isTokenExpired(token)) {
+                dispatch(logout());
+                router.replace("/login");
+            }
+        }, 60000);
+
+        return () => clearInterval(interval);
+    }, [token, isAuthenticated, router, dispatch]);
 
     const handleLogout = () => {
         dispatch(logout());

@@ -185,22 +185,13 @@ export default function HajjUmrahPage() {
                                         </div>
 
                                         <div className="mt-auto pt-2">
-                                            <a href={`https://wa.me/8801234567890?text=${encodeURIComponent(
-                                                `🕋 Hajj & Umrah Inquiry\n\n` +
-                                                `Service: ${pkg.type === 'hajj' ? 'Hajj (হজ্জ)' : 'Umrah (ওমরাহ)'}\n` +
-                                                `Package: ${pkg.name}${pkg.nameBn ? ` (${pkg.nameBn})` : ''}\n` +
-                                                `Price: ৳${pkg.price?.toLocaleString()} per person\n` +
-                                                `Duration: ${pkg.duration}\n` +
-                                                `Hotel: ${pkg.hotel || 'N/A'}\n` +
-                                                `Departure: ${pkg.departureDate ? new Date(pkg.departureDate).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Flexible'}\n\n` +
-                                                `I would like to get more information about this package. Please contact me.`
-                                            )}`}
-                                                target="_blank" rel="noopener noreferrer"
+                                            <button
+                                                onClick={() => setBookingModal({ open: true, pkg })}
                                                 className="w-full flex items-center justify-center gap-2 py-3 rounded-lg text-[11px] font-bold uppercase tracking-widest transition-all hover:opacity-90 text-white"
-                                                style={{ backgroundColor: '#25D366' }}>
-                                                <FaWhatsapp size={16} />
-                                                {isBn ? 'হোয়াটসঅ্যাপে কথা বলুন' : 'Quick Discussion'}
-                                            </a>
+                                                style={{ backgroundColor: '#EF8C2C' }}>
+                                                <LuCalendar size={16} />
+                                                {isBn ? 'এখনই বুক করুন' : 'Book Now'}
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -251,22 +242,13 @@ export default function HajjUmrahPage() {
                                         </div>
 
                                         <div className="mt-auto pt-2">
-                                            <a href={`https://wa.me/8801234567890?text=${encodeURIComponent(
-                                                `🕌 Hajj & Umrah Inquiry\n\n` +
-                                                `Service: ${pkg.type === 'hajj' ? 'Hajj (হজ্জ)' : 'Umrah (ওমরাহ)'}\n` +
-                                                `Package: ${pkg.name}${pkg.nameBn ? ` (${pkg.nameBn})` : ''}\n` +
-                                                `Price: ৳${pkg.price?.toLocaleString()} per person\n` +
-                                                `Duration: ${pkg.duration}\n` +
-                                                `Hotel: ${pkg.hotel || 'N/A'}\n` +
-                                                `Departure: ${pkg.departureDate ? new Date(pkg.departureDate).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Flexible'}\n\n` +
-                                                `I would like to get more information about this package. Please contact me.`
-                                            )}`}
-                                                target="_blank" rel="noopener noreferrer"
+                                            <button
+                                                onClick={() => setBookingModal({ open: true, pkg })}
                                                 className="w-full flex items-center justify-center gap-2 py-3 rounded-lg text-[11px] font-bold uppercase tracking-widest transition-all hover:opacity-90 text-white"
-                                                style={{ backgroundColor: '#25D366' }}>
-                                                <FaWhatsapp size={16} />
-                                                {isBn ? 'হোয়াটসঅ্যাপে কথা বলুন' : 'Quick Discussion'}
-                                            </a>
+                                                style={{ backgroundColor: '#EF8C2C' }}>
+                                                <LuCalendar size={16} />
+                                                {isBn ? 'এখনই বুক করুন' : 'Book Now'}
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
