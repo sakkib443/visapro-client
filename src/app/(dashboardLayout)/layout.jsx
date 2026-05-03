@@ -75,7 +75,6 @@ const menuItems = [
     {
         name: "Visa Documents",
         icon: FiFileText,
-        hidden: true,
         children: [
             { name: "All Documents", href: "/dashboard/admin/visa-documents", icon: FiFileText },
             { name: "Create Document", href: "/dashboard/admin/visa-documents/create", icon: FiPlus },
@@ -88,6 +87,19 @@ const menuItems = [
         name: "Ticket Generator",
         icon: LuPlane,
         href: "/dashboard/admin/ticket-generator",
+    },
+    {
+        name: "Air Tickets",
+        icon: LuPlane,
+        children: [
+            { name: "All Air Tickets", href: "/dashboard/admin/air-tickets", icon: LuPlane },
+            { name: "Create Ticket", href: "/dashboard/admin/air-tickets/create", icon: FiPlus },
+        ],
+    },
+    {
+        name: "All Tickets",
+        href: "/dashboard/admin/all-tickets",
+        icon: FiClipboard,
     },
     {
         name: "Tour Packages",
@@ -132,6 +144,12 @@ const menuItems = [
         roles: ["user"],
     },
     {
+        name: "My Bookings",
+        icon: FiCalendar,
+        href: "/dashboard/user/my-bookings",
+        roles: ["user"],
+    },
+    {
         section: "MANAGEMENT",
     },
     {
@@ -148,10 +166,14 @@ const menuItems = [
         icon: FiCalendar,
     },
     {
-        name: "Payments",
-        href: "/dashboard/admin/payments",
-        icon: FiDollarSign,
-        hidden: true,
+        name: "Hotel Bookings",
+        href: "/dashboard/admin/hotel-bookings",
+        icon: LuHotel,
+    },
+    {
+        name: "All Documents",
+        href: "/dashboard/admin/all-documents",
+        icon: FiFileText,
     },
     {
         section: "CONTENT",
@@ -165,30 +187,14 @@ const menuItems = [
         ],
     },
     {
-        name: "Gallery",
-        href: "/dashboard/admin/gallery",
-        icon: FiImage,
-    },
-    {
         name: "Reviews",
         href: "/dashboard/admin/testimonials",
         icon: FiStar,
     },
     {
-        section: "COMMUNICATION",
-        hidden: true,
-    },
-    {
         name: "Messages",
         href: "/dashboard/admin/messages",
         icon: FiMessageSquare,
-        hidden: true,
-    },
-    {
-        name: "Notifications",
-        href: "/dashboard/admin/notifications",
-        icon: FiBell,
-        hidden: true,
     },
     {
         section: "DESIGN & CONTENT",
@@ -197,9 +203,15 @@ const menuItems = [
         name: "Design & Content",
         icon: FiLayout,
         children: [
+            { name: "Home Page", href: "/dashboard/admin/design-content/home", icon: FiHome },
             { name: "Contact Page", href: "/dashboard/admin/design-content/contact", icon: FiPhone },
             { name: "Social Links", href: "/dashboard/admin/design-content/social", icon: FiGlobe },
         ],
+    },
+    {
+        name: "Theme",
+        href: "/dashboard/admin/theme",
+        icon: FiImage,
     },
     {
         section: "SETTINGS",

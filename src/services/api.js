@@ -221,6 +221,17 @@ export const analyticsService = {
     getDashboard: () => apiFetch('/api/analytics/dashboard'),
 };
 
+// ==================== HOME CONTENT SERVICE ====================
+export const homeContentService = {
+    getAll: () => apiFetch('/api/home-content'),
+    getSection: (section) => apiFetch(`/api/home-content/${section}`),
+    updateSection: (section, data) => apiFetch(`/api/home-content/${section}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+    }),
+    seed: () => apiFetch('/api/home-content/seed', { method: 'POST' }),
+};
+
 // ==================== LEGACY STUBS (fonts pages) ====================
 export const fontService = {
     getAll: () => Promise.resolve({ success: false, data: [] }),

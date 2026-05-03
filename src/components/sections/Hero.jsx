@@ -394,7 +394,7 @@ function SearchButton({ label, onClick, bnFont }) {
 }
 
 // ─── Main Hero Component ─────────────────────────────────────────────────────
-export default function Hero() {
+export default function Hero({ heroData }) {
     const [activeTab, setActiveTab] = useState("visa");
     const { t, language } = useLanguage();
     const { settings } = useSiteSettings();
@@ -402,6 +402,13 @@ export default function Hero() {
     const router = useRouter();
     const isBn = language === "bn";
     const bnFont = isBn ? "Hind Siliguri, sans-serif" : undefined;
+
+    // Bilingual text helper
+    const bt = (obj, fallback = "") => {
+        if (!obj) return fallback;
+        return isBn ? (obj.bn || obj.en || fallback) : (obj.en || fallback);
+    };
+    const hd = heroData || {};
 
     // ── Data ──
     const [countries, setCountries] = useState([]);
@@ -626,7 +633,7 @@ export default function Hero() {
                     className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full w-auto h-auto object-cover"
                 >
                     <source
-                        src="https://res.cloudinary.com/dyjx0hfwi/video/upload/hero_jnba7p.mp4"
+                        src={hd.videoUrl || "https://res.cloudinary.com/dyjx0hfwi/video/upload/hero_jnba7p.mp4"}
                         type="video/mp4"
                     />
                 </video>
@@ -651,7 +658,7 @@ export default function Hero() {
                             className="text-white text-[9px] lg:text-[10px] font-bold tracking-widest uppercase"
                             style={{ fontFamily: bnFont }}
                         >
-                            {t("openingHour")}
+                            {hd.badgeText ? bt(hd.badgeText) : t("openingHour")}
                         </span>
                     </motion.div>
 
@@ -668,7 +675,7 @@ export default function Hero() {
                             lineHeight: "0.95",
                         }}
                     >
-                        {t("heroTitle")}
+                        {hd.heading ? bt(hd.heading) : t("heroTitle")}
                     </motion.h1>
 
                     <motion.div
@@ -678,12 +685,12 @@ export default function Hero() {
                         className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-3 lg:mt-5 w-full max-w-sm sm:max-w-none"
                     >
                         <Link
-                            href="/contact"
+                            href={hd.ctaButton1Link || "/contact"}
                             className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-[#EF8C2C] hover:bg-[#D97A1E] text-white rounded-lg font-semibold text-[12px] transition-all shadow-lg hover:-translate-y-0.5"
                             style={{ fontFamily: bnFont }}
                         >
                             <LuCalendarCheck className="w-3.5 h-3.5" />
-                            {isBn ? "বুকিং এর জন্য যোগাযোগ" : "Contact for booking"}
+                            {hd.ctaButton1Text ? bt(hd.ctaButton1Text) : (isBn ? "বুকিং এর জন্য যোগাযোগ" : "Contact for booking")}
                         </Link>
                         <a
                             href={buildWhatsAppUrl(settings.whatsappNumber, isBn ? "ভিসা/ট্যুর সম্পর্কে জানতে চাই" : "I need help with visa/tour services")}
@@ -693,7 +700,7 @@ export default function Hero() {
                             style={{ fontFamily: bnFont }}
                         >
                             <FaWhatsapp className="w-4 h-4" />
-                            {isBn ? "প্রশ্ন করুন" : "Ask a question"}
+                            {hd.ctaButton2Text ? bt(hd.ctaButton2Text) : (isBn ? "প্রশ্ন করুন" : "Ask a question")}
                         </a>
                     </motion.div>
                 </div>

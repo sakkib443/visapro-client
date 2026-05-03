@@ -23,72 +23,39 @@ import { useLanguage } from "@/context/LanguageContext";
 import "swiper/css";
 import "swiper/css/navigation";
 
-export default function Services() {
+export default function Services({ servicesData }) {
     const { t, language } = useLanguage();
     const bnFont = language === 'bn' ? 'Hind Siliguri, sans-serif' : undefined;
+    const isBn = language === 'bn';
 
-    const services = [
-        {
-            title: t('visaProcessing'),
-            subtitle: t('visaProcessingSub'),
-            description: t('visaProcessingDesc'),
-            icon: <LuTicket />,
-            image: "https://images.unsplash.com/photo-1544016768-982d1554f0b9?w=800&fit=crop",
-            color: "#1D7EDD",
-            stats: t('visaProcessingStats'),
-            href: "/visa"
-        },
-        {
-            title: t('flightBooking'),
-            subtitle: t('flightBookingSub'),
-            description: t('flightBookingDesc'),
-            icon: <LuPlane />,
-            image: "https://images.pexels.com/photos/46148/aircraft-jet-landing-cloud-46148.jpeg?auto=compress&cs=tinysrgb&w=800",
-            color: "#EF8C2C",
-            stats: t('flightBookingStats'),
-            href: "/contact"
-        },
-        {
-            title: t('hotelReservation'),
-            subtitle: t('hotelReservationSub'),
-            description: t('hotelReservationDesc'),
-            icon: <LuBed />,
-            image: "https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=800",
-            color: "#10B981",
-            stats: t('hotelReservationStats'),
-            href: "/hotel"
-        },
-        {
-            title: t('tourPackages'),
-            subtitle: t('tourPackagesSub'),
-            description: t('tourPackagesDesc'),
-            icon: <LuMapPin />,
-            image: "https://images.pexels.com/photos/457882/pexels-photo-457882.jpeg?auto=compress&cs=tinysrgb&w=800",
-            color: "#8B5CF6",
-            stats: t('tourPackagesStats'),
-            href: "/tour"
-        },
-        {
-            title: t('hajjUmrahService'),
-            subtitle: t('hajjUmrahSub'),
-            description: t('hajjUmrahDesc'),
-            icon: <LuMoon />,
-            image: "https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?w=800&fit=crop",
-            color: "#F59E0B",
-            stats: t('hajjUmrahStats'),
-            href: "/hajj-umrah"
-        },
-        {
-            title: t('studyAbroadService'),
-            subtitle: t('studyAbroadSub'),
-            description: t('studyAbroadDesc'),
-            icon: <LuGraduationCap />,
-            image: "https://images.pexels.com/photos/159711/books-bookstore-book-reading-159711.jpeg?auto=compress&cs=tinysrgb&w=800",
-            color: "#EC4899",
-            stats: t('studyAbroadStats'),
-            href: "/study-abroad"
-        }
-    ];
+    // Bilingual text helper
+    const bt = (obj, fallback = "") => {
+        if (!obj) return fallback;
+        return isBn ? (obj.bn || obj.en || fallback) : (obj.en || fallback);
+    };
+
+    const sd = servicesData || {};
+
+    // Icon map for dynamic rendering
+    const iconMap = {
+        LuTicket: <LuTicket />, LuPlane: <LuPlane />, LuBed: <LuBed />,
+        LuMapPin: <LuMapPin />, LuMoon: <LuMoon />, LuGraduationCap: <LuGraduationCap />,
+    };
+
+    const services = sd.items?.length
+        ? sd.items.filter(i => i.isActive !== false).map(i => ({
+            title: bt(i.title), subtitle: bt(i.subtitle), description: bt(i.description),
+            icon: iconMap[i.icon] || <LuTicket />, image: i.image, color: i.color,
+            stats: bt(i.stats), href: i.href,
+          }))
+        : [
+            { title: t('visaProcessing'), subtitle: t('visaProcessingSub'), description: t('visaProcessingDesc'), icon: <LuTicket />, image: "https://images.unsplash.com/photo-1544016768-982d1554f0b9?w=800&fit=crop", color: "#1D7EDD", stats: t('visaProcessingStats'), href: "/visa" },
+            { title: t('flightBooking'), subtitle: t('flightBookingSub'), description: t('flightBookingDesc'), icon: <LuPlane />, image: "https://images.pexels.com/photos/46148/aircraft-jet-landing-cloud-46148.jpeg?auto=compress&cs=tinysrgb&w=800", color: "#EF8C2C", stats: t('flightBookingStats'), href: "/contact" },
+            { title: t('hotelReservation'), subtitle: t('hotelReservationSub'), description: t('hotelReservationDesc'), icon: <LuBed />, image: "https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=800", color: "#10B981", stats: t('hotelReservationStats'), href: "/hotel" },
+            { title: t('tourPackages'), subtitle: t('tourPackagesSub'), description: t('tourPackagesDesc'), icon: <LuMapPin />, image: "https://images.pexels.com/photos/457882/pexels-photo-457882.jpeg?auto=compress&cs=tinysrgb&w=800", color: "#8B5CF6", stats: t('tourPackagesStats'), href: "/tour" },
+            { title: t('hajjUmrahService'), subtitle: t('hajjUmrahSub'), description: t('hajjUmrahDesc'), icon: <LuMoon />, image: "https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?w=800&fit=crop", color: "#F59E0B", stats: t('hajjUmrahStats'), href: "/hajj-umrah" },
+            { title: t('studyAbroadService'), subtitle: t('studyAbroadSub'), description: t('studyAbroadDesc'), icon: <LuGraduationCap />, image: "https://images.pexels.com/photos/159711/books-bookstore-book-reading-159711.jpeg?auto=compress&cs=tinysrgb&w=800", color: "#EC4899", stats: t('studyAbroadStats'), href: "/study-abroad" },
+        ];
 
     return (
         <section className="relative py-28 overflow-hidden bg-[#F8FAFC]">
@@ -127,7 +94,7 @@ export default function Services() {
                         <div className="flex items-center gap-2 px-5 py-2 rounded-full border border-[#EF8C2C]/15 bg-[#EF8C2C]/[0.05]">
                             <LuSparkles className="text-[#EF8C2C] text-sm" />
                             <span className="text-[#EF8C2C] text-xs font-semibold tracking-[0.25em] uppercase" style={{ fontFamily: bnFont || '"Poppins", sans-serif' }}>
-                                {t('servicesTag')}
+                                {sd.tagText ? bt(sd.tagText) : t('servicesTag')}
                             </span>
                         </div>
                         <div className="h-[1px] w-12 bg-gradient-to-l from-transparent to-[#EF8C2C]" />
@@ -141,7 +108,7 @@ export default function Services() {
                         className="text-3xl md:text-6xl font-black text-[#0F172A] uppercase tracking-tight leading-[0.85]"
                         style={{ fontFamily: language === 'bn' ? '"Hind Siliguri", sans-serif' : '"Teko", sans-serif' }}
                     >
-                        {t('servicesTitle')} <span className="text-[#1D7EDD]">{t('servicesTitleHighlight')}</span>
+                        {sd.heading ? bt(sd.heading) : t('servicesTitle')} <span className="text-[#1D7EDD]">{sd.headingHighlight ? bt(sd.headingHighlight) : t('servicesTitleHighlight')}</span>
                     </motion.h2>
 
                     <motion.p
@@ -152,7 +119,7 @@ export default function Services() {
                         className="text-gray-400 text-sm max-w-lg mx-auto mt-5 leading-relaxed"
                         style={{ fontFamily: bnFont || '"Poppins", sans-serif' }}
                     >
-                        {t('servicesDesc')}
+                        {sd.description ? bt(sd.description) : t('servicesDesc')}
                     </motion.p>
 
                 </div>
@@ -317,7 +284,7 @@ export default function Services() {
                     </div>
 
                     <Link href="/contact" className="group/cta flex items-center gap-3 px-7 py-3.5 rounded-full bg-gradient-to-r from-[#1D7EDD] to-[#3BAAFF] text-white text-xs font-bold uppercase tracking-[0.15em] hover:shadow-[0_8px_32px_rgba(29,126,221,0.3)] transition-all duration-500 hover:-translate-y-0.5" style={{ fontFamily: bnFont || '"Poppins", sans-serif' }}>
-                        {language === 'bn' ? 'সব সেবা দেখুন' : 'View All Services'}
+                        {sd.bottomCTAText ? bt(sd.bottomCTAText) : (language === 'bn' ? 'সব সেবা দেখুন' : 'View All Services')}
                         <LuArrowRight className="text-sm group-hover/cta:translate-x-1 transition-transform" />
                     </Link>
                 </motion.div>
