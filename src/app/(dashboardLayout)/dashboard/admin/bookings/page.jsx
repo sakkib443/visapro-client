@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { LuSearch, LuFilter, LuLoader, LuTrash2, LuCheckCircle, LuXCircle, LuClock, LuRefreshCw } from "react-icons/lu";
+import { LuSearch, LuFilter, LuLoader, LuTrash2, LuCheckCircle, LuXCircle, LuClock, LuRefreshCw, LuEye, LuX } from "react-icons/lu";
 import { useSelector } from "react-redux";
 import { selectToken } from "@/redux/features/authSlice";
 
@@ -20,6 +20,9 @@ const STATUS_STYLE = {
     rejected:   "bg-red-100 text-red-700",
 };
 
+// Turn a camelCase details key into a readable label (visaType → "Visa Type")
+const humanize = (k) => k.replace(/([A-Z])/g, " $1").replace(/^./, (c) => c.toUpperCase()).trim();
+
 export default function AdminBookingsPage() {
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -29,6 +32,7 @@ export default function AdminBookingsPage() {
     const [updating, setUpdating] = useState(null);
     const [noteModal, setNoteModal] = useState(null); // { id, status }
     const [note, setNote] = useState("");
+    const [detailsModal, setDetailsModal] = useState(null); // full booking object
     const token = useSelector(selectToken);
 
     const fetchBookings = async () => {
@@ -175,10 +179,16 @@ export default function AdminBookingsPage() {
                                                 {new Date(b.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
                                             </td>
                                             <td className="px-4 py-3">
-                                                <button onClick={() => deleteBooking(b._id)}
-                                                    className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
-                                                    <LuTrash2 size={15} />
-                                                </button>
+                                                <div className="flex items-center gap-1">
+                                                    <button onClick={() => setDetailsModal(b)} title="View details"
+                                                        className="p-1.5 text-blue-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition">
+                                                        <LuEye size={15} />
+                                                    </button>
+                                                    <button onClick={() => deleteBooking(b._id)} title="Delete"
+                                                        className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
+                                                        <LuTrash2 size={15} />
+                                                    </button>
+                                                </div>
                                             </td>
                                         </motion.tr>
                                     ))}
@@ -211,6 +221,77 @@ export default function AdminBookingsPage() {
                     </div>
                 </div>
             )}
+
+            {/* Details Modal — shows full booking incl. type-specific `details` */}
+            {detailsModal && (() => {
+                const b = detailsModal;
+                const details = b.details && typeof b.details === "object" ? b.details : {};
+                const fields = Object.entries(details).filter(([k, v]) => k !== "message" && v !== "" && v !== null && v !== undefined);
+                const message = details.message;
+                return (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setDetailsModal(null)}>
+                        <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                            {/* Header */}
+                            <div className="flex items-start justify-between p-5 border-b border-gray-100">
+                                <div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full text-white" style={{ background: TYPE_COLOR[b.type] }}>{TYPE_LABEL[b.type]}</span>
+                                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_STYLE[b.status]}`}>{b.status?.charAt(0).toUpperCase() + b.status?.slice(1)}</span>
+                                    </div>
+                                    <h3 className="font-bold text-gray-800 mt-2">{b.serviceName}</h3>
+                                </div>
+                                <button onClick={() => setDetailsModal(null)} className="p-2 hover:bg-gray-100 rounded-full transition"><LuX size={20} /></button>
+                            </div>
+                            {/* Body */}
+                            <div className="p-5 space-y-5">
+                                {/* Customer */}
+                                <div>
+                                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wide mb-2">Customer</p>
+                                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                                        <div><span className="text-gray-400">Name: </span><span className="font-medium text-gray-800">{b.name}</span></div>
+                                        <div><span className="text-gray-400">Phone: </span><span className="font-medium text-gray-800">{b.phone}</span></div>
+                                        <div className="col-span-2 break-all"><span className="text-gray-400">Email: </span><span className="font-medium text-gray-800">{b.email}</span></div>
+                                        {b.user?.email && b.user.email !== b.email && (
+                                            <div className="col-span-2 break-all"><span className="text-gray-400">Account: </span><span className="font-medium text-gray-800">{b.user.email}</span></div>
+                                        )}
+                                    </div>
+                                </div>
+                                {/* Booking-specific details */}
+                                <div>
+                                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wide mb-2">Booking Details</p>
+                                    {fields.length === 0 && !message ? (
+                                        <p className="text-sm text-gray-400 italic">No additional details provided.</p>
+                                    ) : (
+                                        <div className="space-y-2 text-sm">
+                                            {fields.map(([k, v]) => (
+                                                <div key={k} className="flex justify-between gap-4">
+                                                    <span className="text-gray-400">{humanize(k)}</span>
+                                                    <span className="font-medium text-gray-800 text-right">{String(v)}</span>
+                                                </div>
+                                            ))}
+                                            {message && (
+                                                <div className="pt-1">
+                                                    <span className="text-gray-400">Message</span>
+                                                    <p className="mt-1 bg-gray-50 rounded-lg p-3 text-gray-800 whitespace-pre-wrap">{String(message)}</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                                {/* Meta */}
+                                <div>
+                                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wide mb-2">Meta</p>
+                                    <div className="grid grid-cols-1 gap-2 text-sm">
+                                        <div><span className="text-gray-400">Submitted: </span><span className="font-medium text-gray-800">{b.createdAt ? new Date(b.createdAt).toLocaleString("en-GB") : "—"}</span></div>
+                                        {b.serviceId && <div className="break-all"><span className="text-gray-400">Service ID: </span><span className="font-mono text-xs text-gray-600">{b.serviceId}</span></div>}
+                                        {b.adminNote && <div><span className="text-gray-400">Admin Note: </span><span className="font-medium text-gray-800">{b.adminNote}</span></div>}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            })()}
         </div>
     );
 }
