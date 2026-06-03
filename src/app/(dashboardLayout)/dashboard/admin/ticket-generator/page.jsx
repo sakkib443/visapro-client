@@ -574,7 +574,7 @@ export default function TicketGeneratorPage() {
     const downloadPDF = async () => {
         setGenerating(true);
         try {
-            const [{ default: html2canvas }, { jsPDF }] = await Promise.all([import("html2canvas"), import("jspdf")]);
+            const [{ default: html2canvas }, { jsPDF }] = await Promise.all([import("html2canvas-pro"), import("jspdf")]);
             const el = document.getElementById("ticket-print");
 
             // Capture at scale 1 to avoid dimension confusion
@@ -609,7 +609,7 @@ export default function TicketGeneratorPage() {
     const downloadImg = async () => {
         setGenerating(true);
         try {
-            const { default: html2canvas } = await import("html2canvas");
+            const { default: html2canvas } = await import("html2canvas-pro");
             const el = document.getElementById("ticket-print");
             const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
             const a = document.createElement("a");
@@ -627,7 +627,7 @@ export default function TicketGeneratorPage() {
         window.history.replaceState({}, '', window.location.pathname);
     };
 
-    useEffect(() => { import("html2canvas").catch(() => { }); import("jspdf").catch(() => { }); }, []);
+    useEffect(() => { import("html2canvas-pro").catch(() => { }); import("jspdf").catch(() => { }); }, []);
 
     /* Fill progress */
     const countFilled = () => {
