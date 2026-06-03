@@ -15,14 +15,6 @@ import { selectToken } from "@/redux/features/authSlice";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-const mockPrograms = [
-    { _id: "1", name: "BSc in Computer Science - University of Toronto", country: "Canada", university: "University of Toronto", degree: "Bachelor's", duration: "4 Years", tuition: 4500000, deadline: "2025-06-30", status: "open", applications: 45, requirements: "IELTS 6.5+, HSC GPA 4.0+", scholarship: "Available" },
-    { _id: "2", name: "MSc in Data Science - TU Munich", country: "Germany", university: "TU Munich", degree: "Master's", duration: "2 Years", tuition: 0, deadline: "2025-05-15", status: "open", applications: 32, requirements: "IELTS 6.5+, BSc in related field", scholarship: "Tuition Free" },
-    { _id: "3", name: "MBBS - University of Manchester", country: "United Kingdom", university: "University of Manchester", degree: "MBBS", duration: "5 Years", tuition: 8500000, deadline: "2025-04-30", status: "open", applications: 18, requirements: "IELTS 7.0+, Biology+Chemistry A-Level", scholarship: "Limited" },
-    { _id: "4", name: "MBA - Melbourne Business School", country: "Australia", university: "Melbourne Business School", degree: "Master's", duration: "2 Years", tuition: 7200000, deadline: "2025-07-31", status: "upcoming", applications: 12, requirements: "IELTS 7.0+, 3 years work exp", scholarship: "Available" },
-    { _id: "5", name: "BBA - University of Malaya", country: "Malaysia", university: "University of Malaya", degree: "Bachelor's", duration: "3 Years", tuition: 1800000, deadline: "2025-08-15", status: "open", applications: 28, requirements: "IELTS 5.5+, HSC completed", scholarship: "Available" },
-];
-
 const countryFlags = { "Canada": "🇨🇦", "Germany": "🇩🇪", "United Kingdom": "🇬🇧", "Australia": "🇦🇺", "Malaysia": "🇲🇾", "United States": "🇺🇸", "Japan": "🇯🇵" };
 
 export default function StudyAbroadPage() {
@@ -38,8 +30,16 @@ export default function StudyAbroadPage() {
         try {
             const res = await fetch(`${API_BASE}/api/study-abroad`, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
             const data = await res.json();
-            setPrograms(data.success && data.data ? (Array.isArray(data.data) ? data.data : data.data.data || mockPrograms) : mockPrograms);
-        } catch { setPrograms(mockPrograms); }
+            if (res.ok && data.success && data.data) {
+                const list = Array.isArray(data.data) ? data.data : data.data.data;
+                setPrograms(Array.isArray(list) ? list : []);
+            } else {
+                setPrograms([]);
+            }
+        } catch {
+            toast.error("Failed to fetch programs");
+            setPrograms([]);
+        }
         finally { setLoading(false); }
     };
 
@@ -47,9 +47,19 @@ export default function StudyAbroadPage() {
 
     const handleDelete = async (id) => {
         if (!confirm("Delete this program?")) return;
-        try { await fetch(`${API_BASE}/api/study-abroad/${id}`, { method: "DELETE", headers: token ? { Authorization: `Bearer ${token}` } : {} }); } catch { }
-        setPrograms(prev => prev.filter(p => p._id !== id));
-        toast.success("Program deleted");
+        try {
+            const res = await fetch(`${API_BASE}/api/study-abroad/${id}`, { method: "DELETE", headers: token ? { Authorization: `Bearer ${token}` } : {} });
+            const data = await res.json().catch(() => ({}));
+            if (res.ok && data.success) {
+                setPrograms(prev => prev.filter(p => p._id !== id));
+                if (viewingProg?._id === id) setViewingProg(null);
+                toast.success("Program deleted");
+            } else {
+                toast.error(data.message || "Failed to delete program");
+            }
+        } catch {
+            toast.error("Failed to delete program");
+        }
     };
 
     const filtered = programs.filter(p => {

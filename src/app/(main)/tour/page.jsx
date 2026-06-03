@@ -22,6 +22,7 @@ import {
     LuLoader
 } from "react-icons/lu";
 import Link from "next/link";
+import toast from "react-hot-toast";
 import { useLanguage } from "@/context/LanguageContext";
 import BookingModal from "@/components/shared/BookingModal";
 
@@ -68,7 +69,7 @@ function TourContent() {
     const [selectedType, setSelectedType] = useState("all");
     const [travelDate, setTravelDate] = useState(initialDate);
     const [viewMode, setViewMode] = useState("grid");
-    const [sortBy, setSortBy] = useState("Featured");
+    const [sortBy, setSortBy] = useState("featured");
     const [showFilters, setShowFilters] = useState(false);
     const [bookingModal, setBookingModal] = useState({ open: false, tour: null });
 
@@ -92,7 +93,7 @@ function TourContent() {
     }, []);
 
     const filteredTours = useMemo(() => {
-        return tours.filter(tour => {
+        const result = tours.filter(tour => {
             const matchesSearch =
                 tour.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 tour.destination?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -105,7 +106,15 @@ function TourContent() {
 
             return matchesSearch && matchesCategory && matchesPrice && matchesType;
         });
-    }, [tours, searchQuery, selectedCategory, priceRange, selectedType]);
+
+        if (sortBy === "price-asc") {
+            result.sort((a, b) => (a.price || 0) - (b.price || 0));
+        } else if (sortBy === "price-desc") {
+            result.sort((a, b) => (b.price || 0) - (a.price || 0));
+        }
+
+        return result;
+    }, [tours, searchQuery, selectedCategory, priceRange, selectedType, sortBy]);
 
     const resetFilters = () => {
         setSearchQuery("");
@@ -117,6 +126,13 @@ function TourContent() {
 
     const getCurrencySymbol = (currency) => {
         return currency === 'USD' ? '$' : '৳';
+    };
+
+    const handleNewsletter = (e) => {
+        e.preventDefault();
+        toast(isBn
+            ? 'নিউজলেটার সাবস্ক্রিপশন শীঘ্রই আসছে। যোগাযোগ করতে আমাদের সাথে কথা বলুন।'
+            : 'Newsletter signup is coming soon. Please contact us to get in touch.');
     };
 
 
@@ -176,14 +192,11 @@ function TourContent() {
                         <input
                             type="text"
                             placeholder={isBn ? "আপনার পরবর্তী গন্তব্য খুঁজুন..." : "Find your next destination..."}
-                            className="w-full pl-12 pr-4 sm:pr-32 py-4 bg-white/95 backdrop-blur-md rounded-2xl text-sm font-normal shadow-2xl focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                            className="w-full pl-12 pr-4 py-4 bg-white/95 backdrop-blur-md rounded-2xl text-sm font-normal shadow-2xl focus:ring-4 focus:ring-primary/10 outline-none transition-all"
                             style={{ fontFamily }}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
-                        <button className="hidden sm:block absolute right-2 top-1/2 -translate-y-1/2 px-6 py-2.5 bg-[#021E14] text-white rounded-xl font-bold text-[10px] uppercase tracking-wider hover:bg-primary transition-all" style={{ fontFamily }}>
-                            {isBn ? 'সার্চ' : 'Search'}
-                        </button>
                     </motion.div>
                 </div>
             </section>
@@ -309,9 +322,15 @@ function TourContent() {
                                 <p className="text-[11px] font-normal leading-relaxed mb-4" style={{ color: 'rgba(255,255,255,0.5)', fontFamily }}>
                                     {isBn ? 'আমাদের ট্রাভেল বিশেষজ্ঞদের দ্বারা শুধুমাত্র আপনার জন্য তৈরি একটি অনন্য যাত্রা পরিকল্পনা করুন।' : 'Plan a unique journey tailored just for you by our travel experts.'}
                                 </p>
-                                <button className="w-full py-2.5 rounded border text-[10px] font-bold uppercase tracking-widest transition-all hover:bg-white hover:text-[#021E14]" style={{ borderColor: 'rgba(255,255,255,0.2)', color: 'white', fontFamily }}>
+                                <a
+                                    href={`https://wa.me/8801234567890?text=${encodeURIComponent("Hi, I'd like to get a quote for a custom tour package.")}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block w-full text-center py-2.5 rounded border text-[10px] font-bold uppercase tracking-widest transition-all hover:bg-white hover:text-[#021E14]"
+                                    style={{ borderColor: 'rgba(255,255,255,0.2)', color: 'white', fontFamily }}
+                                >
                                     {isBn ? 'কোটেশন নিন' : 'Get a Quote'}
-                                </button>
+                                </a>
                             </div>
                         </div>
                     </aside>
@@ -351,9 +370,9 @@ function TourContent() {
                                         value={sortBy}
                                         onChange={(e) => setSortBy(e.target.value)}
                                     >
-                                        <option>{isBn ? 'ফিচার্ড' : 'Featured'}</option>
-                                        <option>{isBn ? 'মূল্য: কম-বেশি' : 'Price: Low-High'}</option>
-                                        <option>{isBn ? 'মূল্য: বেশি-কম' : 'Price: High-Low'}</option>
+                                        <option value="featured">{isBn ? 'ফিচার্ড' : 'Featured'}</option>
+                                        <option value="price-asc">{isBn ? 'মূল্য: কম-বেশি' : 'Price: Low-High'}</option>
+                                        <option value="price-desc">{isBn ? 'মূল্য: বেশি-কম' : 'Price: High-Low'}</option>
                                     </select>
                                     <LuChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none" size={14} />
                                 </div>
@@ -561,9 +580,9 @@ function TourContent() {
                             ? 'সপ্তাহে একবার আল্ট্রা-এক্সক্লুসিভ ট্যুর ডিল এবং বিলাসবহুল ভ্রমণ অনুপ্রেরণা পেতে আপডেট থাকুন।'
                             : 'Stay updated with ultra-exclusive tour deals and luxury travel inspiration delivered once a week.'}
                     </p>
-                    <form className="max-w-md mx-auto flex gap-2 p-1.5 bg-gray-50 rounded-md border border-gray-100 focus-within:bg-white transition-all shadow-sm">
+                    <form onSubmit={handleNewsletter} className="max-w-md mx-auto flex gap-2 p-1.5 bg-gray-50 rounded-md border border-gray-100 focus-within:bg-white transition-all shadow-sm">
                         <input type="email" placeholder={isBn ? "ইমেইল এড্রেস" : "Email address"} className="flex-grow px-5 py-3 text-[11px] bg-transparent outline-none font-normal" style={{ fontFamily }} />
-                        <button className="px-6 py-3 bg-[#021E14] text-white rounded-md font-bold text-[9px] uppercase tracking-widest shadow-lg shadow-black/10" style={{ fontFamily }}>
+                        <button type="submit" className="px-6 py-3 bg-[#021E14] text-white rounded-md font-bold text-[9px] uppercase tracking-widest shadow-lg shadow-black/10" style={{ fontFamily }}>
                             {isBn ? 'যোগ দিন' : 'Join Now'}
                         </button>
                     </form>

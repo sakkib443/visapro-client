@@ -574,22 +574,22 @@ export default function CountryDetailPage() {
                                                 <LuCalendar size={28} className="text-[#1D7EDD]" />
                                             </div>
                                             <h3 className="text-[16px] font-bold text-gray-800 mb-2" style={{ fontFamily }}>
-                                                {isBn ? 'অনলাইন বুকিং শীঘ্রই আসছে' : 'Online Booking Coming Soon'}
+                                                {isBn ? 'আপনার অ্যাপয়েন্টমেন্ট বুক করুন' : 'Book Your Appointment'}
                                             </h3>
                                             <p className="text-[13px] text-gray-400 max-w-md mx-auto mb-5" style={{ fontFamily }}>
                                                 {isBn
-                                                    ? 'এই মুহূর্তে আমাদের সাথে ফোনে যোগাযোগ করে অ্যাপয়েন্টমেন্ট নিন।'
-                                                    : 'For now, please contact us via phone to schedule your appointment.'}
+                                                    ? 'নিচের ফর্মটি পূরণ করুন, আমাদের ভিসা বিশেষজ্ঞরা শীঘ্রই আপনার সাথে যোগাযোগ করবেন।'
+                                                    : 'Fill out the form below and our visa specialists will contact you shortly to confirm.'}
                                             </p>
                                             <div className="flex flex-wrap justify-center gap-3">
-                                                <a
-                                                    href="tel:+8801712114770"
+                                                <button
+                                                    onClick={() => setBookingOpen(true)}
                                                     className="inline-flex items-center gap-2 px-6 py-3 bg-[#1a2e5a] text-white rounded-lg text-[12px] font-semibold hover:bg-[#162650] transition-all shadow-sm"
                                                     style={{ fontFamily }}
                                                 >
-                                                    <LuPhone size={13} />
-                                                    {isBn ? 'কল করুন: 017 1211 4770' : 'Call: 017 1211 4770'}
-                                                </a>
+                                                    <LuCalendar size={13} />
+                                                    {isBn ? 'অ্যাপয়েন্টমেন্ট বুক করুন' : 'Book Appointment'}
+                                                </button>
                                                 <a
                                                     href="https://wa.me/8801712114770"
                                                     target="_blank"
@@ -599,6 +599,14 @@ export default function CountryDetailPage() {
                                                 >
                                                     <LuMessageCircle size={13} />
                                                     {isBn ? 'হোয়াটসঅ্যাপ' : 'WhatsApp'}
+                                                </a>
+                                                <a
+                                                    href="tel:+8801712114770"
+                                                    className="inline-flex items-center gap-2 px-6 py-3 bg-white text-[#1a2e5a] border border-gray-200 rounded-lg text-[12px] font-semibold hover:bg-gray-50 transition-all shadow-sm"
+                                                    style={{ fontFamily }}
+                                                >
+                                                    <LuPhone size={13} />
+                                                    {isBn ? 'কল করুন: 017 1211 4770' : 'Call: 017 1211 4770'}
                                                 </a>
                                             </div>
                                         </div>
@@ -629,22 +637,6 @@ export default function CountryDetailPage() {
 
                                 {/* Card Body */}
                                 <div className="bg-white p-5 space-y-4">
-                                    {/* Services Field */}
-                                    <div>
-                                        <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider block mb-1.5" style={{ fontFamily }}>
-                                            * {isBn ? 'সেবাসমূহ' : 'Services'}
-                                        </label>
-                                        <div className="relative">
-                                            <select
-                                                className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-[12px] font-medium text-gray-600 outline-none focus:border-[#1a2e5a] transition-colors appearance-none bg-white pr-8 cursor-pointer"
-                                                style={{ fontFamily }}
-                                            >
-                                                <option>{isBn ? 'ভিসা কনসালটেন্সি - VisaPro' : 'Visa Consultancy - VisaPro'}</option>
-                                            </select>
-                                            <LuChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none" />
-                                        </div>
-                                    </div>
-
                                     {/* Visa Type Field */}
                                     <div>
                                         <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider block mb-1.5" style={{ fontFamily }}>

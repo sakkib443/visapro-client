@@ -16,7 +16,6 @@ import {
     LuBed,
     LuMapPin,
     LuWifi,
-    LuUsers,
 } from "react-icons/lu";
 import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
@@ -188,9 +187,6 @@ function HotelContent() {
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
-                        <button className="hidden sm:block absolute right-2 top-1/2 -translate-y-1/2 px-6 py-2.5 bg-[#021E14] text-white rounded-xl font-bold text-[10px] uppercase tracking-wider hover:bg-primary transition-all" style={{ fontFamily }}>
-                            {isBn ? 'সার্চ' : 'Search'}
-                        </button>
                     </motion.div>
                 </div>
             </section>
@@ -327,9 +323,9 @@ function HotelContent() {
                                         ? 'আমাদের বিশেষজ্ঞ দল আপনার জন্য সেরা হোটেল খুঁজে দেবে।'
                                         : 'Our expert team will find the best hotel deals just for you.'}
                                 </p>
-                                <button className="w-full py-2.5 rounded border text-[10px] font-bold uppercase tracking-widest transition-all hover:bg-white hover:text-[#021E14]" style={{ borderColor: 'rgba(255,255,255,0.2)', color: 'white', fontFamily }}>
+                                <Link href="/contact" className="block w-full text-center py-2.5 rounded border text-[10px] font-bold uppercase tracking-widest transition-all hover:bg-white hover:text-[#021E14]" style={{ borderColor: 'rgba(255,255,255,0.2)', color: 'white', fontFamily }}>
                                     {isBn ? 'যোগাযোগ করুন' : 'Contact Us'}
-                                </button>
+                                </Link>
                             </div>
                         </div>
                     </aside>
@@ -528,10 +524,17 @@ function HotelContent() {
                                                                     )}
                                                                 </div>
                                                             </div>
-                                                            <div>
+                                                            <div className="flex items-center gap-2">
+                                                                <button
+                                                                    onClick={() => setBookingModal({ open: true, hotel })}
+                                                                    className="px-4 py-2.5 bg-[#021E14] hover:bg-[#0a3525] text-white rounded-md text-[10px] font-bold uppercase tracking-wider transition-all"
+                                                                    style={{ fontFamily }}
+                                                                >
+                                                                    {isBn ? 'বুক করুন' : 'Book Now'}
+                                                                </button>
                                                                 <Link
                                                                     href={`/hotel/${hotel.slug || hotel._id}`}
-                                                                    className="px-5 py-2.5 bg-[#EF8C2C] hover:bg-[#d97b1f] text-white rounded-md text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5"
+                                                                    className="px-4 py-2.5 bg-[#EF8C2C] hover:bg-[#d97b1f] text-white rounded-md text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5"
                                                                     style={{ fontFamily }}
                                                                 >
                                                                     {isBn ? 'বিস্তারিত' : 'Details'} <LuArrowRight size={12} />
@@ -573,27 +576,6 @@ function HotelContent() {
                     </main>
                 </div>
             </div>
-
-            {/* Newsletter */}
-            <section className="bg-white py-24 border-t border-gray-50">
-                <div className="max-w-[1400px] mx-auto px-4 text-center">
-                    <LuUsers className="text-secondary mx-auto mb-6" size={32} />
-                    <h2 className="text-3xl md:text-5xl font-black text-[#021E14] uppercase tracking-tight mb-4" style={{ fontFamily: headingFont }}>
-                        {isBn ? 'সেরা ডিল ' : 'Get The Best '}<span style={{ color: '#EF8C2C' }}>{isBn ? 'পান' : 'Hotel Deals'}</span>
-                    </h2>
-                    <p className="text-gray-400 text-[12px] max-w-lg mx-auto mb-10 font-normal leading-relaxed" style={{ fontFamily }}>
-                        {isBn
-                            ? 'এক্সক্লুসিভ হোটেল ডিল এবং অফার সরাসরি আপনার ইনবক্সে পেতে সাবস্ক্রাইব করুন।'
-                            : 'Subscribe to get exclusive hotel deals and special offers delivered straight to your inbox.'}
-                    </p>
-                    <form className="max-w-md mx-auto flex gap-2 p-1.5 bg-gray-50 rounded-md border border-gray-100 focus-within:bg-white transition-all shadow-sm">
-                        <input type="email" placeholder={isBn ? "ইমেইল এড্রেস" : "Email address"} className="flex-grow px-5 py-3 text-[11px] bg-transparent outline-none font-normal" style={{ fontFamily }} />
-                        <button className="px-6 py-3 bg-[#021E14] text-white rounded-md font-bold text-[9px] uppercase tracking-widest shadow-lg shadow-black/10" style={{ fontFamily }}>
-                            {isBn ? 'যোগ দিন' : 'Subscribe'}
-                        </button>
-                    </form>
-                </div>
-            </section>
         </div>
 
         <BookingModal

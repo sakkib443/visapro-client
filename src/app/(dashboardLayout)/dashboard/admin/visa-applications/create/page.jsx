@@ -68,17 +68,15 @@ export default function CreateVisaApplication() {
                     appliedDate: new Date().toISOString().split("T")[0],
                 }),
             });
-            const data = await res.json();
-            if (data.success) {
+            const data = await res.json().catch(() => null);
+            if (res.ok && data?.success) {
                 toast.success("Application created successfully!");
                 router.push("/dashboard/admin/visa-applications");
             } else {
-                toast.success("Application saved locally!");
-                router.push("/dashboard/admin/visa-applications");
+                toast.error(data?.message || "Failed to create application. Please try again.");
             }
         } catch {
-            toast.success("Application saved locally!");
-            router.push("/dashboard/admin/visa-applications");
+            toast.error("Failed to create application. Please try again.");
         } finally {
             setLoading(false);
         }

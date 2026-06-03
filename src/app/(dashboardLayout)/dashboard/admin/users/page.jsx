@@ -1,13 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 import {
     FiSearch, FiUsers, FiTrash2, FiCalendar, FiLoader,
     FiCheck, FiX, FiShield, FiDollarSign, FiShoppingBag,
-    FiRefreshCw, FiMail, FiPhone, FiEdit, FiEye, FiExternalLink,
+    FiRefreshCw, FiMail, FiPhone, FiEdit, FiEye,
     FiUser, FiMapPin, FiBook, FiAward
 } from "react-icons/fi";
 import { useSelector } from "react-redux";
@@ -281,18 +280,12 @@ export default function UserManagement() {
 
                         {/* Actions */}
                         <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-                            <Link
-                                href={`/profile/${user._id}`}
-                                className="flex-1 btn btn-primary text-center"
-                            >
-                                <FiExternalLink size={16} /> View Profile
-                            </Link>
                             <button
                                 onClick={() => {
                                     onClose();
                                     handleEdit(user);
                                 }}
-                                className="flex-1 btn btn-ghost"
+                                className="flex-1 btn btn-primary"
                             >
                                 <FiEdit size={16} /> Edit User
                             </button>
@@ -534,13 +527,6 @@ export default function UserManagement() {
                                                         >
                                                             <FiEye size={14} />
                                                         </button>
-                                                        <Link
-                                                            href={`/profile/${user._id}`}
-                                                            className="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/30 text-purple-600 flex items-center justify-center hover:bg-purple-200 transition-colors"
-                                                            title="Go to Profile"
-                                                        >
-                                                            <FiExternalLink size={14} />
-                                                        </Link>
                                                         <button
                                                             onClick={() => handleEdit(user)}
                                                             className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 text-amber-600 flex items-center justify-center hover:bg-amber-200 transition-colors"

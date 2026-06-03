@@ -4,92 +4,58 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import {
     FiUsers,
-    FiAward,
-    FiGlobe,
     FiHeart,
     FiArrowRight,
     FiTarget,
     FiZap,
     FiShield,
-    FiTrendingUp,
 } from "react-icons/fi";
 
 import { useLanguage } from "@/context/LanguageContext";
 
 const stats = [
-    { value: "50K+", valueBn: "৫০K+", label: "Downloads", labelBn: "ডাউনলোড" },
-    { value: "5K+", valueBn: "৫K+", label: "Templates", labelBn: "টেমপ্লেট" },
-    { value: "10K+", valueBn: "১০K+", label: "Happy Customers", labelBn: "সন্তুষ্ট গ্রাহক" },
-    { value: "99%", valueBn: "৯৯%", label: "Satisfaction Rate", labelBn: "সন্তুষ্টির হার" },
+    { value: "10K+", valueBn: "১০K+", label: "Visas Processed", labelBn: "ভিসা প্রসেস" },
+    { value: "50+", valueBn: "৫০+", label: "Countries", labelBn: "দেশ" },
+    { value: "10K+", valueBn: "১০K+", label: "Happy Clients", labelBn: "সন্তুষ্ট ক্লায়েন্ট" },
+    { value: "98%", valueBn: "৯৮%", label: "Success Rate", labelBn: "সাফল্যের হার" },
 ];
 
 const values = [
     {
         icon: FiTarget,
-        title: "Quality First",
-        titleBn: "গুণমান প্রথম",
-        desc: "Every template is crafted with attention to detail and professional standards.",
-        descBn: "প্রতিটি টেমপ্লেট বিস্তারিত মনোযোগ এবং পেশাদার মান দিয়ে তৈরি।",
+        title: "Expert Guidance",
+        titleBn: "বিশেষজ্ঞ গাইডেন্স",
+        desc: "Every application is handled by experienced consultants who guide you at every step.",
+        descBn: "প্রতিটি আবেদন অভিজ্ঞ পরামর্শদাতাদের দ্বারা পরিচালিত হয় যারা প্রতিটি ধাপে আপনাকে গাইড করেন।",
     },
     {
         icon: FiZap,
-        title: "Innovation",
-        titleBn: "উদ্ভাবন",
-        desc: "We constantly innovate to bring you the latest design trends and tools.",
-        descBn: "সর্বশেষ ডিজাইন ট্রেন্ড এবং টুলস আনতে আমরা ক্রমাগত উদ্ভাবন করি।",
+        title: "Fast Processing",
+        titleBn: "দ্রুত প্রসেসিং",
+        desc: "We work to make visa, flight, and travel arrangements as smooth and quick as possible.",
+        descBn: "ভিসা, ফ্লাইট এবং ভ্রমণ ব্যবস্থা যতটা সম্ভব সহজ ও দ্রুত করতে আমরা কাজ করি।",
     },
     {
         icon: FiShield,
         title: "Trust & Security",
         titleBn: "বিশ্বাস ও নিরাপত্তা",
-        desc: "Your data and purchases are protected with enterprise-grade security.",
-        descBn: "আপনার ডেটা এবং ক্রয় এন্টারপ্রাইজ-গ্রেড নিরাপত্তায় সুরক্ষিত।",
+        desc: "Your documents and personal information are handled with strict confidentiality.",
+        descBn: "আপনার নথি এবং ব্যক্তিগত তথ্য কঠোর গোপনীয়তার সাথে পরিচালনা করা হয়।",
     },
     {
         icon: FiHeart,
-        title: "Customer Love",
-        titleBn: "গ্রাহক ভালোবাসা",
-        desc: "We're dedicated to providing the best experience for our customers.",
-        descBn: "আমাদের গ্রাহকদের জন্য সেরা অভিজ্ঞতা প্রদানে আমরা নিবেদিত।",
-    },
-];
-
-const team = [
-    {
-        name: "Sarah Ahmed",
-        nameBn: "সারা আহমেদ",
-        role: "Founder & CEO",
-        roleBn: "প্রতিষ্ঠাতা ও সিইও",
-        image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400",
-    },
-    {
-        name: "Rafiq Hassan",
-        nameBn: "রফিক হাসান",
-        role: "Creative Director",
-        roleBn: "ক্রিয়েটিভ ডিরেক্টর",
-        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400",
-    },
-    {
-        name: "Fatima Khan",
-        nameBn: "ফাতিমা খান",
-        role: "Head of Design",
-        roleBn: "ডিজাইন প্রধান",
-        image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400",
-    },
-    {
-        name: "Karim Rahman",
-        nameBn: "করিম রহমান",
-        role: "Lead Developer",
-        roleBn: "লিড ডেভেলপার",
-        image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400",
+        title: "Client Care",
+        titleBn: "ক্লায়েন্ট কেয়ার",
+        desc: "We're dedicated to giving every client honest advice and dependable support.",
+        descBn: "আমরা প্রতিটি ক্লায়েন্টকে সৎ পরামর্শ এবং নির্ভরযোগ্য সহায়তা দিতে নিবেদিত।",
     },
 ];
 
 const milestones = [
-    { year: "2018", title: "Founded", titleBn: "প্রতিষ্ঠা", desc: "Started with a vision to democratize design", descBn: "ডিজাইন গণতন্ত্রীকরণের দৃষ্টিভঙ্গি নিয়ে শুরু" },
-    { year: "2019", title: "First 1K Users", titleBn: "প্রথম ১K ইউজার", desc: "Reached our first milestone", descBn: "প্রথম মাইলস্টোনে পৌঁছানো" },
-    { year: "2021", title: "50K Downloads", titleBn: "৫০K ডাউনলোড", desc: "Templates downloaded worldwide", descBn: "বিশ্বব্যাপী টেমপ্লেট ডাউনলোড" },
-    { year: "2024", title: "Global Reach", titleBn: "বিশ্বব্যাপী পৌঁছানো", desc: "Serving customers in 50+ countries", descBn: "৫০+ দেশে গ্রাহক সেবা" },
+    { year: "2018", title: "Founded", titleBn: "প্রতিষ্ঠা", desc: "Started in Dhaka with a mission to make global travel accessible", descBn: "বিশ্বব্যাপী ভ্রমণ সহজলভ্য করার লক্ষ্যে ঢাকায় যাত্রা শুরু" },
+    { year: "2019", title: "First 1K Clients", titleBn: "প্রথম ১K ক্লায়েন্ট", desc: "Reached our first major milestone of served clients", descBn: "সেবা প্রদানকৃত ক্লায়েন্টের প্রথম বড় মাইলফলক অর্জন" },
+    { year: "2021", title: "10K+ Visas Processed", titleBn: "১০K+ ভিসা প্রসেস", desc: "Thousands of visa applications successfully handled", descBn: "হাজার হাজার ভিসা আবেদন সফলভাবে সম্পন্ন" },
+    { year: "2024", title: "Global Reach", titleBn: "বিশ্বব্যাপী পৌঁছানো", desc: "Serving clients across 50+ countries", descBn: "৫০+ দেশে ক্লায়েন্টদের সেবা প্রদান" },
 ];
 
 export default function AboutPage() {
@@ -124,15 +90,15 @@ export default function AboutPage() {
                             </div>
 
                             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white font-heading uppercase leading-[0.9] mb-6">
-                                {language === 'bn' ? 'ক্রিয়েটিভ' : 'CREATIVE'}
+                                {language === 'bn' ? 'ভিসা' : 'VISA'}
                                 <br />
-                                <span className="text-primary">{language === 'bn' ? 'হাব প্রো।' : 'HUB PRO.'}</span>
+                                <span className="text-primary">{language === 'bn' ? 'প্রো।' : 'PRO.'}</span>
                             </h1>
 
                             <p className="text-lg text-gray-500 dark:text-gray-400 max-w-lg mb-8">
                                 {language === 'bn'
-                                    ? 'আমরা বাংলাদেশের সেরা ডিজাইন মার্কেটপ্লেস। বিশ্বমানের গ্রাফিক টেমপ্লেট, ফন্ট, এবং ক্রিয়েটিভ এসেট সরবরাহ করি।'
-                                    : 'We are Bangladesh\'s premier design marketplace. Providing world-class graphic templates, fonts, and creative assets.'}
+                                    ? 'আমরা বাংলাদেশের একটি বিশ্বস্ত ভিসা ও মাইগ্রেশন কনসালটেন্সি। ভিসা প্রসেসিং, ফ্লাইট বুকিং, হোটেল রিজার্ভেশন, হজ ও উমরাহ এবং স্টাডি অ্যাব্রোড সেবা প্রদান করি।'
+                                    : 'We are a trusted visa & migration consultancy in Bangladesh. Providing visa processing, flight booking, hotel reservation, Hajj & Umrah, and study abroad services.'}
                             </p>
 
                             {/* Stats */}
@@ -213,8 +179,8 @@ export default function AboutPage() {
                             </h2>
                             <p className="text-lg text-gray-500 dark:text-gray-400 leading-relaxed mb-6">
                                 {language === 'bn'
-                                    ? 'আমাদের লক্ষ্য হলো প্রতিটি ক্রিয়েটর এবং ব্যবসাকে উচ্চ-মানের ডিজাইন রিসোর্স প্রদান করা যা তাদের কাজকে পরবর্তী স্তরে নিয়ে যেতে সাহায্য করে। আমরা বিশ্বাস করি দুর্দান্ত ডিজাইন সবার জন্য সহজলভ্য হওয়া উচিত।'
-                                    : 'Our goal is to provide every creator and business with high-quality design resources that help take their work to the next level. We believe great design should be accessible to everyone.'}
+                                    ? 'আমাদের লক্ষ্য হলো প্রতিটি ক্লায়েন্টকে নির্ভরযোগ্য ভিসা ও ভ্রমণ সহায়তা প্রদান করা যা তাদের আন্তর্জাতিক যাত্রাকে সহজ করে তোলে। আমরা বিশ্বাস করি সঠিক গাইডেন্স সবার জন্য সহজলভ্য হওয়া উচিত।'
+                                    : 'Our goal is to provide every client with reliable visa and travel support that makes their international journey simple. We believe the right guidance should be accessible to everyone.'}
                             </p>
                             <p className="text-lg text-gray-500 dark:text-gray-400 leading-relaxed">
                                 {language === 'bn'
@@ -289,54 +255,6 @@ export default function AboutPage() {
                 </div>
             </section>
 
-            {/* Team */}
-            <section className="py-20 bg-gray-50 dark:bg-gray-900">
-                <div className="container px-6 lg:px-12 max-w-[1400px] mx-auto">
-                    <motion.div
-                        className="text-center mb-16"
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                    >
-                        <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white font-heading uppercase mb-4">
-                            {language === 'bn' ? 'আমাদের টিম' : 'MEET THE TEAM'}
-                        </h2>
-                        <p className="text-gray-500 dark:text-gray-400 max-w-lg mx-auto">
-                            {language === 'bn'
-                                ? 'আমাদের প্রতিভাবান টিম যারা CreativeHub Pro কে সম্ভব করে তুলেছে।'
-                                : 'The talented people behind CreativeHub Pro who make it all possible.'}
-                        </p>
-                    </motion.div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                        {team.map((member, index) => (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: index * 0.1 }}
-                                className="text-center group"
-                            >
-                                <div className="relative w-48 h-48 mx-auto rounded-full overflow-hidden mb-6">
-                                    <img
-                                        src={member.image}
-                                        alt={language === 'bn' ? member.nameBn : member.name}
-                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                    />
-                                </div>
-                                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
-                                    {language === 'bn' ? member.nameBn : member.name}
-                                </h3>
-                                <p className="text-primary font-medium">
-                                    {language === 'bn' ? member.roleBn : member.role}
-                                </p>
-                            </motion.div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
             {/* CTA */}
             <section className="py-20 bg-gray-900 dark:bg-black">
                 <div className="container px-6 lg:px-12 max-w-[1400px] mx-auto text-center">
@@ -350,8 +268,8 @@ export default function AboutPage() {
                         </h2>
                         <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-8">
                             {language === 'bn'
-                                ? 'হাজার হাজার ক্রিয়েটরদের সাথে যোগ দিন এবং আপনার ডিজাইন যাত্রা শুরু করুন।'
-                                : 'Join thousands of creators and start your design journey today.'}
+                                ? 'হাজার হাজার সন্তুষ্ট ক্লায়েন্টের সাথে যোগ দিন এবং আজই আপনার ভ্রমণ যাত্রা শুরু করুন।'
+                                : 'Join thousands of satisfied clients and start your travel journey today.'}
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Link

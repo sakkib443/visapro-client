@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
 import {
-    LuCalendar, LuClock, LuArrowLeft, LuArrowRight, LuEye, LuTag, LuLoader, LuShare2
+    LuCalendar, LuClock, LuArrowLeft, LuArrowRight, LuEye, LuTag, LuLoader
 } from "react-icons/lu";
 import { useLanguage } from "@/context/LanguageContext";
 

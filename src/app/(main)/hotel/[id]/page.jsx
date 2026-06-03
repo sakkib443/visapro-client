@@ -10,8 +10,6 @@ import {
     LuPhone,
     LuMessageCircle,
     LuChevronRight,
-    LuHeart,
-    LuShare2,
     LuCircleCheck,
     LuCircleDot,
     LuShieldCheck,
@@ -232,14 +230,6 @@ export default function HotelDetailsPage() {
                                     )}
                                 </div>
 
-                                <div className="flex items-center gap-2">
-                                    <button className="w-9 h-9 rounded-md bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all">
-                                        <LuHeart size={15} />
-                                    </button>
-                                    <button className="w-9 h-9 rounded-md bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 hover:text-[#3590CF] hover:bg-blue-50 transition-all">
-                                        <LuShare2 size={15} />
-                                    </button>
-                                </div>
                             </div>
                         </div>
 
@@ -500,14 +490,23 @@ export default function HotelDetailsPage() {
                                         {isBn ? 'সেরা ডিল ও কাস্টম প্যাকেজের জন্য আমাদের সাথে যোগাযোগ করুন।' : 'Contact us for best deals and custom hotel packages.'}
                                     </p>
                                     <div className="space-y-2">
-                                        <button className="w-full py-3 rounded-md flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white transition-all hover:opacity-90" style={{ backgroundColor: '#EF8C2C', fontFamily }}>
+                                        <a
+                                            href="tel:+8801234567890"
+                                            className="w-full py-3 rounded-md flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white transition-all hover:opacity-90"
+                                            style={{ backgroundColor: '#EF8C2C', fontFamily }}
+                                        >
                                             <LuPhone size={13} />
                                             {isBn ? 'কল করুন' : 'Call Now'}
-                                        </button>
-                                        <button className="w-full py-3 rounded-md flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white border border-white/15 transition-all hover:bg-white/5" style={{ fontFamily }}>
+                                        </a>
+                                        <a
+                                            href={`https://wa.me/8801234567890?text=${encodeURIComponent(`Hi, I need help with hotel booking for "${hotel.name}". Please contact me.`)}`}
+                                            target="_blank" rel="noopener noreferrer"
+                                            className="w-full py-3 rounded-md flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white border border-white/15 transition-all hover:bg-white/5"
+                                            style={{ fontFamily }}
+                                        >
                                             <LuMessageCircle size={13} />
                                             {isBn ? 'মেসেজ করুন' : 'Send Message'}
-                                        </button>
+                                        </a>
                                     </div>
                                 </div>
                             </motion.div>

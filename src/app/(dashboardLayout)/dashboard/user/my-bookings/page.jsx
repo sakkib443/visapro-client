@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { LuCalendar, LuPackage, LuClock, LuCircleCheck, LuCircleX, LuLoader } from "react-icons/lu";
+import { LuCalendar, LuPackage, LuClock, LuCircleCheck, LuCircleX, LuLoader, LuTriangleAlert, LuRefreshCw } from "react-icons/lu";
 
 const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
 
@@ -19,19 +19,35 @@ const TYPE_LABEL = { visa: "Visa Application", hotel: "Hotel Booking", tour: "To
 export default function MyBookingsPage() {
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [filter, setFilter] = useState("all");
 
-    useEffect(() => {
-        const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-        if (!token) { setLoading(false); return; }
+    const loadBookings = async () => {
+        setLoading(true);
+        setError(null);
 
-        fetch(`${BACKEND}/api/bookings/my`, {
-            headers: { Authorization: `Bearer ${token}` },
-        })
-            .then(r => r.json())
-            .then(d => { setBookings(d.data || []); setLoading(false); })
-            .catch(() => setLoading(false));
-    }, []);
+        const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+        if (!token) {
+            setError("Please sign in to view your bookings.");
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const res = await fetch(`${BACKEND}/api/bookings/my`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (!res.ok) throw new Error(`Request failed (${res.status})`);
+            const d = await res.json();
+            setBookings(d.data || []);
+        } catch {
+            setError("We couldn't load your bookings. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => { loadBookings(); }, []);
 
     const filtered = filter === "all" ? bookings : bookings.filter(b => b.type === filter);
 
@@ -61,8 +77,22 @@ export default function MyBookingsPage() {
                     </div>
                 )}
 
+                {/* Error */}
+                {!loading && error && (
+                    <div className="text-center py-16">
+                        <LuTriangleAlert size={48} className="mx-auto text-red-400 mb-3" />
+                        <p className="text-gray-700 font-medium">{error}</p>
+                        <button
+                            onClick={loadBookings}
+                            className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition">
+                            <LuRefreshCw size={14} />
+                            Try again
+                        </button>
+                    </div>
+                )}
+
                 {/* Empty */}
-                {!loading && filtered.length === 0 && (
+                {!loading && !error && filtered.length === 0 && (
                     <div className="text-center py-16">
                         <LuPackage size={48} className="mx-auto text-gray-300 mb-3" />
                         <p className="text-gray-500 font-medium">No bookings found</p>

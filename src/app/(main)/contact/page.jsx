@@ -8,7 +8,6 @@ import {
     LuMapPin,
     LuClock,
     LuSend,
-    LuMessageCircle,
     LuGlobe,
     LuFacebook,
     LuFileCheck,
@@ -24,6 +23,8 @@ import { FaWhatsapp } from "react-icons/fa";
 import { useLanguage } from "@/context/LanguageContext";
 import { useSiteSettings, buildWhatsAppUrl } from "@/context/SiteSettingsContext";
 import toast from "react-hot-toast";
+
+const BACKEND = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 const contactInfo = [
     {
@@ -74,6 +75,7 @@ export default function ContactPage() {
     const [formData, setFormData] = useState({
         name: "",
         email: "",
+        phone: "",
         subject: "",
         message: "",
         visaType: "Tourist Visa"
@@ -117,10 +119,39 @@ export default function ContactPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        toast.success(language === 'bn' ? 'আবেদনটি জমা হয়েছে!' : 'Visa inquiry submitted successfully!');
-        setFormData({ name: "", email: "", subject: "", message: "", visaType: "Tourist Visa" });
-        setLoading(false);
+        try {
+            const body = {
+                type: "visa",
+                serviceName: formData.visaType,
+                name: formData.name,
+                email: formData.email,
+                phone: formData.phone,
+                details: {
+                    visaType: formData.visaType,
+                    subject: formData.subject,
+                    message: formData.message,
+                },
+            };
+            const res = await fetch(`${BACKEND}/api/bookings`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body),
+            });
+            const data = await res.json();
+            if (!res.ok || !data.success) {
+                throw new Error(data.message || "Something went wrong");
+            }
+            toast.success(language === 'bn' ? 'আবেদনটি জমা হয়েছে!' : 'Visa inquiry submitted successfully!');
+            setFormData({ name: "", email: "", phone: "", subject: "", message: "", visaType: "Tourist Visa" });
+        } catch (err) {
+            toast.error(
+                language === 'bn'
+                    ? 'আবেদন জমা দেওয়া যায়নি। আবার চেষ্টা করুন।'
+                    : (err.message || 'Failed to submit inquiry. Please try again.')
+            );
+        } finally {
+            setLoading(false);
+        }
     };
 
     const isBn = language === 'bn';
@@ -319,6 +350,18 @@ export default function ContactPage() {
                                     </div>
                                 </div>
 
+                                <div className="space-y-1.5">
+                                    <label className="text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">{isBn ? 'ফোন নম্বর' : 'Phone Number'}</label>
+                                    <input
+                                        type="tel"
+                                        value={formData.phone}
+                                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                        className="w-full px-4 py-3 bg-gray-50 border border-transparent rounded-lg focus:bg-white focus:border-secondary/20 focus:ring-4 focus:ring-secondary/5 transition-all text-sm font-semibold text-gray-900 outline-none"
+                                        placeholder="+880 1XXXXXXXXX"
+                                        required
+                                    />
+                                </div>
+
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-1.5">
                                         <label className="text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1">{isBn ? 'ভিসার ধরণ' : 'Visa Type'}</label>
@@ -410,15 +453,15 @@ export default function ContactPage() {
                                         </div>
                                     </a>
 
-                                    <div className="flex items-center gap-4 p-5 bg-secondary/5 rounded-2xl border border-secondary/10 group">
+                                    <a href={`mailto:${settings.contactEmail || ""}`} className="flex items-center gap-4 p-5 bg-secondary/5 rounded-2xl border border-secondary/10 hover:bg-secondary/10 transition-all group">
                                         <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center text-white shadow-lg shadow-secondary/20">
-                                            <LuMessageCircle size={20} />
+                                            <LuMail size={20} />
                                         </div>
                                         <div className="flex flex-col">
-                                            <span className="text-[10px] font-bold text-secondary uppercase tracking-widest leading-none mb-1">Live Chat</span>
-                                            <span className="text-sm font-bold text-gray-900">24/7 Priority</span>
+                                            <span className="text-[10px] font-bold text-secondary uppercase tracking-widest leading-none mb-1">{isBn ? 'ইমেইল' : 'Email'}</span>
+                                            <span className="text-sm font-bold text-gray-900">{settings.contactEmail}</span>
                                         </div>
-                                    </div>
+                                    </a>
                                 </div>
                             </motion.div>
 
@@ -462,14 +505,17 @@ export default function ContactPage() {
                                     : 'Our destination experts are ready to provide technical guidance.'}
                             </p>
                         </div>
-                        <motion.button
+                        <motion.a
+                            href={buildWhatsAppUrl(settings.whatsappNumber)}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             className="flex items-center gap-2 px-8 py-3 bg-primary text-white font-bold text-[9px] uppercase tracking-[0.2em] rounded-full shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all"
                         >
                             <span>{isBn ? 'ফ্রি কনসাল্টেশন বুক করুন' : 'BOOK FREE CONSULTATION'}</span>
                             <LuArrowRight className="w-4 h-4" />
-                        </motion.button>
+                        </motion.a>
                     </div>
                 </div>
             </section>

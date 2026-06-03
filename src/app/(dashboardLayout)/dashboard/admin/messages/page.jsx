@@ -1,38 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import toast from "react-hot-toast";
 import {
-    FiMessageCircle, FiSearch, FiLoader, FiSend, FiUser, FiClock,
-    FiCheck, FiCheckCircle, FiRefreshCw, FiInbox
+    FiMessageCircle, FiSearch, FiLoader, FiUser, FiClock,
+    FiCheck, FiCheckCircle, FiInbox
 } from "react-icons/fi";
 
 export default function MessagesPage() {
     const [messages, setMessages] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [selected, setSelected] = useState(null);
-    const [reply, setReply] = useState("");
     const [filter, setFilter] = useState("all");
 
-    const mockData = [
-        { _id: "1", from: { firstName: "John", lastName: "Doe", email: "john@example.com" }, subject: "Help with download", message: "I purchased a UI kit but can't download it. Can you help?", status: "unread", createdAt: new Date() },
-        { _id: "2", from: { firstName: "Jane", lastName: "Smith", email: "jane@example.com" }, subject: "Refund request", message: "I accidentally bought the wrong product. Can I get a refund?", status: "unread", createdAt: new Date(Date.now() - 3600000) },
-        { _id: "3", from: { firstName: "Mike", lastName: "Johnson", email: "mike@example.com" }, subject: "License question", message: "Can I use the purchased graphics for commercial projects?", status: "read", createdAt: new Date(Date.now() - 7200000) },
-        { _id: "4", from: { firstName: "Sarah", lastName: "Williams", email: "sarah@example.com" }, subject: "Great product!", message: "Just wanted to say thanks for the amazing course!", status: "replied", createdAt: new Date(Date.now() - 86400000) },
-    ];
-
-    useEffect(() => {
-        setLoading(true);
-        setTimeout(() => { setMessages(mockData); setLoading(false); }, 500);
-    }, []);
-
-    const handleReply = () => {
-        if (!reply.trim()) return;
-        toast.success("Reply sent!");
-        setMessages(prev => prev.map(m => m._id === selected._id ? { ...m, status: "replied" } : m));
-        setReply("");
-    };
+    // No messages backend exists yet, so there is nothing to fetch.
+    // Show an honest empty inbox instead of fabricated data.
 
     const markAsRead = (id) => {
         setMessages(prev => prev.map(m => m._id === id ? { ...m, status: "read" } : m));
@@ -66,7 +48,6 @@ export default function MessagesPage() {
                         <p className="text-sm text-gray-500">{unreadCount} unread</p>
                     </div>
                 </div>
-                <button className="btn btn-ghost p-3"><FiRefreshCw /></button>
             </div>
 
             <div className="flex-1 flex gap-6 overflow-hidden">
@@ -134,17 +115,7 @@ export default function MessagesPage() {
                                 <p className="text-gray-600 dark:text-gray-300 whitespace-pre-wrap">{selected.message}</p>
                             </div>
                             <div className="p-4 border-t border-gray-100 dark:border-gray-700">
-                                <div className="flex gap-3">
-                                    <input
-                                        type="text"
-                                        value={reply}
-                                        onChange={(e) => setReply(e.target.value)}
-                                        className="input flex-1"
-                                        placeholder="Type your reply..."
-                                        onKeyDown={(e) => e.key === "Enter" && handleReply()}
-                                    />
-                                    <button onClick={handleReply} className="btn btn-primary px-6"><FiSend /> Send</button>
-                                </div>
+                                <p className="text-center text-xs text-gray-400">Replying is not available yet.</p>
                             </div>
                         </>
                     ) : (

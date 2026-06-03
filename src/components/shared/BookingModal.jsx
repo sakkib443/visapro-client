@@ -5,7 +5,7 @@ import { LuX, LuSend, LuLoader } from "react-icons/lu";
 import { useSelector } from "react-redux";
 import { selectToken, selectCurrentUser } from "@/redux/features/authSlice";
 
-const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
+const BACKEND = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 export default function BookingModal({ isOpen, onClose, type, serviceName, serviceId = "", extraFields = [] }) {
     const token = useSelector(selectToken);

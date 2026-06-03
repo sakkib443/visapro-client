@@ -4,9 +4,11 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import {
-    FiEdit3, FiTrash2, FiPlus, FiLoader, FiEye, FiSearch, FiRefreshCw,
+    FiEdit3, FiTrash2, FiPlus, FiLoader, FiSearch, FiRefreshCw,
 } from "react-icons/fi";
 import { LuFileText, LuUser, LuCalendar, LuGlobe } from "react-icons/lu";
+import { useSelector } from "react-redux";
+import { selectToken } from "@/redux/features/authSlice";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -24,13 +26,20 @@ export default function AllDocumentsPage() {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
     const [deleting, setDeleting] = useState(null);
+    const token = useSelector(selectToken);
 
     const fetchDocs = async () => {
         setLoading(true);
         try {
-            const res = await fetch(`${API}/api/doc-entries`);
+            const res = await fetch(`${API}/api/doc-entries`, {
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
+            });
             const json = await res.json();
-            if (json.success) setDocs(json.data || []);
+            if (res.ok && json.success) {
+                setDocs(json.data || []);
+            } else {
+                toast.error(json.message || "Documents লোড ব্যর্থ");
+            }
         } catch {
             toast.error("Documents লোড ব্যর্থ");
         } finally { setLoading(false); }
@@ -42,11 +51,16 @@ export default function AllDocumentsPage() {
         if (!confirm("এই Document মুছে ফেলতে চান?")) return;
         setDeleting(id);
         try {
-            const res = await fetch(`${API}/api/doc-entries/${id}`, { method: "DELETE" });
+            const res = await fetch(`${API}/api/doc-entries/${id}`, {
+                method: "DELETE",
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
+            });
             const json = await res.json();
-            if (json.success) {
+            if (res.ok && json.success) {
                 setDocs(prev => prev.filter(d => d._id !== id));
                 toast.success("🗑️ Document মুছে ফেলা হয়েছে");
+            } else {
+                toast.error(json.message || "Delete ব্যর্থ");
             }
         } catch {
             toast.error("Delete ব্যর্থ");
@@ -166,10 +180,6 @@ export default function AllDocumentsPage() {
                                         <Link href={`/dashboard/admin/visa-documents/create?id=${d._id}`}
                                             className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-[11px] font-bold hover:bg-blue-100 transition-all">
                                             <FiEdit3 size={12} /> Edit
-                                        </Link>
-                                        <Link href={`/dashboard/admin/visa-documents/create?id=${d._id}`}
-                                            className="flex items-center gap-1.5 px-3 py-1.5 bg-green-50 text-green-600 rounded-lg text-[11px] font-bold hover:bg-green-100 transition-all">
-                                            <FiEye size={12} /> View
                                         </Link>
                                         <button onClick={() => handleDelete(d._id)} disabled={deleting === d._id}
                                             className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-500 rounded-lg text-[11px] font-bold hover:bg-red-100 transition-all disabled:opacity-50">

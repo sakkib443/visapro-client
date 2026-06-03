@@ -30,14 +30,20 @@ export default function CreateAirTicketPage() {
         if (!formData.passengerName || !formData.from || !formData.to) { toast.error("Fill required fields"); return; }
         setLoading(true);
         try {
-            await fetch(`${API_BASE}/api/air-tickets`, {
+            const res = await fetch(`${API_BASE}/api/air-tickets`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json", ...(token && { Authorization: `Bearer ${token}` }) },
                 body: JSON.stringify({ ...formData, price: Number(formData.price) || 0, ticketId: `AT-${String(Date.now()).slice(-3)}` }),
             });
-            toast.success("Booking created!");
-        } catch { toast.success("Saved locally!"); }
-        finally { setLoading(false); router.push("/dashboard/admin/air-tickets"); }
+            const data = await res.json().catch(() => ({}));
+            if (res.ok && data.success !== false) {
+                toast.success("Booking created!");
+                router.push("/dashboard/admin/air-tickets");
+            } else {
+                toast.error(data.message || "Failed to create booking");
+            }
+        } catch { toast.error("Something went wrong. Please try again."); }
+        finally { setLoading(false); }
     };
 
     const inputClass = "w-full px-3.5 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 dark:bg-gray-700 text-[13px] focus:border-[#021E14] outline-none transition-all placeholder-gray-400";

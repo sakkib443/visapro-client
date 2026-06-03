@@ -14,17 +14,10 @@ import { selectToken } from "@/redux/features/authSlice";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-const mockTickets = [
-    { _id: "1", ticketId: "AT-001", passengerName: "Mohammad Sakib", airline: "Biman Bangladesh", from: "Dhaka (DAC)", to: "London (LHR)", departureDate: "2025-03-15", returnDate: "2025-04-15", class: "Economy", price: 85000, status: "confirmed", phone: "+880171XXXXXXX" },
-    { _id: "2", ticketId: "AT-002", passengerName: "Fatima Rahman", airline: "Emirates", from: "Dhaka (DAC)", to: "Dubai (DXB)", departureDate: "2025-03-20", returnDate: "2025-03-28", class: "Business", price: 125000, status: "confirmed", phone: "+880181XXXXXXX" },
-    { _id: "3", ticketId: "AT-003", passengerName: "Ahmed Hasan", airline: "Singapore Airlines", from: "Dhaka (DAC)", to: "Singapore (SIN)", departureDate: "2025-04-05", returnDate: "2025-04-12", class: "Economy", price: 45000, status: "pending", phone: "+880191XXXXXXX" },
-    { _id: "4", ticketId: "AT-004", passengerName: "Nusrat Jahan", airline: "Qatar Airways", from: "Dhaka (DAC)", to: "Toronto (YYZ)", departureDate: "2025-05-01", returnDate: "", class: "Economy", price: 95000, status: "confirmed", phone: "+880161XXXXXXX" },
-    { _id: "5", ticketId: "AT-005", passengerName: "Kamal Uddin", airline: "Malaysian Airlines", from: "Dhaka (DAC)", to: "Kuala Lumpur (KUL)", departureDate: "2025-03-25", returnDate: "2025-04-01", class: "Economy", price: 32000, status: "cancelled", phone: "+880151XXXXXXX" },
-];
-
 export default function AirTicketsPage() {
     const [tickets, setTickets] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
     const [search, setSearch] = useState("");
     const [filter, setFilter] = useState("all");
     const [viewingTicket, setViewingTicket] = useState(null);
@@ -32,11 +25,21 @@ export default function AirTicketsPage() {
 
     const fetchTickets = async () => {
         setLoading(true);
+        setError(false);
         try {
             const res = await fetch(`${API_BASE}/api/air-tickets`, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
             const data = await res.json();
-            setTickets(data.success && data.data ? (Array.isArray(data.data) ? data.data : data.data.data || mockTickets) : mockTickets);
-        } catch { setTickets(mockTickets); }
+            if (res.ok && data.success && data.data) {
+                const list = Array.isArray(data.data) ? data.data : (data.data.data || []);
+                setTickets(list);
+            } else {
+                setTickets([]);
+                setError(true);
+            }
+        } catch {
+            setTickets([]);
+            setError(true);
+        }
         finally { setLoading(false); }
     };
 
@@ -186,6 +189,13 @@ export default function AirTicketsPage() {
                                 </tr>
                             </thead>
                             <tbody>
+                                {filtered.length === 0 && (
+                                    <tr>
+                                        <td colSpan={8} className="text-center py-12 text-gray-400 text-[13px]">
+                                            {error ? "Could not load bookings. Please try again." : "No bookings found"}
+                                        </td>
+                                    </tr>
+                                )}
                                 {filtered.map((ticket, i) => (
                                     <motion.tr key={ticket._id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }}
                                         className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">

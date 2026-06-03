@@ -14,6 +14,7 @@ import {
 import { FaKaaba, FaMosque } from "react-icons/fa6";
 import { FaWhatsapp } from "react-icons/fa";
 import { useLanguage } from "@/context/LanguageContext";
+import { useSiteSettings, buildWhatsAppUrl } from "@/context/SiteSettingsContext";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -34,6 +35,7 @@ const fallbackUmrah = [
 export default function HajjUmrahPage() {
     const [activeTab, setActiveTab] = useState("hajj");
     const { language } = useLanguage();
+    const { settings } = useSiteSettings();
     const isBn = language === 'bn';
     const fontFamily = isBn ? 'Hind Siliguri, sans-serif' : 'Poppins, sans-serif';
     const headingFont = isBn ? 'Hind Siliguri, sans-serif' : 'Teko, sans-serif';
@@ -101,7 +103,7 @@ export default function HajjUmrahPage() {
                     </motion.p>
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="flex flex-wrap gap-4 justify-center">
                         <a href="#packages" className="px-8 py-3 rounded-lg text-[11px] font-bold uppercase tracking-widest transition-all hover:opacity-90" style={{ backgroundColor: '#EF8C2C', color: '#FFFFFF' }}>{isBn ? 'প্যাকেজ দেখুন' : 'View Packages'}</a>
-                        <a href={`https://wa.me/8801234567890?text=${encodeURIComponent("Hi, I'd like to get a quote for Hajj/Umrah package.")}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-8 py-3 rounded-lg border text-[11px] font-bold uppercase tracking-widest transition-all hover:bg-white/10" style={{ borderColor: 'rgba(255,255,255,0.3)', color: '#FFFFFF' }}><FaWhatsapp size={16} />{isBn ? 'কোটেশন নিন' : 'Get a Quote'}</a>
+                        <a href={buildWhatsAppUrl(settings.whatsappNumber, isBn ? "আসসালামু আলাইকুম, আমি হজ্জ/ওমরাহ প্যাকেজের জন্য কোটেশন চাই।" : "Hi, I'd like to get a quote for Hajj/Umrah package.")} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-8 py-3 rounded-lg border text-[11px] font-bold uppercase tracking-widest transition-all hover:bg-white/10" style={{ borderColor: 'rgba(255,255,255,0.3)', color: '#FFFFFF' }}><FaWhatsapp size={16} />{isBn ? 'কোটেশন নিন' : 'Get a Quote'}</a>
                     </motion.div>
                 </div>
             </section>

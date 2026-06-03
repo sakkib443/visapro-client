@@ -17,7 +17,6 @@ import {
     FiCalendar,
     FiGlobe,
     FiPlus,
-    FiEye,
 } from "react-icons/fi";
 import { LuPlane, LuGraduationCap } from "react-icons/lu";
 import { FaKaaba } from "react-icons/fa6";
@@ -95,31 +94,25 @@ export default function AdminDashboard() {
         monthlyRevenue: 345000,
     });
 
-    const [recentApplications, setRecentApplications] = useState([
-        { id: "VA-2024-001", name: "Mohammad Sakib", type: "Tourist Visa", country: "🇬🇧 UK", status: "processing", date: "Feb 20, 2025" },
-        { id: "VA-2024-002", name: "Fatima Rahman", type: "Student Visa", country: "🇨🇦 Canada", status: "approved", date: "Feb 19, 2025" },
-        { id: "VA-2024-003", name: "Ahmed Hasan", type: "Work Visa", country: "🇦🇺 Australia", status: "pending", date: "Feb 18, 2025" },
-        { id: "VA-2024-004", name: "Nusrat Jahan", type: "Visit Visa", country: "🇺🇸 USA", status: "approved", date: "Feb 17, 2025" },
-        { id: "VA-2024-005", name: "Kamal Uddin", type: "Tourist Visa", country: "🇲🇾 Malaysia", status: "rejected", date: "Feb 16, 2025" },
-        { id: "VA-2024-006", name: "Rina Akter", type: "Student Visa", country: "🇩🇪 Germany", status: "processing", date: "Feb 15, 2025" },
-    ]);
-
-    const [upcomingTours, setUpcomingTours] = useState([
-        { name: "Cox's Bazar Premium", date: "Mar 5, 2025", travelers: 24, revenue: 120000 },
-        { name: "Sundarban Adventure", date: "Mar 12, 2025", travelers: 16, revenue: 96000 },
-        { name: "Umrah March Group", date: "Mar 20, 2025", travelers: 40, revenue: 2000000 },
-        { name: "Thailand Package", date: "Apr 1, 2025", travelers: 12, revenue: 360000 },
-    ]);
+    const [recentApplications, setRecentApplications] = useState([]);
+    const [upcomingTours, setUpcomingTours] = useState([]);
+    const [error, setError] = useState(false);
 
     const fetchDashboardData = async () => {
         setRefreshing(true);
+        setError(false);
         try {
             const response = await analyticsService.getDashboard();
             if (response.success && response.data) {
-                setStats(prev => ({ ...prev, ...response.data }));
+                const { recentApplications: apps, upcomingTours: tours, ...statValues } = response.data;
+                setStats(prev => ({ ...prev, ...statValues }));
+                setRecentApplications(Array.isArray(apps) ? apps : []);
+                setUpcomingTours(Array.isArray(tours) ? tours : []);
+            } else {
+                setError(true);
             }
         } catch (error) {
-            console.log("Using demo data");
+            setError(true);
         } finally {
             setLoading(false);
             setRefreshing(false);
@@ -331,41 +324,49 @@ export default function AdminDashboard() {
                         </Link>
                     </div>
                     <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead>
-                                <tr className="border-b border-gray-50 dark:border-gray-700/50">
-                                    <th className="text-left px-4 py-3 text-[9px] font-bold uppercase tracking-wider text-gray-400">ID</th>
-                                    <th className="text-left px-4 py-3 text-[9px] font-bold uppercase tracking-wider text-gray-400">Applicant</th>
-                                    <th className="text-left px-4 py-3 text-[9px] font-bold uppercase tracking-wider text-gray-400">Type</th>
-                                    <th className="text-left px-4 py-3 text-[9px] font-bold uppercase tracking-wider text-gray-400">Country</th>
-                                    <th className="text-left px-4 py-3 text-[9px] font-bold uppercase tracking-wider text-gray-400">Status</th>
-                                    <th className="text-left px-4 py-3 text-[9px] font-bold uppercase tracking-wider text-gray-400">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {recentApplications.map((app) => (
-                                    <tr key={app.id} className="border-b border-gray-50 dark:border-gray-700/30 hover:bg-gray-50/50 dark:hover:bg-gray-700/20 transition-colors">
-                                        <td className="px-4 py-3 text-[11px] font-mono font-semibold text-gray-500">{app.id}</td>
-                                        <td className="px-4 py-3">
-                                            <p className="text-[12px] font-semibold text-gray-700 dark:text-gray-200">{app.name}</p>
-                                            <p className="text-[10px] text-gray-400">{app.date}</p>
-                                        </td>
-                                        <td className="px-4 py-3 text-[11px] text-gray-500">{app.type}</td>
-                                        <td className="px-4 py-3 text-[12px]">{app.country}</td>
-                                        <td className="px-4 py-3">
-                                            <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold capitalize ${getStatusStyle(app.status)}`}>
-                                                {app.status}
-                                            </span>
-                                        </td>
-                                        <td className="px-4 py-3">
-                                            <button className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hover:text-gray-600 transition-colors">
-                                                <FiEye size={13} />
-                                            </button>
-                                        </td>
+                        {error ? (
+                            <div className="text-center py-12 text-gray-400">
+                                <FiFileText size={36} className="mx-auto mb-3 opacity-30" />
+                                <p className="text-[13px] font-medium">Couldn't load applications</p>
+                                <p className="text-[11px] mt-1">Please try refreshing</p>
+                            </div>
+                        ) : (!loading && recentApplications.length === 0) ? (
+                            <div className="text-center py-12 text-gray-400">
+                                <FiFileText size={36} className="mx-auto mb-3 opacity-30" />
+                                <p className="text-[13px] font-medium">No recent applications</p>
+                                <p className="text-[11px] mt-1">New applications will appear here</p>
+                            </div>
+                        ) : (
+                            <table className="w-full">
+                                <thead>
+                                    <tr className="border-b border-gray-50 dark:border-gray-700/50">
+                                        <th className="text-left px-4 py-3 text-[9px] font-bold uppercase tracking-wider text-gray-400">ID</th>
+                                        <th className="text-left px-4 py-3 text-[9px] font-bold uppercase tracking-wider text-gray-400">Applicant</th>
+                                        <th className="text-left px-4 py-3 text-[9px] font-bold uppercase tracking-wider text-gray-400">Type</th>
+                                        <th className="text-left px-4 py-3 text-[9px] font-bold uppercase tracking-wider text-gray-400">Country</th>
+                                        <th className="text-left px-4 py-3 text-[9px] font-bold uppercase tracking-wider text-gray-400">Status</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {recentApplications.map((app) => (
+                                        <tr key={app.id} className="border-b border-gray-50 dark:border-gray-700/30 hover:bg-gray-50/50 dark:hover:bg-gray-700/20 transition-colors">
+                                            <td className="px-4 py-3 text-[11px] font-mono font-semibold text-gray-500">{app.id}</td>
+                                            <td className="px-4 py-3">
+                                                <p className="text-[12px] font-semibold text-gray-700 dark:text-gray-200">{app.name}</p>
+                                                <p className="text-[10px] text-gray-400">{app.date}</p>
+                                            </td>
+                                            <td className="px-4 py-3 text-[11px] text-gray-500">{app.type}</td>
+                                            <td className="px-4 py-3 text-[12px]">{app.country}</td>
+                                            <td className="px-4 py-3">
+                                                <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold capitalize ${getStatusStyle(app.status)}`}>
+                                                    {app.status}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
                     </div>
                 </motion.div>
 
@@ -386,26 +387,40 @@ export default function AdminDashboard() {
                         </Link>
                     </div>
                     <div className="p-4 space-y-3">
-                        {upcomingTours.map((tour, i) => (
-                            <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-[#F8FAFC] dark:bg-gray-700/30 hover:bg-gray-100/80 dark:hover:bg-gray-700/50 transition-colors">
-                                <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#021E1408' }}>
-                                    <FiMapPin size={16} className="text-[#021E14]" />
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-[12px] font-semibold text-gray-700 dark:text-gray-200 truncate">{tour.name}</p>
-                                    <div className="flex items-center gap-2 mt-0.5">
-                                        <span className="text-[10px] text-gray-400 flex items-center gap-1">
-                                            <FiCalendar size={9} /> {tour.date}
-                                        </span>
-                                        <span className="text-[10px] text-gray-400">•</span>
-                                        <span className="text-[10px] text-gray-400 flex items-center gap-1">
-                                            <FiUsers size={9} /> {tour.travelers}
-                                        </span>
-                                    </div>
-                                </div>
-                                <p className="text-[11px] font-semibold text-emerald-500">৳{(tour.revenue / 1000).toFixed(0)}K</p>
+                        {error ? (
+                            <div className="text-center py-10 text-gray-400">
+                                <FiMapPin size={32} className="mx-auto mb-3 opacity-30" />
+                                <p className="text-[13px] font-medium">Couldn't load tours</p>
+                                <p className="text-[11px] mt-1">Please try refreshing</p>
                             </div>
-                        ))}
+                        ) : (!loading && upcomingTours.length === 0) ? (
+                            <div className="text-center py-10 text-gray-400">
+                                <FiMapPin size={32} className="mx-auto mb-3 opacity-30" />
+                                <p className="text-[13px] font-medium">No upcoming tours</p>
+                                <p className="text-[11px] mt-1">Scheduled tours will appear here</p>
+                            </div>
+                        ) : (
+                            upcomingTours.map((tour, i) => (
+                                <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-[#F8FAFC] dark:bg-gray-700/30 hover:bg-gray-100/80 dark:hover:bg-gray-700/50 transition-colors">
+                                    <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#021E1408' }}>
+                                        <FiMapPin size={16} className="text-[#021E14]" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-[12px] font-semibold text-gray-700 dark:text-gray-200 truncate">{tour.name}</p>
+                                        <div className="flex items-center gap-2 mt-0.5">
+                                            <span className="text-[10px] text-gray-400 flex items-center gap-1">
+                                                <FiCalendar size={9} /> {tour.date}
+                                            </span>
+                                            <span className="text-[10px] text-gray-400">•</span>
+                                            <span className="text-[10px] text-gray-400 flex items-center gap-1">
+                                                <FiUsers size={9} /> {tour.travelers}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <p className="text-[11px] font-semibold text-emerald-500">৳{(tour.revenue / 1000).toFixed(0)}K</p>
+                                </div>
+                            ))
+                        )}
                     </div>
                 </motion.div>
             </div>

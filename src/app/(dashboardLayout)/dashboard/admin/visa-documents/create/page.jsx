@@ -8,6 +8,8 @@ import {
     FiCheck, FiEye, FiPrinter, FiList, FiMaximize, FiMinimize, FiPlus, FiTrash2,
 } from "react-icons/fi";
 import { LuScanLine, LuBuilding } from "react-icons/lu";
+import { useSelector } from "react-redux";
+import { selectToken } from "@/redux/features/authSlice";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -217,6 +219,7 @@ function ETicketPreview({ data: p }) {
    MAIN PAGE
 ═══════════════════════════════════════════════════════════════ */
 export default function VisaDocumentCreatePage() {
+    const token = useSelector(selectToken);
     const [file, setFile] = useState(null);
     const [imgPrev, setImgPrev] = useState(null);
     const [pdfUrl, setPdfUrl] = useState(null);
@@ -239,7 +242,7 @@ export default function VisaDocumentCreatePage() {
         const id = new URLSearchParams(window.location.search).get("id");
         if (id) {
             setEditId(id);
-            fetch(`${API}/api/doc-entries/${id}`).then(r => r.json()).then(j => {
+            fetch(`${API}/api/doc-entries/${id}`, { headers: token ? { Authorization: `Bearer ${token}` } : {} }).then(r => r.json()).then(j => {
                 if (j.success && j.data) { setData({ ...JSON.parse(JSON.stringify(INIT)), ...j.data }); setScanDone(true); toast.success("Loaded!"); }
             }).catch(() => toast.error("Load failed"));
         }
@@ -261,7 +264,7 @@ export default function VisaDocumentCreatePage() {
         const iv = setInterval(() => setScanPct(p => { if (p >= 88) { clearInterval(iv); return 88; } return p + 3; }), 130);
         try {
             const fd = new FormData(); fd.append("pdf", file);
-            const res = await fetch(`${API}/api/pdf-extract`, { method: "POST", body: fd });
+            const res = await fetch(`${API}/api/pdf-extract`, { method: "POST", headers: token ? { Authorization: `Bearer ${token}` } : {}, body: fd });
             const j = await res.json(); clearInterval(iv); setScanPct(100);
             if (!j.success) throw new Error(j.message);
             const d = j.data;
@@ -334,7 +337,7 @@ export default function VisaDocumentCreatePage() {
         setSaving(true);
         try {
             const u = editId ? `${API}/api/doc-entries/${editId}` : `${API}/api/doc-entries`;
-            const r = await fetch(u, { method: editId ? "PUT" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+            const r = await fetch(u, { method: editId ? "PUT" : "POST", headers: { "Content-Type": "application/json", ...(token && { Authorization: `Bearer ${token}` }) }, body: JSON.stringify(data) });
             const j = await r.json(); if (!j.success) throw 0;
             if (!editId && j.data?._id) setEditId(j.data._id);
             toast.success(editId ? "Updated!" : "Saved!");

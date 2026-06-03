@@ -30,14 +30,20 @@ export default function CreateHotelBookingPage() {
         if (!formData.guestName || !formData.hotel) { toast.error("Fill required fields"); return; }
         setLoading(true);
         try {
-            await fetch(`${API_BASE}/api/hotel-bookings`, {
+            const res = await fetch(`${API_BASE}/api/hotel-bookings`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json", ...(token && { Authorization: `Bearer ${token}` }) },
                 body: JSON.stringify({ ...formData, price: Number(formData.price) || 0, rooms: Number(formData.rooms) || 1, bookingId: `HB-${String(Date.now()).slice(-3)}` }),
             });
-            toast.success("Booking created!");
-        } catch { toast.success("Saved locally!"); }
-        finally { setLoading(false); router.push("/dashboard/admin/hotel-bookings"); }
+            const data = await res.json();
+            if (res.ok && data.success) {
+                toast.success("Booking created!");
+                router.push("/dashboard/admin/hotel-bookings");
+            } else {
+                toast.error(data.message || "Failed to create booking");
+            }
+        } catch { toast.error("Something went wrong"); }
+        finally { setLoading(false); }
     };
 
     const inputClass = "w-full px-3.5 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 dark:bg-gray-700 text-[13px] focus:border-[#021E14] outline-none transition-all placeholder-gray-400";

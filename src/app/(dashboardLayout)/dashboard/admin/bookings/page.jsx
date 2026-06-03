@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { LuSearch, LuFilter, LuLoader, LuTrash2, LuCheckCircle, LuXCircle, LuClock, LuRefreshCw, LuEye, LuX } from "react-icons/lu";
 import { useSelector } from "react-redux";
+import toast from "react-hot-toast";
 import { selectToken } from "@/redux/features/authSlice";
 
 const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
@@ -26,6 +27,7 @@ const humanize = (k) => k.replace(/([A-Z])/g, " $1").replace(/^./, (c) => c.toUp
 export default function AdminBookingsPage() {
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
     const [typeFilter, setTypeFilter] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
     const [search, setSearch] = useState("");
@@ -37,39 +39,73 @@ export default function AdminBookingsPage() {
 
     const fetchBookings = async () => {
         setLoading(true);
+        setError(false);
         const params = new URLSearchParams();
         if (typeFilter) params.set("type", typeFilter);
         if (statusFilter) params.set("status", statusFilter);
-        const res = await fetch(`${BACKEND}/api/bookings?${params}`, {
-            headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
-        setBookings(data.data || []);
-        setLoading(false);
+        try {
+            const res = await fetch(`${BACKEND}/api/bookings?${params}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const data = await res.json();
+            if (res.ok && data.success !== false) {
+                setBookings(data.data || []);
+            } else {
+                setBookings([]);
+                setError(true);
+            }
+        } catch {
+            setBookings([]);
+            setError(true);
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => { fetchBookings(); }, [typeFilter, statusFilter]);
 
     const updateStatus = async (id, status, adminNote = "") => {
         setUpdating(id);
-        await fetch(`${BACKEND}/api/bookings/${id}/status`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-            body: JSON.stringify({ status, adminNote }),
-        });
-        setUpdating(null);
-        setNoteModal(null);
-        setNote("");
-        fetchBookings();
+        try {
+            const res = await fetch(`${BACKEND}/api/bookings/${id}/status`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                body: JSON.stringify({ status, adminNote }),
+            });
+            const data = await res.json();
+            if (res.ok && data.success !== false) {
+                toast.success("Status updated");
+                setNoteModal(null);
+                setNote("");
+                fetchBookings();
+            } else {
+                toast.error(data.message || "Failed to update status");
+            }
+        } catch {
+            toast.error("Failed to update status");
+        } finally {
+            setUpdating(null);
+        }
     };
 
     const deleteBooking = async (id) => {
         if (!confirm("Delete this booking?")) return;
-        await fetch(`${BACKEND}/api/bookings/${id}`, {
-            method: "DELETE",
-            headers: { Authorization: `Bearer ${token}` },
-        });
-        fetchBookings();
+        try {
+            const res = await fetch(`${BACKEND}/api/bookings/${id}`, {
+                method: "DELETE",
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const data = await res.json();
+            if (res.ok && data.success !== false) {
+                toast.success("Booking deleted");
+                if (detailsModal?._id === id) setDetailsModal(null);
+                fetchBookings();
+            } else {
+                toast.error(data.message || "Failed to delete booking");
+            }
+        } catch {
+            toast.error("Failed to delete booking");
+        }
     };
 
     const filtered = bookings.filter(b =>
@@ -128,6 +164,17 @@ export default function AdminBookingsPage() {
                 {/* Table */}
                 {loading ? (
                     <div className="flex justify-center py-16"><LuLoader size={32} className="animate-spin text-blue-500" /></div>
+                ) : error ? (
+                    <div className="flex flex-col items-center justify-center py-16 text-center">
+                        <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mb-4">
+                            <LuX size={24} className="text-red-300" />
+                        </div>
+                        <h3 className="text-lg font-bold text-gray-400 mb-1">Failed to load bookings</h3>
+                        <p className="text-sm text-gray-400 mb-4">Something went wrong while fetching bookings.</p>
+                        <button onClick={fetchBookings} className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm text-white font-medium transition">
+                            <LuRefreshCw size={14} /> Try Again
+                        </button>
+                    </div>
                 ) : (
                     <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
                         <div className="overflow-x-auto">

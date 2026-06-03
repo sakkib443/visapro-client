@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import {
-    FiUser, FiMail, FiPhone, FiLock, FiSave, FiLoader, FiCamera,
+    FiUser, FiMail, FiPhone, FiLock, FiSave, FiLoader,
     FiShield, FiCheck
 } from "react-icons/fi";
 import { useSelector } from "react-redux";
@@ -113,9 +113,6 @@ export default function ProfilePage() {
                             <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-3xl font-bold overflow-hidden">
                                 {formData.avatar ? <img src={formData.avatar} alt="" className="w-full h-full object-cover" /> : `${formData.firstName?.[0]}${formData.lastName?.[0]}`}
                             </div>
-                            <button type="button" className="absolute -bottom-2 -right-2 w-8 h-8 bg-white dark:bg-gray-700 rounded-full shadow-lg flex items-center justify-center text-gray-500 hover:text-primary">
-                                <FiCamera size={16} />
-                            </button>
                         </div>
                         <div>
                             <p className="font-bold text-gray-900 dark:text-white">{formData.firstName} {formData.lastName}</p>

@@ -7,6 +7,8 @@ import {
     FiEdit3, FiTrash2, FiPlus, FiLoader, FiEye, FiSearch, FiRefreshCw,
 } from "react-icons/fi";
 import { LuPlane, LuUser, LuCalendar } from "react-icons/lu";
+import { useSelector } from "react-redux";
+import { selectToken } from "@/redux/features/authSlice";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -15,11 +17,12 @@ export default function AllTicketsPage() {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
     const [deleting, setDeleting] = useState(null);
+    const token = useSelector(selectToken);
 
     const fetchTickets = async () => {
         setLoading(true);
         try {
-            const res = await fetch(`${API}/api/tickets`);
+            const res = await fetch(`${API}/api/tickets`, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
             const json = await res.json();
             if (json.success) setTickets(json.data || []);
         } catch {
@@ -33,7 +36,7 @@ export default function AllTicketsPage() {
         if (!confirm("এই Ticket মুছে ফেলতে চান?")) return;
         setDeleting(id);
         try {
-            const res = await fetch(`${API}/api/tickets/${id}`, { method: "DELETE" });
+            const res = await fetch(`${API}/api/tickets/${id}`, { method: "DELETE", headers: token ? { Authorization: `Bearer ${token}` } : {} });
             const json = await res.json();
             if (json.success) {
                 setTickets(prev => prev.filter(t => t._id !== id));

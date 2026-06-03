@@ -68,9 +68,17 @@ export default function ContactDesignPage() {
 
     const reload = async () => {
         setLoading(true);
-        await refetch();
-        setLoading(false);
-        toast.success("Settings refreshed");
+        try {
+            const res = await fetch(`${API_BASE}/api/settings`);
+            const data = await res.json();
+            if (!res.ok || !data.success) throw new Error(data.message || "Failed to refresh settings");
+            await refetch();
+            toast.success("Settings refreshed");
+        } catch (err) {
+            toast.error(err.message || "Failed to refresh settings");
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleField = (key, value) => {

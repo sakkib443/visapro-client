@@ -12,8 +12,6 @@ import {
     LuPhone,
     LuMessageCircle,
     LuChevronRight,
-    LuHeart,
-    LuShare2,
     LuCircleCheck,
     LuCircleDot,
     LuUsers,
@@ -28,6 +26,7 @@ import {
 } from "react-icons/lu";
 import { FaWhatsapp } from "react-icons/fa";
 import { useLanguage } from "@/context/LanguageContext";
+import { useSiteSettings, buildWhatsAppUrl, buildTelUrl } from "@/context/SiteSettingsContext";
 import Link from "next/link";
 import BookingModal from "@/components/shared/BookingModal";
 
@@ -37,6 +36,7 @@ export default function TourDetailsPage() {
     const { id } = useParams();
     const router = useRouter();
     const { language } = useLanguage();
+    const { settings } = useSiteSettings();
     const isBn = language === 'bn';
     const fontFamily = isBn ? 'Hind Siliguri, sans-serif' : 'Poppins, sans-serif';
     const headingFont = isBn ? 'Hind Siliguri, sans-serif' : 'Teko, sans-serif';
@@ -201,14 +201,6 @@ export default function TourDetailsPage() {
                                             {isBn ? `আপনি ${sym}${savings.toLocaleString()} সাশ্রয় করছেন` : `You save ${sym}${savings.toLocaleString()}`}
                                         </p>
                                     )}
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <button className="w-9 h-9 rounded-md bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all">
-                                        <LuHeart size={15} />
-                                    </button>
-                                    <button className="w-9 h-9 rounded-md bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 hover:text-[#3590CF] hover:bg-blue-50 transition-all">
-                                        <LuShare2 size={15} />
-                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -444,7 +436,7 @@ export default function TourDetailsPage() {
                                     </p>
                                     <div className="space-y-2">
                                         <a
-                                            href="tel:+8801234567890"
+                                            href={buildTelUrl(settings.contactPhone)}
                                             className="w-full py-3 rounded-md flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white transition-all hover:opacity-90"
                                             style={{ backgroundColor: '#EF8C2C', fontFamily }}
                                         >
@@ -452,7 +444,7 @@ export default function TourDetailsPage() {
                                             {isBn ? 'কল করুন' : 'Call Now'}
                                         </a>
                                         <a
-                                            href={`https://wa.me/8801234567890?text=${encodeURIComponent(`Hi, I need help with tour booking for "${tour.title}". Please contact me.`)}`}
+                                            href={buildWhatsAppUrl(settings.whatsappNumber, `Hi, I need help with tour booking for "${tour.title}". Please contact me.`)}
                                             target="_blank" rel="noopener noreferrer"
                                             className="w-full py-3 rounded-md flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white border border-white/15 transition-all hover:bg-white/5"
                                             style={{ fontFamily }}
@@ -542,13 +534,13 @@ export default function TourDetailsPage() {
                     </p>
                     <div className="flex flex-wrap justify-center gap-4">
                         <a
-                            href={`https://wa.me/8801234567890?text=${encodeURIComponent(
+                            href={buildWhatsAppUrl(settings.whatsappNumber,
                                 `🌍 Tour Booking - VisaPro\n\n` +
                                 `Tour: ${tour.title}\n` +
                                 `Destination: ${tour.destination}\n` +
                                 `Price: ${sym}${tour.price?.toLocaleString()} per person\n\n` +
                                 `I would like to book this tour. Please assist me.`
-                            )}`}
+                            )}
                             target="_blank" rel="noopener noreferrer"
                             className="px-10 py-4 rounded-md text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:shadow-lg hover:shadow-[#25D366]/20 hover:-translate-y-0.5 flex items-center gap-2"
                             style={{ backgroundColor: '#25D366', fontFamily }}
@@ -557,7 +549,7 @@ export default function TourDetailsPage() {
                             {isBn ? 'এখনই বুক করুন' : 'Book Now'}
                         </a>
                         <a
-                            href={`https://wa.me/8801234567890?text=${encodeURIComponent(`Hi, I need help with tour booking. Please contact me.`)}`}
+                            href={buildWhatsAppUrl(settings.whatsappNumber, `Hi, I need help with tour booking. Please contact me.`)}
                             target="_blank" rel="noopener noreferrer"
                             className="px-10 py-4 rounded-md text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:shadow-lg hover:-translate-y-0.5 flex items-center gap-2"
                             style={{ backgroundColor: '#021E14', fontFamily }}

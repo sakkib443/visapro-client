@@ -18,6 +18,7 @@ import {
     LuGlobe
 } from "react-icons/lu";
 import { useLanguage } from "@/context/LanguageContext";
+import { useSiteSettings, buildWhatsAppUrl, buildTelUrl } from "@/context/SiteSettingsContext";
 import Link from "next/link";
 import CountryFlag, { preloadFlags } from "@/components/shared/CountryFlag";
 
@@ -37,6 +38,7 @@ function VisaContent() {
     const initialRegion = searchParams.get("region") || "";
     const initialCategory = searchParams.get("category") || "";
     const { language } = useLanguage();
+    const { settings } = useSiteSettings();
     const isBn = language === 'bn';
     const fontFamily = isBn ? 'Hind Siliguri, sans-serif' : 'Poppins, sans-serif';
     const headingFont = isBn ? 'Hind Siliguri, sans-serif' : 'Teko, sans-serif';
@@ -104,7 +106,8 @@ function VisaContent() {
         } else if (sortBy === "Most Popular" || sortBy === "সবচেয়ে জনপ্রিয়") {
             result.sort((a, b) => (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0));
         } else {
-            result.sort((a, b) => a.name?.localeCompare(b.name));
+            // Recently Added — newest first by creation date
+            result.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
         }
 
         return result;
@@ -500,12 +503,12 @@ function VisaContent() {
                             : 'Our experts are here to help you with personalized visa solutions tailored to your specific needs and destination.'}
                     </p>
                     <div className="flex flex-wrap justify-center gap-4">
-                        <button className="px-10 py-5 bg-[#EF8C2C] text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-[#EF8C2C]/20 hover:-translate-y-1 transition-all" style={{ fontFamily }}>
+                        <a href={buildTelUrl(settings.contactPhone)} className="px-10 py-5 bg-[#EF8C2C] text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-[#EF8C2C]/20 hover:-translate-y-1 transition-all" style={{ fontFamily }}>
                             {isBn ? 'সাপোর্ট কল করুন' : 'Call Support'}
-                        </button>
-                        <button className="px-10 py-5 bg-[#021E14] text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-black/10 hover:-translate-y-1 transition-all" style={{ fontFamily }}>
+                        </a>
+                        <a href={buildWhatsAppUrl(settings.whatsappNumber, isBn ? 'আমার একটি ভিসা সমাধান প্রয়োজন' : 'Hi, I need help finding a visa solution')} target="_blank" rel="noopener noreferrer" className="px-10 py-5 bg-[#021E14] text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-black/10 hover:-translate-y-1 transition-all" style={{ fontFamily }}>
                             {isBn ? 'লাইভ চ্যাট' : 'Live Chat'}
-                        </button>
+                        </a>
                     </div>
                 </div>
             </section>

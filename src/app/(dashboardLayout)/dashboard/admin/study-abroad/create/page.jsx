@@ -31,14 +31,20 @@ export default function CreateStudyAbroadPage() {
         if (!formData.name || !formData.country || !formData.university) { toast.error("Fill required fields"); return; }
         setLoading(true);
         try {
-            await fetch(`${API_BASE}/api/study-abroad`, {
+            const res = await fetch(`${API_BASE}/api/study-abroad`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json", ...(token && { Authorization: `Bearer ${token}` }) },
                 body: JSON.stringify({ ...formData, tuition: Number(formData.tuition) || 0, applications: 0 }),
             });
-            toast.success("Program added!");
-        } catch { toast.success("Saved locally!"); }
-        finally { setLoading(false); router.push("/dashboard/admin/study-abroad"); }
+            const data = await res.json().catch(() => ({}));
+            if (res.ok && data.success) {
+                toast.success("Program added!");
+                router.push("/dashboard/admin/study-abroad");
+            } else {
+                toast.error(data.message || "Failed to add program");
+            }
+        } catch { toast.error("Error adding program"); }
+        finally { setLoading(false); }
     };
 
     const inputClass = "w-full px-3.5 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 dark:bg-gray-700 text-[13px] focus:border-[#021E14] outline-none transition-all placeholder-gray-400";

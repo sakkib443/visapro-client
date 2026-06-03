@@ -1,8 +1,10 @@
 "use client";
 import { useState, useRef, useCallback, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import { selectToken } from "@/redux/features/authSlice";
 import {
     FiUpload, FiLoader, FiX, FiDownload, FiRefreshCw, FiSave,
     FiCheck, FiEdit3, FiEye, FiEyeOff, FiPlus, FiPrinter, FiList, FiMaximize2, FiMinimize2,
@@ -475,6 +477,7 @@ export default function TicketGeneratorPage() {
     const [pdfUrl, setPdfUrl] = useState(null);
     const [showFullscreen, setShowFullscreen] = useState(false);
     const fileRef = useRef(null);
+    const token = useSelector(selectToken);
 
     const toggleVis = useCallback((key) => {
         setVis(prev => ({ ...prev, [key]: !prev[key] }));
@@ -486,7 +489,7 @@ export default function TicketGeneratorPage() {
         const id = params.get("id");
         if (id) {
             setEditId(id);
-            fetch(`${API}/api/tickets/${id}`).then(r => r.json()).then(json => {
+            fetch(`${API}/api/tickets/${id}`, { headers: token ? { Authorization: `Bearer ${token}` } : {} }).then(r => r.json()).then(json => {
                 if (json.success && json.data) {
                     const d = json.data;
                     setForm({ ...INIT, ...d, passengers: d.passengers?.length ? d.passengers : [mkP()], flights: d.flights?.length ? d.flights : [mkF()], fares: d.fares?.length ? d.fares : [mkFare()] });
@@ -514,7 +517,7 @@ export default function TicketGeneratorPage() {
         try {
             const fd = new FormData(); fd.append("pdf", file);
             setProgress(30);
-            const res = await fetch(`${API}/api/pdf-extract`, { method: "POST", body: fd });
+            const res = await fetch(`${API}/api/pdf-extract`, { method: "POST", headers: token ? { Authorization: `Bearer ${token}` } : {}, body: fd });
             setProgress(70);
             const json = await res.json();
             if (!json.success) throw new Error(json.message || "Failed");
@@ -562,7 +565,7 @@ export default function TicketGeneratorPage() {
         try {
             const url = editId ? `${API}/api/tickets/${editId}` : `${API}/api/tickets`;
             const method = editId ? "PUT" : "POST";
-            const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
+            const res = await fetch(url, { method, headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify(form) });
             const json = await res.json();
             if (!json.success) throw new Error(json.message || "Save failed");
             if (!editId && json.data?._id) setEditId(json.data._id);
@@ -670,7 +673,7 @@ export default function TicketGeneratorPage() {
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-2xl font-black text-gray-800 flex items-center gap-2"><LuPlane className="text-blue-600" /> Ticket Generator</h1>
-                        <p className="text-xs text-gray-500 mt-0.5">Upload ? Scan ? Edit ? Preview & Download</p>
+                        <p className="text-xs text-gray-500 mt-0.5">Upload → Scan → Edit → Preview & Download</p>
                     </div>
                     <div className="flex gap-2">
                         <Link href="/dashboard/admin/all-tickets" className="flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-100"><FiList size={13} /> All Tickets</Link>
@@ -963,7 +966,7 @@ export default function TicketGeneratorPage() {
                     /* Preview & Download */
                     <div className="space-y-4">
                         <div className="flex flex-wrap gap-3">
-                            <button onClick={() => setStep(1)} className="px-5 py-2.5 border border-gray-200 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50">? Edit</button>
+                            <button onClick={() => setStep(1)} className="px-5 py-2.5 border border-gray-200 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50">← Edit</button>
                             <button onClick={handleSave} disabled={saving} className="flex items-center gap-2 px-6 py-2.5 bg-green-600 text-white rounded-xl text-sm font-bold hover:bg-green-700 disabled:opacity-60 shadow-lg shadow-green-200">
                                 {saving ? <FiLoader size={14} className="animate-spin" /> : <FiSave size={14} />} {editId ? "Update" : "Save"}
                             </button>

@@ -16,18 +16,6 @@ import { selectToken } from "@/redux/features/authSlice";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-// Mock data for demo
-const mockApplications = [
-    { _id: "1", applicationId: "VA-2025-001", firstName: "Mohammad", lastName: "Sakib", email: "sakib@email.com", phone: "+880171XXXXXXX", visaType: "Tourist Visa", country: "United Kingdom", passportNo: "AB1234567", status: "processing", fee: 15000, appliedDate: "2025-02-20", notes: "Documents submitted" },
-    { _id: "2", applicationId: "VA-2025-002", firstName: "Fatima", lastName: "Rahman", email: "fatima@email.com", phone: "+880181XXXXXXX", visaType: "Student Visa", country: "Canada", passportNo: "CD2345678", status: "approved", fee: 25000, appliedDate: "2025-02-19", notes: "Approved - Pickup ready" },
-    { _id: "3", applicationId: "VA-2025-003", firstName: "Ahmed", lastName: "Hasan", email: "ahmed@email.com", phone: "+880191XXXXXXX", visaType: "Work Visa", country: "Australia", passportNo: "EF3456789", status: "pending", fee: 35000, appliedDate: "2025-02-18", notes: "Awaiting employer letter" },
-    { _id: "4", applicationId: "VA-2025-004", firstName: "Nusrat", lastName: "Jahan", email: "nusrat@email.com", phone: "+880161XXXXXXX", visaType: "Visit Visa", country: "United States", passportNo: "GH4567890", status: "approved", fee: 20000, appliedDate: "2025-02-17", notes: "" },
-    { _id: "5", applicationId: "VA-2025-005", firstName: "Kamal", lastName: "Uddin", email: "kamal@email.com", phone: "+880151XXXXXXX", visaType: "Tourist Visa", country: "Malaysia", passportNo: "IJ5678901", status: "rejected", fee: 8000, appliedDate: "2025-02-16", notes: "Insufficient funds" },
-    { _id: "6", applicationId: "VA-2025-006", firstName: "Rina", lastName: "Akter", email: "rina@email.com", phone: "+880141XXXXXXX", visaType: "Student Visa", country: "Germany", passportNo: "KL6789012", status: "processing", fee: 22000, appliedDate: "2025-02-15", notes: "Interview scheduled" },
-    { _id: "7", applicationId: "VA-2025-007", firstName: "Tanvir", lastName: "Islam", email: "tanvir@email.com", phone: "+880131XXXXXXX", visaType: "Business Visa", country: "Japan", passportNo: "MN7890123", status: "pending", fee: 30000, appliedDate: "2025-02-14", notes: "" },
-    { _id: "8", applicationId: "VA-2025-008", firstName: "Sumaiya", lastName: "Khan", email: "sumaiya@email.com", phone: "+880121XXXXXXX", visaType: "Medical Visa", country: "India", passportNo: "OP8901234", status: "approved", fee: 5000, appliedDate: "2025-02-13", notes: "Hospital appointment letter received" },
-];
-
 const countryFlags = {
     "United Kingdom": "🇬🇧", "Canada": "🇨🇦", "Australia": "🇦🇺", "United States": "🇺🇸",
     "Malaysia": "🇲🇾", "Germany": "🇩🇪", "Japan": "🇯🇵", "India": "🇮🇳",
@@ -37,6 +25,7 @@ const countryFlags = {
 export default function VisaApplications() {
     const [applications, setApplications] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
     const [search, setSearch] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
     const [viewingApp, setViewingApp] = useState(null);
@@ -47,19 +36,23 @@ export default function VisaApplications() {
 
     const fetchApplications = async () => {
         setLoading(true);
+        setError(false);
         try {
-            // Try to fetch from API, fall back to mock
             const res = await fetch(`${API_BASE}/api/visa-applications`, {
                 headers: token ? { Authorization: `Bearer ${token}` } : {},
             });
             const data = await res.json();
-            if (data.success && data.data) {
-                setApplications(Array.isArray(data.data) ? data.data : data.data.data || mockApplications);
+            if (res.ok && data.success && data.data) {
+                setApplications(Array.isArray(data.data) ? data.data : data.data.data || []);
             } else {
-                setApplications(mockApplications);
+                setApplications([]);
+                setError(true);
+                toast.error(data.message || "Failed to load applications");
             }
         } catch {
-            setApplications(mockApplications);
+            setApplications([]);
+            setError(true);
+            toast.error("Failed to load applications");
         } finally {
             setLoading(false);
         }
@@ -407,6 +400,18 @@ export default function VisaApplications() {
                 {loading ? (
                     <div className="flex items-center justify-center py-20">
                         <FiLoader className="animate-spin" size={24} style={{ color: '#021E14' }} />
+                    </div>
+                ) : error ? (
+                    <div className="text-center py-20 text-gray-400">
+                        <FiFileText size={40} className="mx-auto mb-3 opacity-30 text-red-300" />
+                        <p className="text-[13px] font-medium text-red-500">Failed to load applications</p>
+                        <p className="text-[11px] mt-1">Please check your connection and try again</p>
+                        <button
+                            onClick={fetchApplications}
+                            className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-[11px] font-semibold text-white transition-all" style={{ backgroundColor: '#021E14' }}
+                        >
+                            <FiRefreshCw size={13} /> Retry
+                        </button>
                     </div>
                 ) : filtered.length === 0 ? (
                     <div className="text-center py-20 text-gray-400">

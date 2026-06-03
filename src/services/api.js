@@ -231,16 +231,3 @@ export const homeContentService = {
     }),
     seed: () => apiFetch('/api/home-content/seed', { method: 'POST' }),
 };
-
-// ==================== LEGACY STUBS (fonts pages) ====================
-export const fontService = {
-    getAll: () => Promise.resolve({ success: false, data: [] }),
-    getBySlug: () => Promise.resolve({ success: false, data: null }),
-};
-export const cartService = {
-    getCart: () => Promise.resolve({ success: false, data: [] }),
-    addToCart: () => Promise.resolve({ success: false }),
-};
-export const downloadService = {
-    download: () => Promise.resolve({ success: false }),
-};

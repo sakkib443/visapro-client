@@ -23,6 +23,7 @@ import {
     LuTrendingUp
 } from "react-icons/lu";
 import { useLanguage } from "@/context/LanguageContext";
+import { useSiteSettings, buildTelUrl } from "@/context/SiteSettingsContext";
 import CountryFlag from "@/components/shared/CountryFlag";
 import BookingModal from "@/components/shared/BookingModal";
 
@@ -141,6 +142,7 @@ const services = [
 export default function StudyAbroadPage() {
     const [selectedCountry, setSelectedCountry] = useState(0);
     const { language } = useLanguage();
+    const { settings } = useSiteSettings();
     const isBn = language === 'bn';
     const fontFamily = isBn ? 'Hind Siliguri, sans-serif' : 'Poppins, sans-serif';
     const headingFont = isBn ? 'Hind Siliguri, sans-serif' : 'Teko, sans-serif';
@@ -312,7 +314,7 @@ export default function StudyAbroadPage() {
                                     <p className="text-[11px] text-gray-400 font-normal" style={{ fontFamily }}>
                                         {isBn ? 'আরো প্রোগ্রাম জানতে চান?' : 'Want to explore more programs?'}
                                     </p>
-                                    <button className="mt-2 text-[10px] font-bold uppercase tracking-widest hover:underline" style={{ color: '#EF8C2C', fontFamily }}>
+                                    <button onClick={() => setBookingModalOpen(true)} className="mt-2 text-[10px] font-bold uppercase tracking-widest hover:underline" style={{ color: '#EF8C2C', fontFamily }}>
                                         {isBn ? 'সব প্রোগ্রাম দেখুন' : 'View All Programs'}
                                     </button>
                                 </div>
@@ -374,9 +376,9 @@ export default function StudyAbroadPage() {
                         <button onClick={() => setBookingModalOpen(true)} className="px-10 py-4 rounded-lg text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:opacity-90 shadow-lg" style={{ backgroundColor: '#EF8C2C', fontFamily }}>
                             {isBn ? 'বিনামূল্যে পরামর্শ' : 'Free Consultation'}
                         </button>
-                        <button className="px-10 py-4 rounded-lg border text-[11px] font-bold uppercase tracking-widest transition-all hover:bg-gray-50" style={{ borderColor: '#021E14', color: '#021E14', fontFamily }}>
+                        <a href={buildTelUrl(settings.contactPhone)} className="px-10 py-4 rounded-lg border text-[11px] font-bold uppercase tracking-widest transition-all hover:bg-gray-50 inline-flex items-center justify-center" style={{ borderColor: '#021E14', color: '#021E14', fontFamily }}>
                             {isBn ? 'আমাদের কল করুন' : 'Call Us Now'}
-                        </button>
+                        </a>
                     </div>
                 </div>
             </section>

@@ -135,6 +135,9 @@ export default function EditBlogPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!formData.title.trim()) { toast.error("Title is required"); return; }
+        if (!formData.excerpt.trim() || formData.excerpt.trim().length < 20) { toast.error("Excerpt must be at least 20 characters"); return; }
+        if (!formData.content.trim() || formData.content.replace(/<[^>]*>/g, '').trim().length < 100) { toast.error("Content must be at least 100 characters"); return; }
+        if (!formData.thumbnail.trim()) { toast.error("Thumbnail is required"); return; }
         setSaving(true);
         try {
             const payload = {

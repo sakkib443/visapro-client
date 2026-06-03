@@ -178,7 +178,7 @@ export default function BlogPage() {
                                     {isBn ? 'কোনো আর্টিকেল পাওয়া যায়নি' : 'NO ARTICLES FOUND'}
                                 </h3>
                                 <p className="text-gray-400 text-sm mt-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                                    {isBn ? 'অন্যভাবে খোঁজার চেষ্টা করুন' : 'Try adjusting your search or filters'}
+                                    {isBn ? 'অন্যভাবে খোঁজার চেষ্টা করুন' : 'Try adjusting your search'}
                                 </p>
                             </div>
                         )}

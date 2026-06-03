@@ -15,17 +15,10 @@ import { selectToken } from "@/redux/features/authSlice";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-const mockBookings = [
-    { _id: "1", bookingId: "HB-001", guestName: "Mohammad Sakib", hotel: "Radisson Blu Dhaka", city: "Dhaka", checkIn: "2025-03-15", checkOut: "2025-03-18", rooms: 1, roomType: "Deluxe", price: 25000, status: "confirmed", phone: "+880171XXXXXXX" },
-    { _id: "2", bookingId: "HB-002", guestName: "Fatima Rahman", hotel: "Hilton Kuala Lumpur", city: "Kuala Lumpur", checkIn: "2025-04-01", checkOut: "2025-04-05", rooms: 2, roomType: "Suite", price: 85000, status: "confirmed", phone: "+880181XXXXXXX" },
-    { _id: "3", bookingId: "HB-003", guestName: "Ahmed Hasan", hotel: "Long Beach Hotel Coxbazar", city: "Cox's Bazar", checkIn: "2025-03-20", checkOut: "2025-03-23", rooms: 1, roomType: "Ocean View", price: 18000, status: "pending", phone: "+880191XXXXXXX" },
-    { _id: "4", bookingId: "HB-004", guestName: "Nusrat Jahan", hotel: "JW Marriott Dubai", city: "Dubai", checkIn: "2025-05-10", checkOut: "2025-05-15", rooms: 1, roomType: "Premium", price: 120000, status: "confirmed", phone: "+880161XXXXXXX" },
-    { _id: "5", bookingId: "HB-005", guestName: "Kamal Uddin", hotel: "Pan Pacific Singapore", city: "Singapore", checkIn: "2025-04-12", checkOut: "2025-04-14", rooms: 1, roomType: "Standard", price: 35000, status: "cancelled", phone: "+880151XXXXXXX" },
-];
-
 export default function HotelBookingsPage() {
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
     const [search, setSearch] = useState("");
     const [filter, setFilter] = useState("all");
     const [viewingBooking, setViewingBooking] = useState(null);
@@ -33,21 +26,43 @@ export default function HotelBookingsPage() {
 
     const fetchBookings = async () => {
         setLoading(true);
+        setError(false);
         try {
             const res = await fetch(`${API_BASE}/api/hotel-bookings`, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
             const data = await res.json();
-            setBookings(data.success && data.data ? (Array.isArray(data.data) ? data.data : data.data.data || mockBookings) : mockBookings);
-        } catch { setBookings(mockBookings); }
-        finally { setLoading(false); }
+            if (res.ok && data.success && data.data) {
+                const list = Array.isArray(data.data) ? data.data : Array.isArray(data.data.data) ? data.data.data : [];
+                setBookings(list);
+            } else {
+                setBookings([]);
+                setError(true);
+            }
+        } catch {
+            toast.error("Failed to fetch bookings");
+            setBookings([]);
+            setError(true);
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => { fetchBookings(); }, []);
 
     const handleDelete = async (id) => {
         if (!confirm("Delete this booking?")) return;
-        try { await fetch(`${API_BASE}/api/hotel-bookings/${id}`, { method: "DELETE", headers: token ? { Authorization: `Bearer ${token}` } : {} }); } catch { }
-        setBookings(prev => prev.filter(b => b._id !== id));
-        toast.success("Booking deleted");
+        try {
+            const res = await fetch(`${API_BASE}/api/hotel-bookings/${id}`, { method: "DELETE", headers: token ? { Authorization: `Bearer ${token}` } : {} });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                setBookings(prev => prev.filter(b => b._id !== id));
+                if (viewingBooking?._id === id) setViewingBooking(null);
+                toast.success("Booking deleted");
+            } else {
+                toast.error(data.message || "Failed to delete booking");
+            }
+        } catch {
+            toast.error("Failed to delete booking");
+        }
     };
 
     const filtered = bookings.filter(b => {
@@ -164,6 +179,28 @@ export default function HotelBookingsPage() {
             {/* Cards */}
             {loading ? (
                 <div className="flex justify-center py-20"><FiLoader className="animate-spin" size={24} style={{ color: '#021E14' }} /></div>
+            ) : error ? (
+                <div className="flex flex-col items-center justify-center py-20 text-center">
+                    <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mb-4">
+                        <FiX size={24} className="text-red-300" />
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-400 mb-1">Failed to load bookings</h3>
+                    <p className="text-[12px] text-gray-400 mb-4">Something went wrong while fetching hotel bookings.</p>
+                    <button onClick={fetchBookings} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[11px] font-semibold text-white" style={{ backgroundColor: '#021E14' }}>
+                        <FiRefreshCw size={13} /> Try Again
+                    </button>
+                </div>
+            ) : filtered.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-20 text-center">
+                    <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
+                        <LuHotel size={24} className="text-gray-300" />
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-400 mb-1">No Hotel Bookings Found</h3>
+                    <p className="text-[12px] text-gray-400 mb-4">Create your first hotel booking to get started</p>
+                    <Link href="/dashboard/admin/hotel-bookings/create" className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[11px] font-semibold text-white" style={{ backgroundColor: '#021E14' }}>
+                        <FiPlus size={13} /> New Booking
+                    </Link>
+                </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {filtered.map((booking, i) => (
