@@ -72,14 +72,15 @@ const menuItems = [
             { name: "Add Country", href: "/dashboard/admin/countries/create", icon: FiPlus },
         ],
     },
-    {
-        name: "Visa Documents",
-        icon: FiFileText,
-        children: [
-            { name: "All Documents", href: "/dashboard/admin/visa-documents", icon: FiFileText },
-            { name: "Create Document", href: "/dashboard/admin/visa-documents/create", icon: FiPlus },
-        ],
-    },
+    // Hidden for now — temporarily removed from admin dashboard
+    // {
+    //     name: "Visa Documents",
+    //     icon: FiFileText,
+    //     children: [
+    //         { name: "All Documents", href: "/dashboard/admin/visa-documents", icon: FiFileText },
+    //         { name: "Create Document", href: "/dashboard/admin/visa-documents/create", icon: FiPlus },
+    //     ],
+    // },
     {
         section: "TRAVEL & TOURS",
     },
