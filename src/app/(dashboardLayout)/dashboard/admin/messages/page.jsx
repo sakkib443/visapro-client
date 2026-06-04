@@ -1,23 +1,58 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useSelector } from "react-redux";
+import { selectToken } from "@/redux/features/authSlice";
 import {
     FiMessageCircle, FiSearch, FiLoader, FiUser, FiClock,
     FiCheck, FiCheckCircle, FiInbox
 } from "react-icons/fi";
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 export default function MessagesPage() {
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(false);
     const [selected, setSelected] = useState(null);
     const [filter, setFilter] = useState("all");
+    const token = useSelector(selectToken);
 
-    // No messages backend exists yet, so there is nothing to fetch.
-    // Show an honest empty inbox instead of fabricated data.
+    // Fetch messages (admin only) on mount, newest first from the backend.
+    useEffect(() => {
+        const fetchMessages = async () => {
+            setLoading(true);
+            try {
+                const res = await fetch(`${API_BASE}/api/messages`, {
+                    headers: token ? { Authorization: `Bearer ${token}` } : {},
+                });
+                const data = await res.json();
+                if (res.ok && data.success && Array.isArray(data.data)) {
+                    setMessages(data.data);
+                } else {
+                    setMessages([]);
+                }
+            } catch {
+                setMessages([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchMessages();
+    }, [token]);
 
     const markAsRead = (id) => {
+        // Optimistic local update
         setMessages(prev => prev.map(m => m._id === id ? { ...m, status: "read" } : m));
+        // Persist to backend (admin only)
+        fetch(`${API_BASE}/api/messages/${id}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
+            body: JSON.stringify({ status: "read" }),
+        }).catch(() => { });
     };
 
     const filtered = messages.filter(m => {
